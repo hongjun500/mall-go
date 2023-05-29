@@ -1,9 +1,11 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type UmsRole struct {
-	Model
+	*Model
 	// 名称
 	Name string `gorm:"column:name;type:varchar(100);" json:"name"`
 	// 描述
@@ -16,25 +18,40 @@ type UmsRole struct {
 	Sort int `gorm:"column:sort;type:int(11);default:0;" json:"sort"`
 }
 
-func Create(db *gorm.DB, role *UmsRole) (int, error) {
-	tx := db.Create(&role)
-	if tx.Error != nil {
-		return 0, tx.Error
-	}
-	return 1, nil
+func (*UmsRole) TableName() string {
+	return "ums_role"
 }
 
-func Update(db *gorm.DB, id int64, role *UmsRole) (int64, error) {
-	role.Id = id
-	tx := db.Updates(&role)
+func (*UmsRole) CreateAt() string {
+	return "create_at"
+}
+
+func (role *UmsRole) Create(db *gorm.DB) (int64, error) {
+	tx := db.Create(role)
 	if tx.Error != nil {
 		return 0, tx.Error
 	}
 	return tx.RowsAffected, nil
 }
 
-func Delete(db *gorm.DB, id int64) (int64, error) {
-	tx := db.Delete(&UmsRole{}, id)
+func (role *UmsRole) Update(db *gorm.DB, id int64) (int64, error) {
+	role.Id = id
+	tx := db.Updates(role)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return tx.RowsAffected, nil
+}
+
+func (role *UmsRole) Get(db *gorm.DB, id int64) (*UmsRole, error) {
+	tx := db.First(role, id)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return role, nil
+}
+func (role *UmsRole) Delete(db *gorm.DB, id int64) (int64, error) {
+	tx := db.Delete(role, id)
 	if tx.Error != nil {
 		return 0, tx.Error
 	}
@@ -42,7 +59,7 @@ func Delete(db *gorm.DB, id int64) (int64, error) {
 }
 
 // ListAll 获取所有角色信息
-func ListAll(db *gorm.DB) (roles []*UmsRole, err error) {
+func (role *UmsRole) ListAll(db *gorm.DB) (roles []UmsRole, err error) {
 	tx := db.Find(&roles)
 	if tx.Error != nil {
 		return nil, tx.Error
@@ -51,8 +68,8 @@ func ListAll(db *gorm.DB) (roles []*UmsRole, err error) {
 }
 
 // ListPage 根据 name 的关键字分页获取角色信息
-func ListPage(db *gorm.DB, keyword string, page int, pageSize int) (roles []*UmsRole, err error) {
-	tx := db.Where("name like ", "%"+keyword+"%").Offset((page - 1) * pageSize).Limit(pageSize).Find(&roles)
+func (role *UmsRole) ListPage(db *gorm.DB, keyword string, page int, pageSize int) (roles []*UmsRole, err error) {
+	tx := db.Where("name like ?", "%"+keyword+"%").Offset((page - 1) * pageSize).Limit(pageSize).Find(&roles)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
