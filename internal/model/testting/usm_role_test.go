@@ -50,7 +50,7 @@ func TestUpdate(t *testing.T) {
 func TestDelete(t *testing.T) {
 	t.Log("test delete")
 	var umsRole model.UmsRole
-	i, err := umsRole.Delete(conf.Db, 7)
+	i, err := umsRole.Delete(conf.Db, 8)
 	if err != nil {
 		return // 测试失败
 	}
