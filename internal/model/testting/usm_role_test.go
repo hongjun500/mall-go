@@ -77,3 +77,19 @@ func TestListPage(t *testing.T) {
 	}
 	t.Logf("page = %v", page)
 }
+
+func TestListMenu(t *testing.T) {
+	t.Log("test list menu")
+	var umsRole model.UmsRole
+	menu, err := umsRole.ListMenu(conf.Db, 1)
+	if err != nil {
+		t.Errorf("error occurred: %v", err)
+	}
+	if len(menu) == 0 {
+		t.Errorf("menu is empty")
+	}
+	for i, umsMenu := range menu {
+		t.Logf("menu[%d] = %v", i, umsMenu)
+	}
+
+}
