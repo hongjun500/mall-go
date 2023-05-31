@@ -72,3 +72,12 @@ func TestUpdateHidden(t *testing.T) {
 	}
 	t.Log("update success RowsAffected = ", row)
 }
+
+func TestListMenuTree(t *testing.T) {
+	var menu model.UmsMenu
+	menus, err := menu.ListMenuTree(conf.Db)
+	if err != nil {
+		return
+	}
+	t.Log("list all success, len = ", len(menus))
+}

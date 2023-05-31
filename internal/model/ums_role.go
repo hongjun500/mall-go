@@ -72,7 +72,11 @@ func (role *UmsRole) ListAll(db *gorm.DB) ([]*UmsRole, error) {
 // ListPage 根据 name 的关键字分页获取角色信息
 func (role *UmsRole) ListPage(db *gorm.DB, keyword string, pageNum int, pageSize int) ([]*UmsRole, error) {
 	var roles []*UmsRole
-	tx := db.Where("name like ?", "%"+keyword+"%").Offset((pageNum - 1) * pageSize).Limit(pageSize).Find(&roles)
+	dbQuery := db.Offset((pageNum - 1) * pageSize).Limit(pageSize)
+	if keyword != "" {
+		dbQuery = dbQuery.Where("name like ?", "%"+keyword+"%")
+	}
+	tx := dbQuery.Find(&roles)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}

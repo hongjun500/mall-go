@@ -105,16 +105,32 @@ func (umsMenu *UmsMenu) UpdateHidden(db *gorm.DB, id, hidden int64) (int64, erro
 	return tx.RowsAffected, nil
 }
 
-// ListTree 获取菜单树形列表
-func (umsMenu *UmsMenu) ListTree(db *gorm.DB) ([]*UmsMenu, error) {
+// ListMenuTree 获取菜单树形列表
+func (umsMenu *UmsMenu) ListMenuTree(db *gorm.DB) ([]*UmsMenuNode, error) {
 	var menus []*UmsMenu
 	tx := db.Order("sort desc").Find(&menus)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
-	return menus, nil
+	var umsMenuNodes []*UmsMenuNode
+	for _, menu := range menus {
+		if menu.ParentID == 0 {
+			umsMenuNodes = append(umsMenuNodes, ConvertMenuTreeNode(menu, menus))
+		}
+	}
+	return umsMenuNodes, nil
 }
 
-func ConvertMenuTreeNode(menus []*UmsMenu, menu *UmsMenu) *UmsMenuNode {
-	return nil
+// ConvertMenuTreeNode 转换菜单树形结构
+func ConvertMenuTreeNode(menu *UmsMenu, menus []*UmsMenu) *UmsMenuNode {
+	var umsMenuNode = &UmsMenuNode{}
+	var umsMenuNodeChildren []*UmsMenuNode
+	umsMenuNode.UmsMenu = *menu
+	for _, umsMenu := range menus {
+		if umsMenu.ParentID == menu.Id {
+			umsMenuNodeChildren = append(umsMenuNodeChildren, ConvertMenuTreeNode(umsMenu, menus))
+		}
+	}
+	umsMenuNode.Children = umsMenuNodeChildren
+	return umsMenuNode
 }

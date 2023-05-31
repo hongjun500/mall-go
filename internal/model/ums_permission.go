@@ -19,3 +19,7 @@ type UmsPermission struct {
 	// 排序值
 	Sort int64 `gorm:"column:sort;default:0" json:"sort"`
 }
+
+func (*UmsPermission) TableName() string {
+	return "ums_permission"
+}
