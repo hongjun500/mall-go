@@ -2,7 +2,7 @@ package testting
 
 import (
 	"github.com/hongjun500/mall-go/internal/conf"
-	"github.com/hongjun500/mall-go/internal/model"
+	"github.com/hongjun500/mall-go/internal/models"
 	"os"
 	"testing"
 )
@@ -19,7 +19,7 @@ func TestMain(t *testing.M) {
 
 func TestCreate(t *testing.T) {
 	t.Log("test create")
-	var umsRole model.UmsRole
+	var umsRole models.UmsRole
 	umsRole.Name = "二手管理员"
 	umsRole.Description = "二手"
 	umsRole.AdminCount = 1
@@ -35,7 +35,7 @@ func TestCreate(t *testing.T) {
 
 func TestUpdate(t *testing.T) {
 	t.Log("test update")
-	var umsRole model.UmsRole
+	var umsRole models.UmsRole
 	role, err := umsRole.Get(conf.Db, 7)
 	if err != nil {
 		return
@@ -49,7 +49,7 @@ func TestUpdate(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	t.Log("test delete")
-	var umsRole model.UmsRole
+	var umsRole models.UmsRole
 	i, err := umsRole.Delete(conf.Db, 8)
 	if err != nil {
 		return // 测试失败
@@ -60,7 +60,7 @@ func TestDelete(t *testing.T) {
 func TestListAll(t *testing.T) {
 
 	t.Log("test list all")
-	var umsRole model.UmsRole
+	var umsRole models.UmsRole
 	all, err := umsRole.ListAll(conf.Db)
 	if err != nil {
 		return
@@ -70,7 +70,7 @@ func TestListAll(t *testing.T) {
 
 func TestListPage(t *testing.T) {
 	t.Log("test list page")
-	var umsRole model.UmsRole
+	var umsRole models.UmsRole
 	page, err := umsRole.ListPage(conf.Db, "管理员", 1, 10)
 	if err != nil {
 		return
@@ -80,7 +80,7 @@ func TestListPage(t *testing.T) {
 
 func TestListMenu(t *testing.T) {
 	t.Log("test list menu")
-	var umsRole model.UmsRole
+	var umsRole models.UmsRole
 	menu, err := umsRole.ListMenu(conf.Db, 1)
 	if err != nil {
 		t.Errorf("error occurred: %v", err)
