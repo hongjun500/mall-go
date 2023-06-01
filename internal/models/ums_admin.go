@@ -13,7 +13,7 @@ type UmsAdmin struct {
 	// 邮箱
 	Email string `gorm:"column:email;" json:"email"`
 	// 昵称
-	NickName string `gorm:"column:nick_name;" json:"nick_name"`
+	Nickname string `gorm:"column:nick_name;" json:"nick_name"`
 	// 备注信息
 	Note string `gorm:"column:note;" json:"note"`
 	// 最后登录时间
@@ -36,8 +36,8 @@ func (umsAdmin *UmsAdmin) GetUmsAdminByUsername(db *gorm.DB, username string) ([
 	return umsAdmins, nil
 }
 
-// Register 注册
-func (umsAdmin *UmsAdmin) Register(db *gorm.DB) (int64, error) {
+// CreateUmsAdmin 注册
+func (umsAdmin *UmsAdmin) CreateUmsAdmin(db *gorm.DB) (int64, error) {
 	tx := db.Create(umsAdmin)
 	if tx.Error != nil {
 		return 0, tx.Error

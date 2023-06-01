@@ -1,4 +1,4 @@
-package init
+package database
 
 import (
 	"database/sql"
@@ -9,8 +9,22 @@ import (
 	"sync"
 )
 
-// GormMySQL 初始化 gorm 对于 MySQL 的连接
-func GormMySQL() (db *gorm.DB, err error) {
+type DbFactory struct {
+	// 基于 gorm 的 MySQL 连接
+	GormMySQL *gorm.DB
+
+	// todo 改写 redis
+	Redis string
+	// todo 改写 es
+	Es string
+}
+
+type DbSessionFactory interface {
+	NewDbSessionFactory(args ...any) *DbFactory
+}
+
+// NewGormMySQL 初始化 gorm 对于 MySQL 的连接
+func NewGormMySQL() (db *gorm.DB, err error) {
 	// 拿到配置
 	config, gormLogger := conf.GetDbSetting()
 	// 初始化 gorm 对于 MySQL 的连接

@@ -1,14 +1,14 @@
-package testting
+package models
 
 import (
-	"github.com/hongjun500/mall-go/internal/conf"
+	"github.com/hongjun500/mall-go/internal/initialize"
 	"github.com/hongjun500/mall-go/internal/models"
 	"testing"
 )
 
 func TestResourceListAll(t *testing.T) {
 	var umsResource models.UmsResource
-	all, err := umsResource.ListAll(conf.Db)
+	all, err := umsResource.ListAll(initialize.SqlSession.DbMySQL)
 	if err != nil {
 		return
 	}
@@ -17,7 +17,7 @@ func TestResourceListAll(t *testing.T) {
 
 func TestResourceListPage(t *testing.T) {
 	var umsResource models.UmsResource
-	page, err := umsResource.ListPage(conf.Db, 0, "", "", 1, 10)
+	page, err := umsResource.ListPage(initialize.SqlSession.DbMySQL, 0, "", "", 1, 10)
 	if err != nil {
 		return
 	}
