@@ -3,25 +3,12 @@ package initialize
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/database"
-	"gorm.io/gorm"
+	"github.com/hongjun500/mall-go/internal/services"
 )
-
-type RedisCli struct {
-}
-
-type SqlFactory struct {
-	DbMySQL *gorm.DB
-	// todo 改写 redis
-	DbRedis RedisCli
-}
 
 type GinEngine struct {
 	GinEngine *gin.Engine
 }
-
-var (
-	SqlSession *SqlFactory
-)
 
 func NewGinEngine() *GinEngine {
 	r := gin.Default()
@@ -36,34 +23,25 @@ func NewGinEngine() *GinEngine {
 	}
 
 	engine := &GinEngine{GinEngine: r}
+
 	return engine
+
+	/*// Gin 初始化
+	ginEngine := NewGinEngine()
+	ginEngine.GinEngine.Run(":8080")*/
 }
 
 // StartUp 启动初始化
 func StartUp() {
+	// 通过 gorm 拿到 MySQL 数据库连接
 	gormMySQL, _ := database.NewGormMySQL()
-	SqlSession = NewSqlSessionFactory(gormMySQL, nil)
-	// Gin 初始化
-	ginEngine := NewGinEngine()
-	ginEngine.GinEngine.Run(":8080")
-}
 
-type SqlSessionFactory interface {
-	NewSqlSessionFactory(args ...any) *SqlFactory
-}
+	// 将与数据库相关的封装到一个结构体中
+	sqlSessionFactory := database.NewDbFactory(gormMySQL, nil)
 
-func NewSqlSessionFactory(args ...any) *SqlFactory {
-	factory := &SqlFactory{
-		DbMySQL: nil,
-		DbRedis: RedisCli{},
-	}
-	for _, arg := range args {
-		switch val := arg.(type) {
-		case *gorm.DB:
-			factory.DbMySQL = val
-		case RedisCli:
-			factory.DbRedis = val
-		}
-	}
-	return factory
+	// 将与业务逻辑相关的封装到一个结构体中
+	_ = services.InitCoreService(sqlSessionFactory)
+
+	// 将与路由相关的封装到一个结构体中
+
 }

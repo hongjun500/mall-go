@@ -6,23 +6,14 @@ import (
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/models"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 type UmsAdminService struct {
 	DbFactory *database.DbFactory
 }
 
-func (*UmsAdminService) NewDbSessionFactory(args ...any) *database.DbFactory {
-	gormMySQL := args[0].(*gorm.DB)
-	redis := args[1].(string)
-	es := args[2].(string)
-
-	return &database.DbFactory{
-		GormMySQL: gormMySQL,
-		Redis:     redis,
-		Es:        es,
-	}
+func NewUmsAdminService(dbFactory *database.DbFactory) *UmsAdminService {
+	return &UmsAdminService{DbFactory: dbFactory}
 }
 
 // UmsAdminRequest 用户注册请求参数
