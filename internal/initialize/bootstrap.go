@@ -3,33 +3,10 @@ package initialize
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/database"
+	"github.com/hongjun500/mall-go/internal/gin_common"
+	"github.com/hongjun500/mall-go/internal/routers"
 	"github.com/hongjun500/mall-go/internal/services"
 )
-
-type GinEngine struct {
-	GinEngine *gin.Engine
-}
-
-func NewGinEngine() *GinEngine {
-	r := gin.Default()
-	// 强制日志颜色化
-	gin.ForceConsoleColor()
-
-	// 路由分组
-	api := r.Group("/api")
-	{
-		// 用户注册
-		api.POST("/ums/admin/register", nil)
-	}
-
-	engine := &GinEngine{GinEngine: r}
-
-	return engine
-
-	/*// Gin 初始化
-	ginEngine := NewGinEngine()
-	ginEngine.GinEngine.Run(":8080")*/
-}
 
 // StartUp 启动初始化
 func StartUp() {
@@ -40,8 +17,42 @@ func StartUp() {
 	sqlSessionFactory := database.NewDbFactory(gormMySQL, nil)
 
 	// 将与业务逻辑相关的封装到一个结构体中
-	_ = services.InitCoreService(sqlSessionFactory)
+	coreService := services.InitCoreService(sqlSessionFactory)
 
 	// 将与路由相关的封装到一个结构体中
+	coreRouter := routers.InitCoreRouter(coreService)
 
+	// 初始化 gin 引擎
+	ginEngine := InitGinEngine().GinEngine
+
+	// 初始化路由分组
+	InitGroupRouter(coreRouter, ginEngine)
+
+	// 启动 gin 引擎并监听在 8080 端口
+	ginEngine.Run(":8080")
+
+}
+
+// InitGinEngine 初始化 gin 引擎
+func InitGinEngine() *gin_common.GinEngine {
+	r := gin.Default()
+	// 强制日志颜色化
+	gin.ForceConsoleColor()
+
+	engine := &gin_common.GinEngine{GinEngine: r}
+	// 强制日志颜色化
+	gin.ForceConsoleColor()
+	// 日志中间件
+	r.Use(gin.Logger())
+	// 限流中间件
+	/*routers.go.Use(limits.RequestSizeLimiter(10))
+	routers.go.Use(cors.Default())*/
+	r.Use(gin.Recovery())
+	// gin.SetMode(gin)
+	return engine
+}
+
+// InitGroupRouter 初始化路由分组
+func InitGroupRouter(coreRouter *routers.CoreRouter, ginEngine *gin.Engine) {
+	coreRouter.GroupUmsAdminRouter(ginEngine)
 }

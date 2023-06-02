@@ -31,8 +31,8 @@ type GinCommonResponse struct {
 
 // GinCommonError 通用错误信息
 type GinCommonError struct {
-	ErrCode int    `json:"errCode"`
-	ErrMsg  string `json:"errMsg"`
+	ErrCode int    `json:"err_code"`
+	ErrMsg  string `json:"err_msg"`
 }
 
 var CommonErrorConst = map[int]string{
@@ -42,8 +42,10 @@ var CommonErrorConst = map[int]string{
 
 // 通用错误码
 const (
-	UnknownError = 100000 + iota
-	ParameterValidationError
+	UnknownError             = 100000
+	ParameterValidationError = 200000
+	UsernameAlreadyExists    = 300000
+	PasswordError            = 300000 + iota
 	// ParameterMissingError
 	// ParameterTypeError
 )
@@ -54,7 +56,6 @@ func CreateAny(result any, status string, context *gin.Context) {
 		Status: status,
 		Data:   result,
 	})
-	return
 }
 
 // CreateSuccess 创建一个成功的返回信息
