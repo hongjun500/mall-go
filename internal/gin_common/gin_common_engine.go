@@ -38,6 +38,7 @@ type GinCommonError struct {
 var CommonErrorConst = map[int]string{
 	UnknownError:             "未知错误",
 	ParameterValidationError: "参数不合法",
+	UsernameAlreadyExists:    "用户名已存在",
 }
 
 // 通用错误码
@@ -65,7 +66,7 @@ func CreateSuccess(result any, context *gin.Context) {
 
 // Create 创建一个成功的没有返回值的返回信息
 func Create(context *gin.Context) {
-	CreateSuccess("success", context)
+	CreateSuccess(nil, context)
 }
 
 // CreateFail 创建一个失败的返回信息

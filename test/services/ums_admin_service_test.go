@@ -1,21 +1,21 @@
 package services
 
 import (
+	"bytes"
+	"encoding/json"
 	"github.com/hongjun500/mall-go/internal/initialize"
 	"github.com/hongjun500/mall-go/internal/services"
 	"github.com/stretchr/testify/assert"
-	"os"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
-func TestMain(t *testing.M) {
+/*func TestMain(t *testing.M) {
 	// 在测试之前，初始化数据库连接
-	initialize.StartUp()
-	code := t.Run()
-	// 退出测试
-	os.Exit(code)
+	// initialize.StartUp()
 
-}
+}*/
 
 func TestHashPassword(t *testing.T) {
 	password, err := services.HashPassword("123456")
@@ -36,5 +36,14 @@ func TestUmsAdminRegister(t *testing.T) {
 	var umsAdminRequest services.UmsAdminRequest
 	umsAdminRequest.Username = "hongjun"
 	umsAdminRequest.Password = "123456"
-	services.UmsAdminRegister(nil)
+	// services.UmsAdminService.UmsAdminRegister(nil, &umsAdminRequest)
+	requestBody, _ := json.Marshal(umsAdminRequest)
+	router := initialize.StartUp()
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/admin/register", bytes.NewReader(requestBody))
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, "pong", w.Body.String())
 }

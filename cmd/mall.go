@@ -8,6 +8,7 @@ import (
 func main() {
 	fmt.Println("hello, mall-go")
 
-	initialize.StartUp()
-	// initialize.GinEngine.GinEngine.Run(":8080")
+	ginEngine := initialize.StartUp()
+	// 启动 gin 引擎并监听在 8080 端口
+	ginEngine.Run(":8080")
 }

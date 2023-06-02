@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/database"
+	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/models"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -37,17 +38,18 @@ func (s *UmsAdminService) UmsAdminRegister(context *gin.Context) {
 	var request UmsAdminRequest
 	err := context.ShouldBind(&request)
 	if err != nil {
-		// return nil
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		// 这些地方需要手动 return
 		return
 	}
 	// 检查用户名是否重复了
 	var umsAdmin *models.UmsAdmin
 	umsAdmins, err := umsAdmin.GetUmsAdminByUsername(s.DbFactory.GormMySQL, request.Username)
 	if err != nil {
-		return
+		gin_common.CreateFail(gin_common.UnknownError, context)
 	}
 	if umsAdmins != nil && len(umsAdmins) > 0 {
-		// return umsAdmin
+		gin_common.CreateFail(gin_common.UsernameAlreadyExists, context)
 		return
 	}
 	// 密码加密
@@ -64,15 +66,13 @@ func (s *UmsAdminService) UmsAdminRegister(context *gin.Context) {
 	}
 	register, err := umsAdmin.CreateUmsAdmin(s.DbFactory.GormMySQL)
 	if err != nil {
-		// return nil
+		gin_common.CreateFail(gin_common.UnknownError, context)
 		return
 	}
 	if register > 0 {
-		// return umsAdmin
+		gin_common.Create(context)
 		return
 	}
-	// return nil
-	return
 }
 
 // HashPassword 加密密码

@@ -9,7 +9,7 @@ import (
 )
 
 // StartUp 启动初始化
-func StartUp() {
+func StartUp() *gin.Engine {
 	// 通过 gorm 拿到 MySQL 数据库连接
 	gormMySQL, _ := database.NewGormMySQL()
 
@@ -28,9 +28,7 @@ func StartUp() {
 	// 初始化路由分组
 	InitGroupRouter(coreRouter, ginEngine)
 
-	// 启动 gin 引擎并监听在 8080 端口
-	ginEngine.Run(":8080")
-
+	return ginEngine
 }
 
 // InitGinEngine 初始化 gin 引擎
@@ -47,7 +45,7 @@ func InitGinEngine() *gin_common.GinEngine {
 	// 限流中间件
 	/*routers.go.Use(limits.RequestSizeLimiter(10))
 	routers.go.Use(cors.Default())*/
-	r.Use(gin.Recovery())
+	// r.Use(gin.Recovery())
 	// gin.SetMode(gin)
 	return engine
 }
