@@ -15,15 +15,13 @@ func NewUmsAdminRouter(service *services.UmsAdminService) *UmsAdminRouter {
 
 // GroupUmsAdminRouter 用户管理路由
 func (router *UmsAdminRouter) GroupUmsAdminRouter(routerEngine *gin.Engine) {
-	adminGroup := routerEngine.Group("/admin")
+	umsAdminGroup := routerEngine.Group("/admin")
 	{
 		// 用户注册
-		adminGroup.POST("/register", router.UmsAdminRegister)
+		umsAdminGroup.POST("/register", router.UmsAdminService.UmsAdminRegister)
 		/*adminGroup.POST("/register", router.UmsAdminRegister) 这样写也可以*/
 
 		// 用户登录
-		// umsAdminGroup.POST("/login", router.UmsAdminService.UmsAdminLogin)
+		umsAdminGroup.POST("/login", router.UmsAdminService.UmsAdminLogin)
 	}
-
-	routerEngine.GET("/ping", router.UmsAdminRegister)
 }

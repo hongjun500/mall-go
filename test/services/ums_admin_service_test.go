@@ -36,14 +36,24 @@ func TestUmsAdminRegister(t *testing.T) {
 	var umsAdminRequest services.UmsAdminRequest
 	umsAdminRequest.Username = "hongjun"
 	umsAdminRequest.Password = "123456"
-	// services.UmsAdminService.UmsAdminRegister(nil, &umsAdminRequest)
-	requestBody, _ := json.Marshal(umsAdminRequest)
+	umsAdminRequest.Icon = "http://www.baidu.com"
+	umsAdminRequest.Email = "emial.com"
+	umsAdminRequest.Nickname = "nickname"
+	umsAdminRequest.Note = "note"
+	body, err := json.Marshal(umsAdminRequest)
+	if err != nil {
+		return
+	}
+
 	router := initialize.StartUp()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/admin/register", bytes.NewReader(requestBody))
+	// req, err := http.Post("/admin/register", "application/json", bytes.NewReader(body))
+	req, _ := http.NewRequest("POST", "/admin/register", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "pong", w.Body.String())
+
 }

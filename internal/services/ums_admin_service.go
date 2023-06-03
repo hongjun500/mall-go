@@ -99,3 +99,17 @@ func VerifyPassword(password, hashedPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	return err == nil
 }
+
+func (s *UmsAdminRequest) UmsAdminLogin(context *gin.Context) {
+	var request UmsAdminRequest
+	err := context.ShouldBind(&request)
+	if err != nil {
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		// 这些地方需要手动 return
+		return
+	}
+	// todo根据用户名查询用户
+	// todo校验密码
+	// todo生成token
+	// todo返回token
+}
