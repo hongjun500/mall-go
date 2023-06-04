@@ -25,6 +25,12 @@ func (router *UmsAdminRouter) GroupUmsAdminRouter(routerEngine *gin.Engine) {
 
 		// 用户登录
 		umsAdminGroup.POST("/login", router.UmsAdminService.UmsAdminLogin)
+		// 刷新 token
+		umsAdminGroup.POST("/refreshToken", router.UmsAdminService.UmsAdminRefreshToken)
+		// 根据用户 ID 获取用户信息
+		umsAdminGroup.GET("/info", router.UmsAdminService.UmsAdminInfo)
+		// 用户列表分页
+		umsAdminGroup.GET("/list", router.UmsAdminService.UmsAdminListPage)
 	}
 	authGroup := routerEngine.Group("/auth").Use(mid.GinJWTMiddleware())
 	{

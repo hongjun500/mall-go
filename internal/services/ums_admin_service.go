@@ -7,6 +7,7 @@ import (
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/models"
+	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,25 +19,9 @@ func NewUmsAdminService(dbFactory *database.DbFactory) *UmsAdminService {
 	return &UmsAdminService{DbFactory: dbFactory}
 }
 
-// UmsAdminRequest 用户注册请求参数
-type UmsAdminRequest struct {
-	// 用户名
-	Username string `json:"username" form:"username" binding:"required"`
-	// 密文密码
-	Password string `json:"password" form:"password" binding:"required"`
-	// 用户头像
-	Icon string `json:"icon" form:"icon"`
-	// 邮箱
-	Email string `json:"email" form:"email"`
-	// 用户昵称
-	Nickname string `json:"nickname" form:"nickname"`
-	// 备注
-	Note string `json:"note" form:"note"`
-}
-
 // UmsAdminRegister 用户注册
 func (s *UmsAdminService) UmsAdminRegister(context *gin.Context) {
-	var request UmsAdminRequest
+	var request ums_admin.UmsAdminRequest
 	err := context.ShouldBind(&request)
 	if err != nil {
 		gin_common.CreateFail(gin_common.ParameterValidationError, context)
@@ -103,7 +88,7 @@ func VerifyPassword(password, hashedPassword string) bool {
 }
 
 func (s *UmsAdminService) UmsAdminLogin(context *gin.Context) {
-	var request UmsAdminRequest
+	var request ums_admin.UmsAdminRequest
 	err := context.ShouldBind(&request)
 	if err != nil {
 		gin_common.CreateFail(gin_common.ParameterValidationError, context)
@@ -140,5 +125,61 @@ func (s *UmsAdminService) UmsAdminLogin(context *gin.Context) {
 	}
 	token := mid.GenerateToken(umsAdmin.Username)
 	// todo 添加登录记录
-	gin_common.CreateSuccess(token, context)
+
+	if token == "" {
+		gin_common.CreateFail(gin_common.TokenGenFail, context)
+		return
+	}
+	tokenMap := make(map[string]string)
+	tokenMap["token"] = token
+	tokenMap["tokenHead"] = "Bearer "
+	gin_common.CreateSuccess(tokenMap, context)
+}
+
+func (s *UmsAdminService) UmsAdminRefreshToken(context *gin.Context) {
+	header := context.GetHeader("Authorization")
+	refreshToken, _ := mid.RefreshToken(header)
+	if refreshToken == "" {
+		gin_common.CreateFail(gin_common.TokenExpired, context)
+		return
+	}
+	tokenMap := make(map[string]string)
+	tokenMap["token"] = refreshToken
+	tokenMap["tokenHead"] = "Bearer "
+	gin_common.CreateSuccess(tokenMap, context)
+}
+
+// UmsAdminInfo 根据用户 ID 获取用户信息
+func (s *UmsAdminService) UmsAdminInfo(context *gin.Context) {
+	id := context.MustGet("id")
+	if id == "" || id == nil {
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+	}
+	var umsAdmin *models.UmsAdmin
+	umsAdmins, err := umsAdmin.GetUmsAdminByUserId(s.DbFactory.GormMySQL, id.(int64))
+	if err != nil {
+		gin_common.Create(context)
+		return
+	}
+	if umsAdmins == nil {
+		gin_common.Create(context)
+		return
+	}
+	gin_common.CreateSuccess(umsAdmins, context)
+}
+
+func (s *UmsAdminService) UmsAdminListPage(context *gin.Context) {
+	var request ums_admin.UmsAdminRequest
+	err := context.ShouldBind(&request)
+	if err != nil {
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		return
+	}
+	var umsAdmin *models.UmsAdmin
+	umsAdmins, err := umsAdmin.GetUmsAdminListPage(s.DbFactory.GormMySQL, request.Username, request.PageNum, request.PageSize)
+	if err != nil {
+		gin_common.CreateFail(gin_common.UnknownError, context)
+		return
+	}
+	gin_common.CreateSuccess(umsAdmins, context)
 }

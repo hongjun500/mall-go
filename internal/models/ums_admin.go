@@ -47,3 +47,27 @@ func (umsAdmin *UmsAdmin) CreateUmsAdmin(db *gorm.DB) (int64, error) {
 	}
 	return tx.RowsAffected, nil
 }
+
+// GetUmsAdminByUserId 根据用户 ID 获取用户信息
+func (umsAdmin *UmsAdmin) GetUmsAdminByUserId(db *gorm.DB, userId int64) (*UmsAdmin, error) {
+	tx := db.Where("id = ?", userId).First(umsAdmin)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return umsAdmin, nil
+}
+
+// GetUmsAdminListPage 分页获取用户列表
+func (umsAdmin *UmsAdmin) GetUmsAdminListPage(db *gorm.DB, keyword string, pageNum, pageSize int) ([]*UmsAdmin, error) {
+	var umsAdmins []*UmsAdmin
+	dbQuery := db.Offset((pageNum - 1) * pageSize).Limit(pageSize)
+	if keyword != "" {
+		dbQuery = dbQuery.Where("name like  ? or nickname like ?", "%"+keyword+"%")
+	}
+	tx := dbQuery.Find(&umsAdmins)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	return umsAdmins, nil
+}
