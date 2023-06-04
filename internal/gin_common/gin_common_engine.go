@@ -39,6 +39,8 @@ var CommonErrorConst = map[int]string{
 	UnknownError:             "未知错误",
 	ParameterValidationError: "参数不合法",
 	UsernameAlreadyExists:    "用户名已存在",
+	CodeInvalidToken:         "token验证失败",
+	Unauthorized:             "未授权",
 }
 
 // 通用错误码
@@ -46,7 +48,9 @@ const (
 	UnknownError             = 100000
 	ParameterValidationError = 200000
 	UsernameAlreadyExists    = 300000
-	PasswordError            = 300000 + iota
+	PasswordError            = 300001
+	CodeInvalidToken         = 300402
+	Unauthorized             = 300403
 	// ParameterMissingError
 	// ParameterTypeError
 )
