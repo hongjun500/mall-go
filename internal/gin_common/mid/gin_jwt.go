@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	sub     = "mall-go"
+	sub     = "sub"
 	created = "created"
 	// TokenHeader todo 从配置中获取
 	TokenHeader = "Authorization"
@@ -77,9 +77,10 @@ func GenerateTokenExpire() time.Time {
 	return time.Now().Add(time.Hour * 24 * 7)
 }
 
-func GenerateKey() []byte {
+// generatePrivateKey 生成 token 的私钥
+func generatePrivateKey() []byte {
 	// todo 从配置中获取
-	return []byte("AllYourBase")
+	return []byte("mall-go-jwt-secret")
 }
 
 // GenerateTokenFromClaims 根据自定义声明生成 token
@@ -91,8 +92,9 @@ func GenerateTokenFromClaims(claimsMap map[string]any) string {
 			ExpiresAt: jwt.NewNumericDate(GenerateTokenExpire()),
 		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodES512, claims)
-	tokenString, _ := token.SignedString(GenerateKey)
+	// 用这个算法实现的签名方法直接可以利用一个字符串，无需私钥或者公钥的麻烦操作
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
+	tokenString, _ := token.SignedString(generatePrivateKey())
 	return tokenString
 }
 
@@ -109,7 +111,7 @@ func GetClaimsFromToken(tokenString string) (CustomClaims, error) {
 	claims := CustomClaims{}
 
 	token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (any, error) {
-		return GenerateKey(), nil
+		return generatePrivateKey(), nil
 	})
 	if err != nil {
 		return claims, err
@@ -129,8 +131,8 @@ func GetUsernameFromToken(tokenString string) (string, error) {
 	return claims.Sub, nil
 }
 
-// IsTokenExpired 判断 token 是否过期
-func IsTokenExpired(tokenString string) bool {
+// TokenIsExpired 判断 token 是否过期
+func TokenIsExpired(tokenString string) bool {
 	claims, err := GetClaimsFromToken(tokenString)
 	if err != nil {
 		return true
@@ -145,7 +147,7 @@ func TokenValid(tokenString string, username string) bool {
 		return false
 	}
 	token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (any, error) {
-		return GenerateKey(), nil
+		return generatePrivateKey(), nil
 	})
 	if err != nil {
 		return false
@@ -179,7 +181,7 @@ func RefreshToken(oldTokenString string) (string, error) {
 		return "", nil
 	}
 	// 验证 token 是否过期,过期不支持刷新
-	if IsTokenExpired(oldTokenString) {
+	if TokenIsExpired(oldTokenString) {
 		return "", nil
 	}
 	// 验证 token 是否在指定时间内刷新过,30 分钟内不支持刷新
