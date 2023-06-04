@@ -10,6 +10,6 @@ type CoreRouter struct {
 
 func InitCoreRouter(service *services.CoreService) *CoreRouter {
 	return &CoreRouter{
-		UmsAdminRouter: NewUmsAdminRouter(service.UmsAdminService),
+		UmsAdminRouter: CreateUmsAdminRouter(service.UmsAdminService),
 	}
 }

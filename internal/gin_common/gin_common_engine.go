@@ -39,8 +39,10 @@ var CommonErrorConst = map[int]string{
 	UnknownError:             "未知错误",
 	ParameterValidationError: "参数不合法",
 	UsernameAlreadyExists:    "用户名已存在",
+	UsernameOrPasswordError:  "用户名或密码错误",
 	CodeInvalidToken:         "token验证失败",
 	Unauthorized:             "未授权",
+	AccountLocked:            "账号被锁定",
 }
 
 // 通用错误码
@@ -48,11 +50,10 @@ const (
 	UnknownError             = 100000
 	ParameterValidationError = 200000
 	UsernameAlreadyExists    = 300000
-	PasswordError            = 300001
+	UsernameOrPasswordError  = 300001
 	CodeInvalidToken         = 300402
 	Unauthorized             = 300403
-	// ParameterMissingError
-	// ParameterTypeError
+	AccountLocked            = 300404
 )
 
 // CreateAny 创建一个通用的返回信息,不取用 Http 状态码,而是自己定义 status 为 success 或 fail
@@ -80,5 +81,7 @@ func CreateFail(result any, context *gin.Context) {
 		// 失败时将错误信息封装到 Data 中
 		commonError := GinCommonError{ErrCode: errCode, ErrMsg: CommonErrorConst[errCode]}
 		CreateAny(commonError, "fail", context)
+	default:
+		CreateAny(GinCommonError{ErrCode: UnknownError, ErrMsg: CommonErrorConst[UnknownError]}, "fail", context)
 	}
 }

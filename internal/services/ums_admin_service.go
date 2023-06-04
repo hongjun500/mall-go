@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/gin_common"
+	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/models"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -47,6 +48,7 @@ func (s *UmsAdminService) UmsAdminRegister(context *gin.Context) {
 	umsAdmins, err := umsAdmin.GetUmsAdminByUsername(s.DbFactory.GormMySQL, request.Username)
 	if err != nil {
 		gin_common.CreateFail(gin_common.UnknownError, context)
+		return
 	}
 	if umsAdmins != nil && len(umsAdmins) > 0 {
 		gin_common.CreateFail(gin_common.UsernameAlreadyExists, context)
@@ -100,16 +102,43 @@ func VerifyPassword(password, hashedPassword string) bool {
 	return err == nil
 }
 
-func (s *UmsAdminRequest) UmsAdminLogin(context *gin.Context) {
+func (s *UmsAdminService) UmsAdminLogin(context *gin.Context) {
 	var request UmsAdminRequest
 	err := context.ShouldBind(&request)
 	if err != nil {
 		gin_common.CreateFail(gin_common.ParameterValidationError, context)
 		// 这些地方需要手动 return
+		// return
+	}
+	/*var umsAdmin *models.UmsAdmin
+	umsAdmins, err := umsAdmin.GetUmsAdminByUsername(s.DbFactory.GormMySQL, request.Username)
+	if err != nil {
+		gin_common.CreateFail(gin_common.UnknownError, context)
 		return
 	}
-	// todo根据用户名查询用户
-	// todo校验密码
-	// todo生成token
-	// todo返回token
+	if umsAdmins == nil || len(umsAdmins) == 0 {
+		gin_common.CreateFail(gin_common.UsernameOrPasswordError, context)
+		return
+	}
+	umsAdmin = umsAdmins[0]
+	if !VerifyPassword(request.Password, umsAdmin.Password) {
+		gin_common.CreateFail(gin_common.UsernameOrPasswordError, context)
+		return
+	}
+	if umsAdmin.Status == 0 {
+		gin_common.CreateFail(gin_common.AccountLocked, context)
+		return
+	}*/
+
+	if request.Username != "hongjun500" || request.Password != "123456" {
+		gin_common.CreateFail(gin_common.UsernameOrPasswordError, context)
+		return
+	}
+	umsAdmin := &models.UmsAdmin{
+		Username: request.Username,
+		Password: request.Password,
+	}
+	token := mid.GenerateToken(umsAdmin.Username)
+	// todo 添加登录记录
+	gin_common.CreateSuccess(token, context)
 }

@@ -34,14 +34,10 @@ func StartUp() *gin.Engine {
 // InitGinEngine 初始化 gin 引擎
 func InitGinEngine() *gin_common.GinEngine {
 	r := gin.Default()
-	// 强制日志颜色化
-	gin.ForceConsoleColor()
 
 	engine := &gin_common.GinEngine{GinEngine: r}
 	// 强制日志颜色化
-	gin.ForceConsoleColor()
-	// 日志中间件
-	r.Use(gin.Logger())
+	// gin.ForceConsoleColor()
 	// 限流中间件
 	/*routers.go.Use(limits.RequestSizeLimiter(10))
 	routers.go.Use(cors.Default())*/

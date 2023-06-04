@@ -2,6 +2,8 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/hongjun500/mall-go/internal/gin_common"
+	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/services"
 )
 
@@ -9,7 +11,7 @@ type UmsAdminRouter struct {
 	*services.UmsAdminService
 }
 
-func NewUmsAdminRouter(service *services.UmsAdminService) *UmsAdminRouter {
+func CreateUmsAdminRouter(service *services.UmsAdminService) *UmsAdminRouter {
 	return &UmsAdminRouter{UmsAdminService: service}
 }
 
@@ -23,5 +25,18 @@ func (router *UmsAdminRouter) GroupUmsAdminRouter(routerEngine *gin.Engine) {
 
 		// 用户登录
 		umsAdminGroup.POST("/login", router.UmsAdminService.UmsAdminLogin)
+	}
+	authGroup := routerEngine.Group("/auth").Use(mid.GinJWTMiddleware())
+	{
+		authGroup.GET("/ping", func(context *gin.Context) {
+			gin_common.CreateSuccess("ok", context)
+		})
+	}
+
+	unAuthGroup := routerEngine.Group("/unauth")
+	{
+		unAuthGroup.GET("/ping", func(context *gin.Context) {
+			gin_common.CreateSuccess("ok", context)
+		})
 	}
 }
