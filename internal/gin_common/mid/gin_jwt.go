@@ -43,15 +43,15 @@ func GinJWTMiddleware() gin.HandlerFunc {
 			username, err := GetUsernameFromToken(authToken)
 			if err != nil {
 				log.Printf("get username from token[%v] is fail %d\n", authToken, err)
-				status = gin_common.CodeInvalidToken
+				status = gin_common.TokenInvalid
 			}
 			log.Printf("checking username: %v", username)
 			if username == "" {
-				status = gin_common.CodeInvalidToken
+				status = gin_common.TokenInvalid
 			}
 			valid := TokenValid(authToken, username)
 			if !valid {
-				status = gin_common.CodeInvalidToken
+				status = gin_common.TokenInvalid
 			}
 			log.Printf("authenticated user: %v", username)
 			c.Set("username", username)

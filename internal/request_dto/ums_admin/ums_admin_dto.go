@@ -27,3 +27,17 @@ type UmsAdminRequest struct {
 	// 备注
 	Note string `json:"note" form:"note"`
 }
+
+// UmsAdminLogin 用户登录请求参数
+type UmsAdminLogin struct {
+	// 用户名
+	Username string `json:"username" form:"username" binding:"required"`
+	// 密文密码
+	Password string `json:"password" form:"password" binding:"required"`
+}
+
+type UmsAdminPage struct {
+	base.PageDTO
+	// 用户名
+	Username string `json:"username" form:"username"`
+}

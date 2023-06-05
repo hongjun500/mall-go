@@ -2,7 +2,6 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/services"
 )
@@ -25,24 +24,21 @@ func (router *UmsAdminRouter) GroupUmsAdminRouter(routerEngine *gin.Engine) {
 
 		// 用户登录
 		umsAdminGroup.POST("/login", router.UmsAdminService.UmsAdminLogin)
-		// 刷新 token
-		umsAdminGroup.POST("/refreshToken", router.UmsAdminService.UmsAdminRefreshToken)
-		// 根据用户 ID 获取用户信息
-		umsAdminGroup.GET("/info", router.UmsAdminService.UmsAdminInfo)
-		// 用户列表分页
-		umsAdminGroup.GET("/list", router.UmsAdminService.UmsAdminListPage)
-	}
-	authGroup := routerEngine.Group("/auth").Use(mid.GinJWTMiddleware())
-	{
-		authGroup.GET("/ping", func(context *gin.Context) {
-			gin_common.CreateSuccess("ok", context)
-		})
+		// 用户登出
+		umsAdminGroup.POST("/logout", router.UmsAdminService.UmsAdminLogout)
+
 	}
 
-	unAuthGroup := routerEngine.Group("/unauth")
+	authGroup := routerEngine.Group("/admin").Use(mid.GinJWTMiddleware())
 	{
-		unAuthGroup.GET("/ping", func(context *gin.Context) {
-			gin_common.CreateSuccess("ok", context)
-		})
+		// 刷新 token
+		authGroup.POST("/refreshToken", router.UmsAdminService.UmsAdminRefreshToken)
+		// 根据用户 ID 获取用户信息
+		authGroup.GET("/info/:user_id", router.UmsAdminService.UmsAdminInfo)
+		// authGroup.GET("/info/:user_id", router.UmsAdminService.UmsAdminInfo)
+		// 用户列表分页
+		authGroup.POST("/list", router.UmsAdminService.UmsAdminListPage)
+
 	}
+
 }

@@ -26,7 +26,7 @@ func (*UmsRole) CreateAt() string {
 	return "create_at"
 }
 
-func (role *UmsRole) Create(db *gorm.DB) (int64, error) {
+func (role *UmsRole) Insert(db *gorm.DB) (int64, error) {
 	tx := db.Create(role)
 	if tx.Error != nil {
 		return 0, tx.Error
@@ -43,7 +43,7 @@ func (role *UmsRole) Update(db *gorm.DB, id int64) (int64, error) {
 	return tx.RowsAffected, nil
 }
 
-func (role *UmsRole) Get(db *gorm.DB, id int64) (*UmsRole, error) {
+func (role *UmsRole) SelectUmsRoleById(db *gorm.DB, id int64) (*UmsRole, error) {
 	var umsRole UmsRole
 	tx := db.First(&umsRole, id)
 	if tx.Error != nil {
@@ -51,6 +51,7 @@ func (role *UmsRole) Get(db *gorm.DB, id int64) (*UmsRole, error) {
 	}
 	return &umsRole, nil
 }
+
 func (role *UmsRole) Delete(db *gorm.DB, id int64) (int64, error) {
 	tx := db.Delete(role, id)
 	if tx.Error != nil {
@@ -59,8 +60,8 @@ func (role *UmsRole) Delete(db *gorm.DB, id int64) (int64, error) {
 	return tx.RowsAffected, nil
 }
 
-// ListAll 获取所有角色信息
-func (role *UmsRole) ListAll(db *gorm.DB) ([]*UmsRole, error) {
+// SelectAll 获取所有角色信息
+func (role *UmsRole) SelectAll(db *gorm.DB) ([]*UmsRole, error) {
 	var roles []*UmsRole
 	tx := db.Find(&roles)
 	if tx.Error != nil {
@@ -69,8 +70,8 @@ func (role *UmsRole) ListAll(db *gorm.DB) ([]*UmsRole, error) {
 	return roles, nil
 }
 
-// ListPage 根据 name 的关键字分页获取角色信息
-func (role *UmsRole) ListPage(db *gorm.DB, keyword string, pageNum int, pageSize int) ([]*UmsRole, error) {
+// SelectPage 根据 name 的关键字分页获取角色信息
+func (role *UmsRole) SelectPage(db *gorm.DB, keyword string, pageNum int, pageSize int) ([]*UmsRole, error) {
 	var roles []*UmsRole
 	dbQuery := db.Offset((pageNum - 1) * pageSize).Limit(pageSize)
 	if keyword != "" {
@@ -83,8 +84,8 @@ func (role *UmsRole) ListPage(db *gorm.DB, keyword string, pageNum int, pageSize
 	return roles, nil
 }
 
-// ListMenu 根据管理员 ID 获取角色的菜单
-func (role *UmsRole) ListMenu(db *gorm.DB, adminId int64) ([]*UmsMenu, error) {
+// SelectMenu 根据管理员 ID 获取角色的菜单
+func (role *UmsRole) SelectMenu(db *gorm.DB, adminId int64) ([]*UmsMenu, error) {
 	var menus []*UmsMenu
 	sql := "SELECT m.id id, m.parent_id parentId, m.create_time createTime, m.title title, m.level level, m.sort sort, m.name name, m.icon icon, m.hidden hidden FROM ums_admin_role_relation arr LEFT JOIN ums_role r ON arr.role_id = r.id LEFT JOIN ums_role_menu_relation rmr ON r.id = rmr.role_id LEFT JOIN ums_menu m ON rmr.menu_id = m.id WHERE arr.admin_id = ? AND m.id IS NOT NULL GROUP BY m.id"
 	tx := db.Raw(sql, adminId).Scan(&menus)
@@ -94,8 +95,8 @@ func (role *UmsRole) ListMenu(db *gorm.DB, adminId int64) ([]*UmsMenu, error) {
 	return menus, nil
 }
 
-// ListMenuByRoleId 根据角色 ID 获取角色的菜单
-func (role *UmsRole) ListMenuByRoleId(db *gorm.DB, roleId int64) ([]*UmsRole, error) {
+// SelectMenuByRoleId 根据角色 ID 获取角色的菜单
+func (role *UmsRole) SelectMenuByRoleId(db *gorm.DB, roleId int64) ([]*UmsRole, error) {
 	var menus []*UmsRole
 	sql := "SELECT m.id id, m.parent_id parentId, m.create_time createTime, m.title title, m.level level, m.sort sort, m.name name, m.icon icon, m.hidden hidden FROM ums_role_menu_relation rmr LEFT JOIN ums_menu m ON rmr.menu_id = m.id WHERE rmr.role_id = ? AND m.id IS NOT NULL GROUP BY m.id"
 	tx := db.Raw(sql, roleId).Scan(&menus)
@@ -106,7 +107,7 @@ func (role *UmsRole) ListMenuByRoleId(db *gorm.DB, roleId int64) ([]*UmsRole, er
 }
 
 // ListResourceByRoleId 根据角色 ID 获取角色的资源
-func (role *UmsRole) ListResourceByRoleId(db *gorm.DB, roleId int64) ([]*UmsResource, error) {
+func (role *UmsRole) SelectResourceByRoleId(db *gorm.DB, roleId int64) ([]*UmsResource, error) {
 	var resources []*UmsResource
 	sql := "SELECT r.id id, r.create_time createTime, r.`name` `name`, r.url url, r.description description, r.category_id categoryId FROM ums_role_resource_relation rrr LEFT JOIN ums_resource r ON rrr.resource_id = r.id WHERE rrr.role_id = ? AND r.id IS NOT NULL GROUP BY r.id"
 	tx := db.Raw(sql, roleId).Scan(&resources)

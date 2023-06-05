@@ -14,7 +14,7 @@ func (*UmsResourceCategory) TableName() string {
 	return "ums_resource_category"
 }
 
-func (umsResourceCategory *UmsResourceCategory) Create(db *gorm.DB) (int64, error) {
+func (umsResourceCategory *UmsResourceCategory) Insert(db *gorm.DB) (int64, error) {
 	tx := db.Create(umsResourceCategory)
 	if tx.Error != nil {
 		return 0, tx.Error
@@ -31,7 +31,7 @@ func (umsResourceCategory *UmsResourceCategory) Update(db *gorm.DB, id int64) (i
 	return tx.RowsAffected, nil
 }
 
-func (umsResourceCategory *UmsResourceCategory) Get(db *gorm.DB, id int64) (*UmsResourceCategory, error) {
+func (umsResourceCategory *UmsResourceCategory) GetUmsResourceCategoryById(db *gorm.DB, id int64) (*UmsResourceCategory, error) {
 	var umsResourceCategoryResult UmsResourceCategory
 	tx := db.First(&umsResourceCategoryResult, id)
 	if tx.Error != nil {
@@ -48,7 +48,7 @@ func (umsResourceCategory *UmsResourceCategory) Delete(db *gorm.DB, id int64) (i
 	return tx.RowsAffected, nil
 }
 
-func (umsResourceCategory *UmsResourceCategory) ListAll(db *gorm.DB, pageNum, pageSize int) ([]*UmsResourceCategory, error) {
+func (umsResourceCategory *UmsResourceCategory) SelectPage(db *gorm.DB, pageNum, pageSize int) ([]*UmsResourceCategory, error) {
 	var umsResourceCategoryList []*UmsResourceCategory
 	var err error
 	if pageNum > 0 && pageSize > 0 {

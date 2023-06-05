@@ -7,6 +7,7 @@ import (
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/models"
+	"github.com/hongjun500/mall-go/internal/request_dto/base"
 	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -30,7 +31,7 @@ func (s *UmsAdminService) UmsAdminRegister(context *gin.Context) {
 	}
 	// 检查用户名是否重复了
 	var umsAdmin *models.UmsAdmin
-	umsAdmins, err := umsAdmin.GetUmsAdminByUsername(s.DbFactory.GormMySQL, request.Username)
+	umsAdmins, err := umsAdmin.SelectUmsAdminByUsername(s.DbFactory.GormMySQL, request.Username)
 	if err != nil {
 		gin_common.CreateFail(gin_common.UnknownError, context)
 		return
@@ -51,7 +52,7 @@ func (s *UmsAdminService) UmsAdminRegister(context *gin.Context) {
 		Nickname: request.Nickname,
 		Note:     request.Note,
 	}
-	register, err := umsAdmin.CreateUmsAdmin(s.DbFactory.GormMySQL)
+	register, err := umsAdmin.InsertUmsAdmin(s.DbFactory.GormMySQL)
 	if err != nil {
 		gin_common.CreateFail(gin_common.UnknownError, context)
 		return
@@ -88,15 +89,15 @@ func VerifyPassword(password, hashedPassword string) bool {
 }
 
 func (s *UmsAdminService) UmsAdminLogin(context *gin.Context) {
-	var request ums_admin.UmsAdminRequest
-	err := context.ShouldBind(&request)
+	var umsAdminLogin ums_admin.UmsAdminLogin
+	err := context.ShouldBind(&umsAdminLogin)
 	if err != nil {
 		gin_common.CreateFail(gin_common.ParameterValidationError, context)
 		// 这些地方需要手动 return
-		// return
+		return
 	}
-	/*var umsAdmin *models.UmsAdmin
-	umsAdmins, err := umsAdmin.GetUmsAdminByUsername(s.DbFactory.GormMySQL, request.Username)
+	var umsAdmin *models.UmsAdmin
+	umsAdmins, err := umsAdmin.SelectUmsAdminByUsername(s.DbFactory.GormMySQL, umsAdminLogin.Username)
 	if err != nil {
 		gin_common.CreateFail(gin_common.UnknownError, context)
 		return
@@ -106,23 +107,15 @@ func (s *UmsAdminService) UmsAdminLogin(context *gin.Context) {
 		return
 	}
 	umsAdmin = umsAdmins[0]
-	if !VerifyPassword(request.Password, umsAdmin.Password) {
+	if !VerifyPassword(umsAdminLogin.Password, umsAdmin.Password) {
 		gin_common.CreateFail(gin_common.UsernameOrPasswordError, context)
 		return
 	}
 	if umsAdmin.Status == 0 {
 		gin_common.CreateFail(gin_common.AccountLocked, context)
 		return
-	}*/
+	}
 
-	if request.Username != "hongjun500" || request.Password != "123456" {
-		gin_common.CreateFail(gin_common.UsernameOrPasswordError, context)
-		return
-	}
-	umsAdmin := &models.UmsAdmin{
-		Username: request.Username,
-		Password: request.Password,
-	}
 	token := mid.GenerateToken(umsAdmin.Username)
 	// todo 添加登录记录
 
@@ -134,6 +127,11 @@ func (s *UmsAdminService) UmsAdminLogin(context *gin.Context) {
 	tokenMap["token"] = token
 	tokenMap["tokenHead"] = "Bearer "
 	gin_common.CreateSuccess(tokenMap, context)
+}
+
+// UmsAdminLogout 用户登出
+func (s *UmsAdminService) UmsAdminLogout(context *gin.Context) {
+	gin_common.Create(context)
 }
 
 func (s *UmsAdminService) UmsAdminRefreshToken(context *gin.Context) {
@@ -149,34 +147,64 @@ func (s *UmsAdminService) UmsAdminRefreshToken(context *gin.Context) {
 	gin_common.CreateSuccess(tokenMap, context)
 }
 
+func (s *UmsAdminService) UmsRoleList(adminId int64) []*models.UmsRole {
+	var umsRoleRelation models.UmsAdminRoleRelation
+	roles, _ := umsRoleRelation.SelectAllByAdminId(s.DbFactory.GormMySQL, adminId)
+	return roles
+}
+
 // UmsAdminInfo 根据用户 ID 获取用户信息
 func (s *UmsAdminService) UmsAdminInfo(context *gin.Context) {
-	id := context.MustGet("id")
-	if id == "" || id == nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
-	}
-	var umsAdmin *models.UmsAdmin
-	umsAdmins, err := umsAdmin.GetUmsAdminByUserId(s.DbFactory.GormMySQL, id.(int64))
+	var userDTO base.UserDTO
+	err := context.ShouldBindUri(&userDTO)
+	// 占位符
 	if err != nil {
-		gin_common.Create(context)
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
 		return
 	}
-	if umsAdmins == nil {
-		gin_common.Create(context)
+	resultMap := make(map[string]interface{})
+	resultMap["username"] = ""
+	resultMap["menus"] = nil
+	resultMap["icon"] = ""
+	resultMap["roles"] = nil
+	var umsAdmin models.UmsAdmin
+	result, err := umsAdmin.SelectUmsAdminByUserId(s.DbFactory.GormMySQL, userDTO.UserId)
+	if err != nil {
+		gin_common.CreateSuccess(resultMap, context)
 		return
 	}
-	gin_common.CreateSuccess(umsAdmins, context)
+	if result == nil {
+		gin_common.CreateSuccess(resultMap, context)
+		return
+	}
+
+	var umsRole models.UmsRole
+	umsMenus, err := umsRole.SelectMenu(s.DbFactory.GormMySQL, userDTO.UserId)
+	if err != nil {
+		gin_common.CreateSuccess(resultMap, context)
+		return
+	}
+	resultMap["menus"] = umsMenus
+	resultMap["username"] = result.Username
+	resultMap["icon"] = result.Icon
+	roles := s.UmsRoleList(userDTO.UserId)
+	var roleNames []string
+	for _, role := range roles {
+		roleNames = append(roleNames, role.Name)
+	}
+	resultMap["roles"] = roleNames
+	gin_common.CreateSuccess(resultMap, context)
 }
 
 func (s *UmsAdminService) UmsAdminListPage(context *gin.Context) {
-	var request ums_admin.UmsAdminRequest
+	var request ums_admin.UmsAdminPage
 	err := context.ShouldBind(&request)
 	if err != nil {
 		gin_common.CreateFail(gin_common.ParameterValidationError, context)
 		return
 	}
 	var umsAdmin *models.UmsAdmin
-	umsAdmins, err := umsAdmin.GetUmsAdminListPage(s.DbFactory.GormMySQL, request.Username, request.PageNum, request.PageSize)
+	umsAdmins, err := umsAdmin.SelectUmsAdminPage(s.DbFactory.GormMySQL, request.Username, request.PageNum, request.PageSize)
 	if err != nil {
 		gin_common.CreateFail(gin_common.UnknownError, context)
 		return

@@ -29,8 +29,8 @@ func (*UmsAdmin) TableName() string {
 	return "ums_admin"
 }
 
-// GetUmsAdminByUsername 根据用户名获取用户信息
-func (umsAdmin *UmsAdmin) GetUmsAdminByUsername(db *gorm.DB, username string) ([]*UmsAdmin, error) {
+// SelectUmsAdminByUsername 根据用户名获取用户信息
+func (umsAdmin *UmsAdmin) SelectUmsAdminByUsername(db *gorm.DB, username string) ([]*UmsAdmin, error) {
 	var umsAdmins []*UmsAdmin
 	tx := db.Where("username = ?", username).Find(&umsAdmins)
 	if tx.Error != nil {
@@ -39,8 +39,8 @@ func (umsAdmin *UmsAdmin) GetUmsAdminByUsername(db *gorm.DB, username string) ([
 	return umsAdmins, nil
 }
 
-// CreateUmsAdmin 注册
-func (umsAdmin *UmsAdmin) CreateUmsAdmin(db *gorm.DB) (int64, error) {
+// InsertUmsAdmin 添加用户
+func (umsAdmin *UmsAdmin) InsertUmsAdmin(db *gorm.DB) (int64, error) {
 	tx := db.Create(umsAdmin)
 	if tx.Error != nil {
 		return 0, tx.Error
@@ -48,17 +48,19 @@ func (umsAdmin *UmsAdmin) CreateUmsAdmin(db *gorm.DB) (int64, error) {
 	return tx.RowsAffected, nil
 }
 
-// GetUmsAdminByUserId 根据用户 ID 获取用户信息
-func (umsAdmin *UmsAdmin) GetUmsAdminByUserId(db *gorm.DB, userId int64) (*UmsAdmin, error) {
-	tx := db.Where("id = ?", userId).First(umsAdmin)
+// SelectUmsAdminByUserId 根据用户 ID 获取用户信息
+func (umsAdmin *UmsAdmin) SelectUmsAdminByUserId(db *gorm.DB, userId int64) (*UmsAdmin, error) {
+	// 如果这里的指针接收者是 nil,需要放入的是一个二级指针
+	// tx := db.First(&umsAdmin, userId)
+	tx := db.First(umsAdmin, userId)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
 	return umsAdmin, nil
 }
 
-// GetUmsAdminListPage 分页获取用户列表
-func (umsAdmin *UmsAdmin) GetUmsAdminListPage(db *gorm.DB, keyword string, pageNum, pageSize int) ([]*UmsAdmin, error) {
+// SelectUmsAdminPage 分页获取用户列表
+func (umsAdmin *UmsAdmin) SelectUmsAdminPage(db *gorm.DB, keyword string, pageNum, pageSize int) ([]*UmsAdmin, error) {
 	var umsAdmins []*UmsAdmin
 	dbQuery := db.Offset((pageNum - 1) * pageSize).Limit(pageSize)
 	if keyword != "" {

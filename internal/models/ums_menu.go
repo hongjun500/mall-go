@@ -31,7 +31,7 @@ func (*UmsMenu) TableName() string {
 	return "ums_menu"
 }
 
-func (umsMenu *UmsMenu) Create(db *gorm.DB) (int64, error) {
+func (umsMenu *UmsMenu) InsertUmsMenu(db *gorm.DB) (int64, error) {
 	umsMenu.UpdateLevel(db)
 	tx := db.Create(umsMenu)
 	if tx.Error != nil {
@@ -60,7 +60,7 @@ func (umsMenu *UmsMenu) UpdateLevel(db *gorm.DB) {
 		umsMenu.Level = 0
 	} else {
 		// 有父级菜单时根据父级菜单 level 设置
-		parentMenu, _ := umsMenu.Get(db, umsMenu.ParentID)
+		parentMenu, _ := umsMenu.SelectById(db, umsMenu.ParentID)
 		if parentMenu != nil {
 			umsMenu.Level = parentMenu.Level + 1
 		} else {
@@ -69,7 +69,7 @@ func (umsMenu *UmsMenu) UpdateLevel(db *gorm.DB) {
 	}
 }
 
-func (umsMenu *UmsMenu) Get(db *gorm.DB, id int64) (*UmsMenu, error) {
+func (umsMenu *UmsMenu) SelectById(db *gorm.DB, id int64) (*UmsMenu, error) {
 	var menu UmsMenu
 	tx := db.First(&menu, id)
 	if tx.Error != nil {
@@ -86,8 +86,8 @@ func (umsMenu *UmsMenu) Delete(db *gorm.DB, id int64) (int64, error) {
 	return tx.RowsAffected, nil
 }
 
-// ListPage 获取菜单分页列表
-func (umsMenu *UmsMenu) ListPage(db *gorm.DB, pageNum int, pageSize int) ([]*UmsMenu, error) {
+// SelectPage 获取菜单分页列表
+func (umsMenu *UmsMenu) SelectPage(db *gorm.DB, pageNum int, pageSize int) ([]*UmsMenu, error) {
 	var menus []*UmsMenu
 	tx := db.Offset((pageNum - 1) * pageSize).Limit(pageSize).Order("sort desc").Find(&menus)
 	if tx.Error != nil {
