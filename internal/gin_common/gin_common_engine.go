@@ -18,12 +18,11 @@ type GinCommonResponse struct {
 
 	// success or fail
 	Status string `json:"status"`
-	// 返回的数据 任意类型
-	// 如果有错误，则把错误信息也封装在此
+	// 返回的数据是任意类型	如果有错误，则把错误信息也封装在此
 	/*
 		{
-			"errCode": "fail",
-			"errMsg": "用户名已存在"
+			"err_code": 300000,
+			"err_msg": "用户名已存在"
 		}
 	*/
 	Data any `json:"data"`

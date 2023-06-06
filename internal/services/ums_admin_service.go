@@ -3,6 +3,7 @@ package services
 import (
 	"crypto/rand"
 	"github.com/gin-gonic/gin"
+	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/gin_common/mid"
@@ -21,8 +22,16 @@ func NewUmsAdminService(dbFactory *database.DbFactory) *UmsAdminService {
 }
 
 // UmsAdminRegister 用户注册
+// @Summary 用户注册
+// @Description 用户注册
+// @Tags 后台用户管理
+// @Accept  json
+// @Produce  json
+// @Param request body ums_admin.UmsAdminRegisterRequest true "用户注册"
+// @Success 200 {object}  gin_common.GinCommonResponse
+// @Router /admin/register [post]
 func (s *UmsAdminService) UmsAdminRegister(context *gin.Context) {
-	var request ums_admin.UmsAdminRequest
+	var request ums_admin.UmsAdminRegisterRequest
 	err := context.ShouldBind(&request)
 	if err != nil {
 		gin_common.CreateFail(gin_common.ParameterValidationError, context)
@@ -88,6 +97,15 @@ func VerifyPassword(password, hashedPassword string) bool {
 	return err == nil
 }
 
+// UmsAdminLogin 用户登录
+// @Summary 用户登录
+// @Description 用户登录
+// @Tags 后台用户管理
+// @Accept  json
+// @Produce  json
+// @Param request body ums_admin.UmsAdminLogin true "用户登录"
+// @Success 200 {object}  gin_common.GinCommonResponse
+// @Router /admin/login [post]
 func (s *UmsAdminService) UmsAdminLogin(context *gin.Context) {
 	var umsAdminLogin ums_admin.UmsAdminLogin
 	err := context.ShouldBind(&umsAdminLogin)
@@ -125,7 +143,7 @@ func (s *UmsAdminService) UmsAdminLogin(context *gin.Context) {
 	}
 	tokenMap := make(map[string]string)
 	tokenMap["token"] = token
-	tokenMap["tokenHead"] = "Bearer "
+	tokenMap["tokenHead"] = conf.GlobalJwtConfigProperties.TokenHead
 	gin_common.CreateSuccess(tokenMap, context)
 }
 
@@ -134,8 +152,17 @@ func (s *UmsAdminService) UmsAdminLogout(context *gin.Context) {
 	gin_common.Create(context)
 }
 
+// UmsAdminRefreshToken 刷新 token
+// @Summary 刷新 token
+// @Description 刷新 token
+// @Tags 后台用户管理
+// @Accept  json
+// @Produce  json
+// @Param request header string true "Authorization"
+// @Success 200 {object}  gin_common.GinCommonResponse
+// @Router /admin/refreshToken [post]
 func (s *UmsAdminService) UmsAdminRefreshToken(context *gin.Context) {
-	header := context.GetHeader("Authorization")
+	header := context.GetHeader(conf.GlobalJwtConfigProperties.TokenHeader)
 	refreshToken, _ := mid.RefreshToken(header)
 	if refreshToken == "" {
 		gin_common.CreateFail(gin_common.TokenExpired, context)
@@ -143,7 +170,7 @@ func (s *UmsAdminService) UmsAdminRefreshToken(context *gin.Context) {
 	}
 	tokenMap := make(map[string]string)
 	tokenMap["token"] = refreshToken
-	tokenMap["tokenHead"] = "Bearer "
+	tokenMap["tokenHead"] = conf.GlobalJwtConfigProperties.TokenHead
 	gin_common.CreateSuccess(tokenMap, context)
 }
 
@@ -154,6 +181,14 @@ func (s *UmsAdminService) UmsRoleList(adminId int64) []*models.UmsRole {
 }
 
 // UmsAdminInfo 根据用户 ID 获取用户信息
+// @Summary 根据用户 ID 获取用户信息
+// @Description 根据用户 ID 获取用户信息
+// @Tags 后台用户管理
+// @Accept  json
+// @Produce  json
+// @Param userId path int true "用户 ID"
+// @Success 200 {object}  gin_common.GinCommonResponse
+// @Router /admin/{userId} [get]
 func (s *UmsAdminService) UmsAdminInfo(context *gin.Context) {
 	var userDTO base.UserDTO
 	err := context.ShouldBindUri(&userDTO)
@@ -196,6 +231,15 @@ func (s *UmsAdminService) UmsAdminInfo(context *gin.Context) {
 	gin_common.CreateSuccess(resultMap, context)
 }
 
+// UmsAdminListPage 分页查询用户
+// @Summary 分页查询用户
+// @Description 分页查询用户
+// @Tags 后台用户管理
+// @Accept  json
+// @Produce  json
+// @Param request body ums_admin.UmsAdminPage true "分页查询用户"
+// @Success 200 {object}  gin_common.GinCommonResponse
+// @Router /admin/list [post]
 func (s *UmsAdminService) UmsAdminListPage(context *gin.Context) {
 	var request ums_admin.UmsAdminPage
 	err := context.ShouldBind(&request)

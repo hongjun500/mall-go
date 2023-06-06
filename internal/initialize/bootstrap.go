@@ -2,11 +2,14 @@ package initialize
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/hongjun500/mall-go/docs"
 	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/routers"
 	"github.com/hongjun500/mall-go/internal/services"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // StartUp 启动初始化
@@ -52,5 +55,11 @@ func NewGinEngine() *gin_common.GinEngine {
 
 // InitGroupRouter 初始化路由分组
 func InitGroupRouter(coreRouter *routers.CoreRouter, ginEngine *gin.Engine) {
+	// 必须要写上这一行很奇怪
+	docs.SwaggerInfo.Version = "1.0"
+
+	// 设置 Swagger 路由
+	ginEngine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	coreRouter.GroupUmsAdminRouter(ginEngine)
 }

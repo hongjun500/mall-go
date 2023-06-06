@@ -10,9 +10,9 @@ package ums_admin
 
 import "github.com/hongjun500/mall-go/internal/request_dto/base"
 
-// UmsAdminRequest 用户注册请求参数
-type UmsAdminRequest struct {
-	base.PageDTO
+// UmsAdminRegisterRequest 用户注册请求参数
+type UmsAdminRegisterRequest struct {
+	// base.PageDTO
 
 	// 用户名
 	Username string `json:"username" form:"username" binding:"required"`
