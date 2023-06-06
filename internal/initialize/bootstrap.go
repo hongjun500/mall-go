@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/routers"
@@ -10,20 +11,23 @@ import (
 
 // StartUp 启动初始化
 func StartUp() *gin.Engine {
+	// 初始化配置文件的属性
+	conf.InitConfigProperties()
+
 	// 通过 gorm 拿到 MySQL 数据库连接
-	gormMySQL, _ := database.NewGormMySQL()
+	gormMySQL, _ := database.NewGormMySQL(conf.GlobalDatabaseConfigProperties)
 
 	// 将与数据库相关的封装到一个结构体中
 	sqlSessionFactory := database.NewDbFactory(gormMySQL, nil)
 
 	// 将与业务逻辑相关的封装到一个结构体中
-	coreService := services.InitCoreService(sqlSessionFactory)
+	coreService := services.NewCoreService(sqlSessionFactory)
 
 	// 将与路由相关的封装到一个结构体中
-	coreRouter := routers.InitCoreRouter(coreService)
+	coreRouter := routers.NewCoreRouter(coreService)
 
 	// 初始化 gin 引擎
-	ginEngine := InitGinEngine().GinEngine
+	ginEngine := NewGinEngine().GinEngine
 
 	// 初始化路由分组
 	InitGroupRouter(coreRouter, ginEngine)
@@ -31,10 +35,10 @@ func StartUp() *gin.Engine {
 	return ginEngine
 }
 
-// InitGinEngine 初始化 gin 引擎
-func InitGinEngine() *gin_common.GinEngine {
+// NewGinEngine 初始化 gin 引擎
+func NewGinEngine() *gin_common.GinEngine {
 	r := gin.Default()
-
+	gin.SetMode(conf.GlobalServerConfigProperties.GinRunMode)
 	engine := &gin_common.GinEngine{GinEngine: r}
 	// 强制日志颜色化
 	// gin.ForceConsoleColor()

@@ -64,7 +64,7 @@ func (umsAdmin *UmsAdmin) SelectUmsAdminPage(db *gorm.DB, keyword string, pageNu
 	var umsAdmins []*UmsAdmin
 	dbQuery := db.Offset((pageNum - 1) * pageSize).Limit(pageSize)
 	if keyword != "" {
-		dbQuery = dbQuery.Where("name like  ? or nickname like ?", "%"+keyword+"%")
+		dbQuery = dbQuery.Where("username like  ? or nick_name like ?", "%"+keyword+"%", "%"+keyword+"%")
 	}
 	tx := dbQuery.Find(&umsAdmins)
 	if tx.Error != nil {

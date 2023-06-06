@@ -8,7 +8,7 @@ type CoreRouter struct {
 	*UmsAdminRouter
 }
 
-func InitCoreRouter(service *services.CoreService) *CoreRouter {
+func NewCoreRouter(service *services.CoreService) *CoreRouter {
 	return &CoreRouter{
 		UmsAdminRouter: CreateUmsAdminRouter(service.UmsAdminService),
 	}

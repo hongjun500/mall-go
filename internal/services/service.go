@@ -6,7 +6,7 @@ type CoreService struct {
 	*UmsAdminService
 }
 
-func InitCoreService(dbFactory *database.DbFactory) *CoreService {
+func NewCoreService(dbFactory *database.DbFactory) *CoreService {
 	return &CoreService{
 		UmsAdminService: NewUmsAdminService(dbFactory),
 	}

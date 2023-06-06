@@ -11,6 +11,7 @@ package mid
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"log"
 	"net/http"
@@ -21,10 +22,6 @@ import (
 const (
 	sub     = "sub"
 	created = "created"
-	// TokenHeader todo 从配置中获取
-	TokenHeader = "Authorization"
-	// TokenHead todo 从配置中获取
-	TokenHead = "Bearer "
 )
 
 type CustomClaims struct {
@@ -37,9 +34,9 @@ type CustomClaims struct {
 func GinJWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		status := http.StatusOK
-		header := c.GetHeader(TokenHeader)
-		if header != "" && strings.HasPrefix(header, TokenHead) {
-			authToken := header[len(TokenHead):]
+		header := c.GetHeader(conf.GlobalJwtConfigProperties.TokenHeader)
+		if header != "" && strings.HasPrefix(header, conf.GlobalJwtConfigProperties.TokenHead) {
+			authToken := header[len(conf.GlobalJwtConfigProperties.TokenHead):]
 			username, err := GetUsernameFromToken(authToken)
 			if err != nil {
 				log.Printf("get username from token[%v] is fail %d\n", authToken, err)
@@ -73,14 +70,13 @@ func GinJWTMiddleware() gin.HandlerFunc {
 
 // GenerateTokenExpire 生成 token 的过期时间
 func GenerateTokenExpire() time.Time {
-	// todo 从配置中获取
-	return time.Now().Add(time.Hour * 24 * 7)
+	// 604800 秒 = 7 天
+	return time.Now().Add(time.Duration(conf.GlobalJwtConfigProperties.Expiration) * time.Second)
 }
 
 // generatePrivateKey 生成 token 的私钥
 func generatePrivateKey() []byte {
-	// todo 从配置中获取
-	return []byte("mall-go-jwt-secret")
+	return []byte(conf.GlobalJwtConfigProperties.Secret)
 }
 
 // GenerateTokenFromClaims 根据自定义声明生成 token
