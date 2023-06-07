@@ -21,10 +21,6 @@ type DbFactory struct {
 	Es *Es
 }
 
-/*type DbSessionFactory interface {
-	NewDbSessionFactory(args ...any) *DbFactory
-}*/
-
 func NewDbFactory(args ...any) *DbFactory {
 	factory := &DbFactory{
 		GormMySQL: nil,

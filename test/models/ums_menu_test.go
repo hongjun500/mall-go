@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/hongjun500/mall-go/internal/initialize"
 	"github.com/hongjun500/mall-go/internal/models"
 	"testing"
 )
@@ -19,7 +18,7 @@ func TestCreateMenu(t *testing.T) {
 		Icon:   "el-icon-s-home",
 		Sort:   0,
 	}
-	row, err := menu.Create(initialize.SqlSession.DbMySQL)
+	row, err := menu.InsertUmsMenu(TestModelGormMySQL)
 	if err != nil {
 		t.Errorf("create error: %v", err)
 		return
@@ -29,8 +28,8 @@ func TestCreateMenu(t *testing.T) {
 
 func TestUpdateMenu(t *testing.T) {
 	var menu models.UmsMenu
-	umsMenu1, _ := menu.Get(initialize.SqlSession.DbMySQL, 31)
-	umsMenu2, _ := menu.Get(initialize.SqlSession.DbMySQL, 36)
+	umsMenu1, _ := menu.SelectById(TestModelGormMySQL, 31)
+	umsMenu2, _ := menu.SelectById(TestModelGormMySQL, 37)
 	umsMenu1.Title = "一级菜单->修改"
 	umsMenu1.Name = "一级菜单->修改"
 	umsMenu1.Hidden = 1
@@ -39,7 +38,7 @@ func TestUpdateMenu(t *testing.T) {
 	umsMenu2.Hidden = 1
 	var menus []*models.UmsMenu
 	menus = append(menus, umsMenu1, umsMenu2)
-	err := menu.Update(initialize.SqlSession.DbMySQL, menus)
+	err := menu.Update(TestModelGormMySQL, menus)
 	if err != nil {
 		return
 	}
@@ -48,7 +47,7 @@ func TestUpdateMenu(t *testing.T) {
 
 func TestDeleteMenu(t *testing.T) {
 	var menu models.UmsMenu
-	i, err := menu.Delete(initialize.SqlSession.DbMySQL, 36)
+	i, err := menu.Delete(TestModelGormMySQL, 37)
 	if err != nil {
 		return
 	}
@@ -57,7 +56,7 @@ func TestDeleteMenu(t *testing.T) {
 
 func TestListPageMenu(t *testing.T) {
 	var menu models.UmsMenu
-	menus, err := menu.ListPage(initialize.SqlSession.DbMySQL, 1, 10)
+	menus, err := menu.SelectPage(TestModelGormMySQL, 1, 10)
 	if err != nil {
 		return
 	}
@@ -66,7 +65,7 @@ func TestListPageMenu(t *testing.T) {
 
 func TestUpdateHidden(t *testing.T) {
 	var menu models.UmsMenu
-	row, err := menu.UpdateHidden(initialize.SqlSession.DbMySQL, 36, 1)
+	row, err := menu.UpdateHidden(TestModelGormMySQL, 37, 0)
 	if err != nil {
 		return
 	}
@@ -75,7 +74,7 @@ func TestUpdateHidden(t *testing.T) {
 
 func TestListMenuTree(t *testing.T) {
 	var menu models.UmsMenu
-	menus, err := menu.ListMenuTree(initialize.SqlSession.DbMySQL)
+	menus, err := menu.ListMenuTree(TestModelGormMySQL)
 	if err != nil {
 		return
 	}

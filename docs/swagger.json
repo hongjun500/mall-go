@@ -88,8 +88,8 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Authorization",
-                        "name": "request",
+                        "description": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJob25nanVuNTAwIiwiY3JlYXRlZCI6IjIwMjMtMDYtMDVUMTQ6Mjk6NDIuODg5MjMzNCswODowMCIsImV4cCI6MTY4NjU1MTM4Mn0.O1KpbIsAXWkyFgUXXN3isTXUSRq9202cNDjiOz4hDOITNA9Scmrmw_3_T1Bk53hKORpm8cbzL4F6_y0eGqs2nw",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     }

@@ -3,10 +3,8 @@ package services
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
+	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/gin_common"
-	"github.com/hongjun500/mall-go/internal/initialize"
-	"github.com/hongjun500/mall-go/internal/models"
 	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
 	"github.com/hongjun500/mall-go/internal/services"
 	"github.com/stretchr/testify/assert"
@@ -14,17 +12,6 @@ import (
 	"net/http/httptest"
 	"testing"
 )
-
-var (
-	testRouter *gin.Engine
-)
-
-func TestMain(t *testing.M) {
-	// 在测试之前，初始化数据库连接
-	testRouter = initialize.StartUp()
-	t.Run()
-
-}
 
 func TestHashPassword(t *testing.T) {
 	password, err := services.HashPassword("123456")
@@ -42,7 +29,7 @@ func TestVerifyPassword(t *testing.T) {
 
 func TestUmsAdminRegister(t *testing.T) {
 
-	var umsAdminRequest ums_admin.UmsAdminRequest
+	var umsAdminRequest ums_admin.UmsAdminRegisterRequest
 	umsAdminRequest.Username = "hongjun"
 	umsAdminRequest.Password = "123456"
 	umsAdminRequest.Icon = "http://www.baidu.com"
@@ -54,13 +41,11 @@ func TestUmsAdminRegister(t *testing.T) {
 		return
 	}
 
-	testRouter := initialize.StartUp()
-
 	w := httptest.NewRecorder()
 	// req, err := http.Post("/admin/register", "application/json", bytes.NewReader(body))
 	req, _ := http.NewRequest("POST", "/admin/register", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
-	testRouter.ServeHTTP(w, req)
+	TestServiceEngine.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "pong", w.Body.String())
@@ -78,7 +63,7 @@ func TestUmsAdminLogin(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/admin/login", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
-	testRouter.ServeHTTP(w, req)
+	TestServiceEngine.ServeHTTP(w, req)
 
 	s := w.Body.String()
 	var ginCommonResponse gin_common.GinCommonResponse
@@ -95,14 +80,18 @@ func TestUmsAdminLogin(t *testing.T) {
 func TestUmsAdminInfo(t *testing.T) {
 	w := httptest.NewRecorder()
 
-	req, _ := http.NewRequest("GET", "/admin/info/:user_id", nil)
-	testRouter.ServeHTTP(w, req)
+	req, _ := http.NewRequest("GET", "/admin/info/1", bytes.NewReader([]byte("1")))
+	req.Header.Set(conf.GlobalJwtConfigProperties.TokenHeader, "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJob25nanVuNTAwIiwiY3JlYXRlZCI6IjIwMjMtMDYtMDdUMTQ6NDQ6MDMuNDI4MTYzNSswODowMCIsImV4cCI6MTY4NjcyNTA0M30.1CRZPhEbRevxQSvKB5to1hRqniXmufBhcJ9r7XO8_9cYpT2TK7WK2yQLW-0Ki-2uDC8-oLGMnQPe8HYlJc04zA")
+	TestServiceEngine.ServeHTTP(w, req)
+
 	var ginCommonResponse gin_common.GinCommonResponse
 	err := json.Unmarshal([]byte(w.Body.String()), &ginCommonResponse)
 	assert.NoError(t, err, "json.Unmarshal should not return an error")
 	assert.Equal(t, "success", ginCommonResponse.Status)
-	assert.True(t, ginCommonResponse.Data != nil, "data should not be nil")
-	result := ginCommonResponse.Data.(models.UmsAdmin)
 
-	assert.Equal(t, "hongjun500", result.Username)
+	assert.True(t, ginCommonResponse.Data != nil, "data should not be nil")
+	result := ginCommonResponse.Data.(map[string]any)
+
+	assert.Equal(t, "test", result["username"])
+
 }

@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/hongjun500/mall-go/internal/initialize"
 	"github.com/hongjun500/mall-go/internal/models"
 	"testing"
 )
@@ -15,7 +14,7 @@ func TestCreate(t *testing.T) {
 	// umsRole.CreateAt = time.Now()
 	umsRole.Status = 1
 	umsRole.Sort = 0
-	create, err := umsRole.Create(initialize.SqlSession.DbMySQL)
+	create, err := umsRole.Insert(TestModelGormMySQL)
 	if err != nil {
 		return // 测试失败
 	}
@@ -25,21 +24,21 @@ func TestCreate(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	t.Log("test update")
 	var umsRole models.UmsRole
-	role, err := umsRole.Get(initialize.SqlSession.DbMySQL, 7)
+	role, err := umsRole.SelectUmsRoleById(TestModelGormMySQL, 7)
 	if err != nil {
 		return
 	}
 	role.Name = "二手管理员->修改"
 	role.Description = "二手->修改"
 	role.DeletedAt = nil
-	role.Update(initialize.SqlSession.DbMySQL, 7)
+	role.Update(TestModelGormMySQL, 7)
 
 }
 
 func TestDelete(t *testing.T) {
 	t.Log("test delete")
 	var umsRole models.UmsRole
-	i, err := umsRole.Delete(initialize.SqlSession.DbMySQL, 8)
+	i, err := umsRole.Delete(TestModelGormMySQL, 8)
 	if err != nil {
 		return // 测试失败
 	}
@@ -50,7 +49,7 @@ func TestListAll(t *testing.T) {
 
 	t.Log("test list all")
 	var umsRole models.UmsRole
-	all, err := umsRole.ListAll(initialize.SqlSession.DbMySQL)
+	all, err := umsRole.SelectAll(TestModelGormMySQL)
 	if err != nil {
 		return
 	}
@@ -60,7 +59,7 @@ func TestListAll(t *testing.T) {
 func TestListPage(t *testing.T) {
 	t.Log("test list page")
 	var umsRole models.UmsRole
-	page, err := umsRole.ListPage(initialize.SqlSession.DbMySQL, "管理员", 1, 10)
+	page, err := umsRole.SelectPage(TestModelGormMySQL, "管理员", 1, 10)
 	if err != nil {
 		return
 	}
@@ -70,7 +69,7 @@ func TestListPage(t *testing.T) {
 func TestListMenu(t *testing.T) {
 	t.Log("test list menu")
 	var umsRole models.UmsRole
-	menu, err := umsRole.ListMenu(initialize.SqlSession.DbMySQL, 1)
+	menu, err := umsRole.SelectMenuByRoleId(TestModelGormMySQL, 1)
 	if err != nil {
 		t.Errorf("error occurred: %v", err)
 	}

@@ -21,7 +21,7 @@ func StartUp() *gin.Engine {
 	gormMySQL, _ := database.NewGormMySQL(conf.GlobalDatabaseConfigProperties)
 
 	// 将与数据库相关的封装到一个结构体中
-	sqlSessionFactory := database.NewDbFactory(gormMySQL, nil)
+	sqlSessionFactory := database.NewDbFactory(gormMySQL, nil, nil)
 
 	// 将与业务逻辑相关的封装到一个结构体中
 	coreService := services.NewCoreService(sqlSessionFactory)

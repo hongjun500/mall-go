@@ -158,7 +158,7 @@ func (s *UmsAdminService) UmsAdminLogout(context *gin.Context) {
 // @Tags 后台用户管理
 // @Accept  json
 // @Produce  json
-// @Param request header string true "Authorization"
+// @Param Authorization header string true "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJob25nanVuNTAwIiwiY3JlYXRlZCI6IjIwMjMtMDYtMDVUMTQ6Mjk6NDIuODg5MjMzNCswODowMCIsImV4cCI6MTY4NjU1MTM4Mn0.O1KpbIsAXWkyFgUXXN3isTXUSRq9202cNDjiOz4hDOITNA9Scmrmw_3_T1Bk53hKORpm8cbzL4F6_y0eGqs2nw"
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/refreshToken [post]
 func (s *UmsAdminService) UmsAdminRefreshToken(context *gin.Context) {
