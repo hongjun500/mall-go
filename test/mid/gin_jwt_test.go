@@ -10,12 +10,16 @@ package mid
 
 import (
 	"fmt"
+	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestGenerateToken(t *testing.T) {
+func TestToken(t *testing.T) {
+
+	conf.InitConfigProperties()
+
 	token := mid.GenerateToken("hongjun500")
 	assert.NotEmpty(t, token)
 	fmt.Println("GenerateToken token: ", token)

@@ -9,6 +9,7 @@
 package mid
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/hongjun500/mall-go/internal/conf"
@@ -22,6 +23,7 @@ import (
 const (
 	sub     = "sub"
 	created = "created"
+	expired = "expired"
 )
 
 type CustomClaims struct {
@@ -81,11 +83,15 @@ func generatePrivateKey() []byte {
 
 // GenerateTokenFromClaims 根据自定义声明生成 token
 func GenerateTokenFromClaims(claimsMap map[string]any) string {
+	expiredTime := GenerateTokenExpire()
+	if claimsMap[expired] != nil {
+		expiredTime = claimsMap[expired].(time.Time)
+	}
 	claims := CustomClaims{
 		claimsMap[sub].(string),
 		claimsMap[created].(time.Time),
 		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(GenerateTokenExpire()),
+			ExpiresAt: jwt.NewNumericDate(expiredTime),
 		},
 	}
 	// 用这个算法实现的签名方法直接可以利用一个字符串，无需私钥或者公钥的麻烦操作
@@ -138,17 +144,18 @@ func TokenIsExpired(tokenString string) bool {
 
 // TokenValid 判断 token 是否有效
 func TokenValid(tokenString string, username string) bool {
-	claims, err := GetClaimsFromToken(tokenString)
-	if err != nil {
-		return false
-	}
-	token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (any, error) {
+
+	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (any, error) {
 		return generatePrivateKey(), nil
 	})
 	if err != nil {
+		fmt.Println(err)
 		return false
 	}
-	return token.Valid && claims.Sub == username
+	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid && claims.Sub == username {
+		return true
+	}
+	return false
 }
 
 // GetTokenExpireTime 获取 token 的过期时间
@@ -165,11 +172,12 @@ func RefreshToken(oldTokenString string) (string, error) {
 	if oldTokenString == "" {
 		return "", nil
 	}
-	if length := len(oldTokenString[7:]); length == 0 {
+	token := oldTokenString[7:]
+	if length := len(token); length == 0 {
 		return "", nil
 	}
 	// 验证 token 是否有效
-	claims, err := GetClaimsFromToken(oldTokenString)
+	claims, err := GetClaimsFromToken(token)
 	if err != nil {
 		return "", err
 	}
@@ -177,14 +185,18 @@ func RefreshToken(oldTokenString string) (string, error) {
 		return "", nil
 	}
 	// 验证 token 是否过期,过期不支持刷新
-	if TokenIsExpired(oldTokenString) {
+	if TokenIsExpired(token) {
 		return "", nil
 	}
 	// 验证 token 是否在指定时间内刷新过,30 分钟内不支持刷新
-	if TokenRefreshJustBeforeExpired(oldTokenString, time.Minute*30) {
-		return "", nil
+	if TokenRefreshJustBeforeExpired(token, time.Minute*30) {
+		return token, nil
+	} else {
+		// 重新生成token
+		// todo 这里会有一个问题：原先的 token 只要在有效期内仍然可以使用
+		newToken := GenerateToken(claims.Sub)
+		return newToken, nil
 	}
-	return "", nil
 }
 
 // TokenRefreshJustBeforeExpired 判断 token 是否在指定时间内刷新过
