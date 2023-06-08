@@ -18,7 +18,7 @@ import (
 
 func TestToken(t *testing.T) {
 
-	conf.InitConfigProperties()
+	conf.InitAdminConfigProperties()
 
 	token := mid.GenerateToken("hongjun500")
 	assert.NotEmpty(t, token)
