@@ -1,12 +1,10 @@
 package database
 
 import (
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
-type Redis struct {
-	// todo
-}
 type Es struct {
 	// todo
 }
@@ -16,7 +14,7 @@ type DbFactory struct {
 	GormMySQL *gorm.DB
 
 	// todo 改写 redis
-	Redis *Redis
+	RedisCli *redis.Client
 	// todo 改写 es
 	Es *Es
 }
@@ -24,16 +22,16 @@ type DbFactory struct {
 func NewDbFactory(args ...any) *DbFactory {
 	factory := &DbFactory{
 		GormMySQL: nil,
-		Redis:     nil,
+		RedisCli:  nil,
 		Es:        nil,
 	}
 	for _, arg := range args {
 		switch val := arg.(type) {
 		case *gorm.DB:
 			factory.GormMySQL = val
-		case Redis:
+		case *redis.Client:
 			// todo 改写 redis
-			factory.Redis = &val
+			factory.RedisCli = val
 		case Es:
 			// todo 改写 es
 			factory.Es = &val

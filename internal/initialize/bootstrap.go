@@ -18,8 +18,11 @@ func StartUpAdmin() *gin.Engine {
 	// 通过 gorm 拿到 MySQL 数据库连接
 	gormMySQL, _ := database.NewGormMySQL(conf.GlobalDatabaseConfigProperties)
 
+	// 拿到
+	redisClient, _ := database.NewRedisClient(conf.GlobalDatabaseConfigProperties)
+
 	// 将与数据库相关的封装到一个结构体中
-	sqlSessionFactory := database.NewDbFactory(gormMySQL, nil, nil)
+	sqlSessionFactory := database.NewDbFactory(gormMySQL, redisClient, nil)
 
 	// 将与业务逻辑相关的封装到一个结构体中
 	coreService := services.NewCoreService(sqlSessionFactory)

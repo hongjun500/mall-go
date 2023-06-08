@@ -14,10 +14,6 @@ import (
 	"time"
 )
 
-var (
-	once = sync.Once{}
-)
-
 func newMySQL(properties conf.DatabaseConfigProperties) (db *sql.DB, err error) {
 	// 设置时区为东八区
 	loc, _ := time.LoadLocation(conf.GlobalDatabaseConfigProperties.GormMysqlConfigProperties.Loc)
@@ -51,11 +47,12 @@ func newMySQL(properties conf.DatabaseConfigProperties) (db *sql.DB, err error) 
 }
 
 // NewGormMySQL 初始化 gorm 对于 MySQL 的连接
-func NewGormMySQL(properties conf.DatabaseConfigProperties) (db *gorm.DB, err error) {
+func NewGormMySQL(properties conf.DatabaseConfigProperties) (*gorm.DB, error) {
 	// gorm 对于 MySQL 的连接
-
+	var db *gorm.DB
+	var err error
+	once := sync.Once{}
 	once.Do(func() {
-
 		mySQL, err := newMySQL(properties)
 		if err != nil {
 			log.Fatalln("NewGormMySQL Fail, ERR = ", err)
@@ -82,7 +79,10 @@ func NewGormMySQL(properties conf.DatabaseConfigProperties) (db *gorm.DB, err er
 		if err != nil {
 			err = fmt.Errorf("GormMySQL Connected Fail, ERR = %v", err)
 		}
-		fmt.Println("GormMySQL Connected!")
 	})
+	if err != nil || db == nil {
+		return nil, err
+	}
+	fmt.Println("GormMySQL Connected!")
 	return db, err
 }
