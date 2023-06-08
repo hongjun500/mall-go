@@ -11,6 +11,6 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	TestServiceEngine = initialize.StartUp()
+	TestServiceEngine = initialize.StartUpAdmin()
 	m.Run()
 }

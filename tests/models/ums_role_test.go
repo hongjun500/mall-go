@@ -6,7 +6,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	t.Log("test create")
+	t.Log("tests create")
 	var umsRole models.UmsRole
 	umsRole.Name = "二手管理员"
 	umsRole.Description = "二手"
@@ -22,7 +22,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	t.Log("test update")
+	t.Log("tests update")
 	var umsRole models.UmsRole
 	role, err := umsRole.SelectUmsRoleById(TestModelGormMySQL, 7)
 	if err != nil {
@@ -36,7 +36,7 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	t.Log("test delete")
+	t.Log("tests delete")
 	var umsRole models.UmsRole
 	i, err := umsRole.Delete(TestModelGormMySQL, 8)
 	if err != nil {
@@ -47,7 +47,7 @@ func TestDelete(t *testing.T) {
 
 func TestListAll(t *testing.T) {
 
-	t.Log("test list all")
+	t.Log("tests list all")
 	var umsRole models.UmsRole
 	all, err := umsRole.SelectAll(TestModelGormMySQL)
 	if err != nil {
@@ -57,7 +57,7 @@ func TestListAll(t *testing.T) {
 }
 
 func TestListPage(t *testing.T) {
-	t.Log("test list page")
+	t.Log("tests list page")
 	var umsRole models.UmsRole
 	page, err := umsRole.SelectPage(TestModelGormMySQL, "管理员", 1, 10)
 	if err != nil {
@@ -67,7 +67,7 @@ func TestListPage(t *testing.T) {
 }
 
 func TestListMenu(t *testing.T) {
-	t.Log("test list menu")
+	t.Log("tests list menu")
 	var umsRole models.UmsRole
 	menu, err := umsRole.SelectMenuByRoleId(TestModelGormMySQL, 1)
 	if err != nil {

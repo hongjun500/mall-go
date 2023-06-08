@@ -1,0 +1,49 @@
+server:
+  Enable: false
+  GinRunMode: debug
+  Host: localhost
+  Port: 8081
+  ReadTimeout: 60
+
+jwt:
+  tokenHeader: "Authorization"
+  tokenHead: "Bearer "
+  secret: "mall-go-jwt-secret"
+  expiration: 604800
+
+database:
+  gorm_mysql:
+    Host: localhost
+    Port: 3306
+    Database: mall_go
+    Username: root
+    Password: hongjun500
+    Charset: utf8mb4_general_ci
+    # 时区设置
+    Loc: Asia/Shanghai
+    # time.Time 与 mysql 日期类型互转
+    ParseTime: true
+
+    GormSlowThreshold: time.Duration
+    GormColorful: bool
+    GormIgnoreRecordNotFoundError: bool
+    GormParameterizedQueries: bool
+    # Gorm 日志级别
+    # 1 Silent，2 Error，3 Warn，4 Info
+    GormLogLevel: 4
+
+  redis:
+    Host: localhost
+    Port: 6379
+    Password:
+    Database: 0
+    MaxIdle: 10
+    MaxActive: 100
+    IdleTimeout: 60
+    Wait: true
+    MaxConnLifetime: 60
+
+# Path: configs\admin-config.yml
+
+
+

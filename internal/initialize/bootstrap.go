@@ -12,10 +12,8 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// StartUp 启动初始化
-func StartUp() *gin.Engine {
-	// 初始化配置文件的属性
-	conf.InitConfigProperties()
+// StartUpAdmin admin 模块启动初始化
+func StartUpAdmin() *gin.Engine {
 
 	// 通过 gorm 拿到 MySQL 数据库连接
 	gormMySQL, _ := database.NewGormMySQL(conf.GlobalDatabaseConfigProperties)
@@ -33,7 +31,7 @@ func StartUp() *gin.Engine {
 	ginEngine := NewGinEngine().GinEngine
 
 	// 初始化路由分组
-	InitGroupRouter(coreRouter, ginEngine)
+	initGroupRouter(coreRouter, ginEngine)
 
 	return ginEngine
 }
@@ -41,7 +39,7 @@ func StartUp() *gin.Engine {
 // NewGinEngine 初始化 gin 引擎
 func NewGinEngine() *gin_common.GinEngine {
 	r := gin.Default()
-	gin.SetMode(conf.GlobalServerConfigProperties.GinRunMode)
+	gin.SetMode(conf.GlobalAdminServerConfigProperties.GinRunMode)
 	engine := &gin_common.GinEngine{GinEngine: r}
 	// 强制日志颜色化
 	// gin.ForceConsoleColor()
@@ -53,8 +51,8 @@ func NewGinEngine() *gin_common.GinEngine {
 	return engine
 }
 
-// InitGroupRouter 初始化路由分组
-func InitGroupRouter(coreRouter *routers.CoreRouter, ginEngine *gin.Engine) {
+// initGroupRouter 初始化路由分组
+func initGroupRouter(coreRouter *routers.CoreRouter, ginEngine *gin.Engine) {
 	// 必须要写上这一行很奇怪
 	docs.SwaggerInfo.Version = "1.0"
 
@@ -63,4 +61,16 @@ func InitGroupRouter(coreRouter *routers.CoreRouter, ginEngine *gin.Engine) {
 
 	// 多个路由
 	coreRouter.GroupUmsAdminRouter(ginEngine)
+}
+
+// StartUpPortal portal 模块启动初始化
+func StartUpPortal() *gin.Engine {
+	// todo portal 的初始化
+	return gin.New()
+}
+
+// StartUpSearch search 模块启动初始化
+func StartUpSearch() *gin.Engine {
+	// todo search 的初始化
+	return gin.New()
 }

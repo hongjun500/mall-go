@@ -4,17 +4,21 @@ import "time"
 
 // 全局配置属性
 var (
-	GlobalServerConfigProperties   = ServerConfigProperties{}
-	GlobalJwtConfigProperties      = JwtConfigProperties{}
-	GlobalDatabaseConfigProperties = DatabaseConfigProperties{}
+	GlobalAdminServerConfigProperties  = ServerConfigProperties{}
+	GlobalPortalServerConfigProperties = ServerConfigProperties{}
+	GlobalSearchServerConfigProperties = ServerConfigProperties{}
+	GlobalJwtConfigProperties          = JwtConfigProperties{}
+	GlobalDatabaseConfigProperties     = DatabaseConfigProperties{}
 )
 
 // ServerConfigProperties 服务配置属性
 type ServerConfigProperties struct {
+	// 启动
+	Enable      bool
 	GinRunMode  string
 	Host        string
 	Port        string
-	ReadTimeout int64
+	ReadTimeout int
 }
 
 // JwtConfigProperties jwt 配置属性
@@ -22,7 +26,7 @@ type JwtConfigProperties struct {
 	TokenHeader string
 	TokenHead   string
 	Secret      string
-	Expiration  int64
+	Expiration  int
 }
 
 // GormMysqlConfigProperties gorm mysql 配置属性

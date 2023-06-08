@@ -1,7 +1,8 @@
 server:
+  Enable: false
   GinRunMode: debug
   Host: localhost
-  Port: 8080
+  Port: 8082
   ReadTimeout: 60
 
 jwt:
@@ -42,7 +43,7 @@ database:
     Wait: true
     MaxConnLifetime: 60
 
-# Path: configs\config.yml
+# Path: configs\admin-config.yml
 
 
 

@@ -6,12 +6,18 @@ import (
 	"time"
 )
 
-// InitConfigProperties 初始化配置属性
-func InitConfigProperties() {
+// InitAllConfigProperties 初始化所有配置属性
+func InitAllConfigProperties() {
+	InitAdminConfigProperties()
+	InitPortalConfigProperties()
+	InitSearchConfigProperties()
+}
 
+// InitAdminConfigProperties 初始化配置属性
+func InitAdminConfigProperties() {
+	log.Println("------ InitAdminConfigProperties ------")
 	viper.SetConfigType("yml")
-	viper.SetConfigName("config")
-
+	viper.SetConfigName("admin-config")
 	viper.AddConfigPath("./configs/")
 	viper.AddConfigPath("../configs/")
 	viper.AddConfigPath("../../configs/")
@@ -32,7 +38,7 @@ func InitConfigProperties() {
 		viper.WatchConfig()
 		var gorMysqlConfigProperties GormMysqlConfigProperties
 		var redisConfigProperties RedisConfigProperties
-		_ = viper.UnmarshalKey("server", &GlobalServerConfigProperties)
+		_ = viper.UnmarshalKey("server", &GlobalAdminServerConfigProperties)
 		_ = viper.UnmarshalKey("jwt", &GlobalJwtConfigProperties)
 		_ = viper.UnmarshalKey("database.gorm_mysql", &gorMysqlConfigProperties)
 		_ = viper.UnmarshalKey("database.redis", &redisConfigProperties)
@@ -44,10 +50,82 @@ func InitConfigProperties() {
 	}
 
 }
+func InitPortalConfigProperties() {
+	// todo 改为 search 服务所需配置项
+	log.Println("------ InitPortalConfigProperties ------")
+	viper.SetConfigType("yml")
+	viper.SetConfigName("portal-config")
+	viper.AddConfigPath("./configs/")
+	viper.AddConfigPath("../configs/")
+	viper.AddConfigPath("../../configs/")
+	viper.AddConfigPath("../../../configs/")
+	// viper.AddConfigPath("../../../../configs/")
+	err := viper.ReadInConfig()
+	if err != nil {
+		// panic(err)
+		log.Println("读取配置文件失败", err)
+
+		// 使用默认配置
+		log.Println("开始使用默认配置")
+		// initDefaultConfigProperties()
+		log.Println("默认配置初始化完成")
+	} else {
+		log.Println("读取配置文件成功")
+		// 监听配置项的修改
+		viper.WatchConfig()
+		// var gorMysqlConfigProperties GormMysqlConfigProperties
+		// var redisConfigProperties RedisConfigProperties
+		_ = viper.UnmarshalKey("server", &GlobalPortalServerConfigProperties)
+		// _ = viper.UnmarshalKey("database.gorm_mysql", &gorMysqlConfigProperties)
+		// _ = viper.UnmarshalKey("database.redis", &redisConfigProperties)
+		// GlobalDatabaseConfigProperties = DatabaseConfigProperties{
+		// 	GormMysqlConfigProperties: gorMysqlConfigProperties,
+		// 	RedisConfigProperties:     redisConfigProperties,
+	}
+	log.Println("配置项初始化完成")
+}
+
+func InitSearchConfigProperties() {
+	// todo 改为 search 服务所需配置项
+	log.Println("------ InitSearchConfigProperties ------")
+	viper.SetConfigType("yml")
+	viper.SetConfigName("search-config")
+	viper.AddConfigPath("./configs/")
+	viper.AddConfigPath("../configs/")
+	viper.AddConfigPath("../../configs/")
+	viper.AddConfigPath("../../../configs/")
+	// viper.AddConfigPath("../../../../configs/")
+	err := viper.ReadInConfig()
+	if err != nil {
+		// panic(err)
+		log.Println("读取配置文件失败", err)
+
+		// 使用默认配置
+		log.Println("开始使用默认配置")
+		// initDefaultConfigProperties()
+		log.Println("默认配置初始化完成")
+	} else {
+		log.Println("读取配置文件成功")
+		// 监听配置项的修改
+		viper.WatchConfig()
+		// var gorMysqlConfigProperties GormMysqlConfigProperties
+		// var redisConfigProperties RedisConfigProperties
+		_ = viper.UnmarshalKey("server", &GlobalSearchServerConfigProperties)
+		// _ = viper.UnmarshalKey("jwt", &GlobalJwtConfigProperties)
+		// _ = viper.UnmarshalKey("database.gorm_mysql", &gorMysqlConfigProperties)
+		// _ = viper.UnmarshalKey("database.redis", &redisConfigProperties)
+		// GlobalDatabaseConfigProperties = DatabaseConfigProperties{
+		// 	GormMysqlConfigProperties: gorMysqlConfigProperties,
+		// 	RedisConfigProperties:     redisConfigProperties,
+		// }
+		log.Println("配置项初始化完成")
+	}
+
+}
 
 // 使用默认配置项
 func initDefaultConfigProperties() {
-	GlobalServerConfigProperties = ServerConfigProperties{
+	GlobalAdminServerConfigProperties = ServerConfigProperties{
 		GinRunMode:  "debug",
 		Host:        "localhost",
 		Port:        "8080",

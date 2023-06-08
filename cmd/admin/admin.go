@@ -1,21 +1,20 @@
-package main
+package admin
 
 import (
-	"context"
-	"fmt"
-	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/initialize"
-	"log"
 	"net/http"
-	"os"
-	"os/signal"
-	"time"
 )
 
+func HandlerAdmin() http.Handler {
+	ginEngine := initialize.StartUpAdmin()
+	return ginEngine
+}
+
+/*
 func main() {
 	fmt.Println("hello, mall-go")
 
-	ginEngine := initialize.StartUp()
+	ginEngine := initialize.StartUpAdmin()
 
 	mallAdminServer := &http.Server{
 		Addr:        conf.GlobalServerConfigProperties.Host + ":" + conf.GlobalServerConfigProperties.Port,
@@ -43,3 +42,4 @@ func main() {
 	}
 	log.Println("Server exiting")
 }
+*/

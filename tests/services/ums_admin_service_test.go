@@ -92,6 +92,6 @@ func TestUmsAdminInfo(t *testing.T) {
 	assert.True(t, ginCommonResponse.Data != nil, "data should not be nil")
 	result := ginCommonResponse.Data.(map[string]any)
 
-	assert.Equal(t, "test", result["username"])
+	assert.Equal(t, "tests", result["username"])
 
 }
