@@ -34,9 +34,9 @@ type CustomClaims struct {
 
 // GinJWTMiddleware 自定义使用 golang-jwt 实现 JWT 认证的 gin 中间件
 func GinJWTMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
+	return func(context *gin.Context) {
 		status := http.StatusOK
-		header := c.GetHeader(conf.GlobalJwtConfigProperties.TokenHeader)
+		header := context.GetHeader(conf.GlobalJwtConfigProperties.TokenHeader)
 		if header != "" && strings.HasPrefix(header, conf.GlobalJwtConfigProperties.TokenHead) {
 			authToken := header[len(conf.GlobalJwtConfigProperties.TokenHead):]
 			username, err := GetUsernameFromToken(authToken)
@@ -53,18 +53,18 @@ func GinJWTMiddleware() gin.HandlerFunc {
 				status = gin_common.TokenInvalid
 			}
 			log.Printf("authenticated user: %v", username)
-			c.Set("username", username)
+			context.Set("username", username)
 		} else {
 			status = gin_common.Unauthorized
 		}
 		if status != http.StatusOK {
-			gin_common.CreateFail(status, c)
-			// c.AbortWithStatus(status)
-			c.Abort()
+			gin_common.CreateFail(status, context)
+			// 这里必须要加上 Abort()，否则会继续往下执行
+			context.Abort()
 			return
 		}
 		// 请求前
-		c.Next()
+		context.Next()
 		// 请求后
 		// 暂无
 	}

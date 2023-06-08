@@ -61,5 +61,6 @@ func InitGroupRouter(coreRouter *routers.CoreRouter, ginEngine *gin.Engine) {
 	// 设置 Swagger 路由
 	ginEngine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	// 多个路由
 	coreRouter.GroupUmsAdminRouter(ginEngine)
 }
