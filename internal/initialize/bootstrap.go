@@ -2,7 +2,7 @@ package initialize
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongjun500/mall-go/docs"
+	_ "github.com/hongjun500/mall-go/docs"
 	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/gin_common"
@@ -57,7 +57,14 @@ func NewGinEngine() *gin_common.GinEngine {
 // initGroupRouter 初始化路由分组
 func initGroupRouter(coreRouter *routers.CoreRouter, ginEngine *gin.Engine) {
 	// 必须要写上这一行很奇怪
-	docs.SwaggerInfo.Version = "1.0"
+	// 解释：必须要导入 swagger 的包，即 docs, 不然 swagger 无法生成文档
+	// docs.SwaggerInfo.Version = "1.0"
+	/*
+		docs.SwaggerInfo.Title = "mall-go"
+		docs.SwaggerInfo.Description = "mall-go 项目接口文档"
+		docs.SwaggerInfo.Schemes = []string{"http", "https"}
+		docs.SwaggerInfo.Host = "localhost:8080"
+		docs.SwaggerInfo.BasePath = "/api/v1"*/
 
 	// 设置 Swagger 路由
 	ginEngine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

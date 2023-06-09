@@ -3,7 +3,7 @@ package services
 import "github.com/hongjun500/mall-go/internal/database"
 
 type CoreService struct {
-	*UmsAdminService
+	UmsAdminService
 }
 
 func NewCoreService(dbFactory *database.DbFactory) *CoreService {
