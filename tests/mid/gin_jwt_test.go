@@ -11,7 +11,7 @@ package mid
 import (
 	"fmt"
 	"github.com/hongjun500/mall-go/internal/conf"
-	"github.com/hongjun500/mall-go/internal/gin_common/mid"
+	"github.com/hongjun500/mall-go/pkg/jwt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -20,22 +20,22 @@ func TestToken(t *testing.T) {
 
 	conf.InitAdminConfigProperties()
 
-	token := mid.GenerateToken("hongjun500")
+	token := jwt.GenerateToken("hongjun500")
 	assert.NotEmpty(t, token)
 	fmt.Println("GenerateToken token: ", token)
-	time := mid.GetTokenExpireTime(token)
+	time := jwt.GetTokenExpireTime(token)
 	assert.NotEmpty(t, time)
 	fmt.Println("GetTokenExpireTime time: ", time)
-	expired := mid.TokenIsExpired(token)
+	expired := jwt.TokenIsExpired(token)
 	assert.False(t, expired)
 	fmt.Println("IsTokenExpired expired: ", expired)
-	username, _ := mid.GetUsernameFromToken(token)
+	username, _ := jwt.GetUsernameFromToken(token)
 	assert.Equal(t, "hongjun500", username)
 	fmt.Println("GetUsernameFromToken username: ", username)
-	valid := mid.TokenValid(token, username)
+	valid := jwt.TokenValid(token, username)
 	assert.True(t, valid)
 	fmt.Println("TokenValid valid: ", valid)
-	refreshToken, err := mid.RefreshToken(token)
+	refreshToken, err := jwt.RefreshToken(token)
 	if err != nil {
 		return
 	}
