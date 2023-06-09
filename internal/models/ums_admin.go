@@ -73,3 +73,12 @@ func (umsAdmin *UmsAdmin) SelectUmsAdminPage(db *gorm.DB, keyword string, pageNu
 
 	return umsAdmins, nil
 }
+
+// UpdateUmsAdminByUserId 更新用户信息
+func (umsAdmin *UmsAdmin) UpdateUmsAdminByUserId(db *gorm.DB, userId int64) (int64, error) {
+	tx := db.Where("id = ?", userId).Updates(umsAdmin)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return tx.RowsAffected, nil
+}

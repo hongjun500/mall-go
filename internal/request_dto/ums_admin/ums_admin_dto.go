@@ -36,8 +36,25 @@ type UmsAdminLogin struct {
 	Password string `json:"password" form:"password" binding:"required"`
 }
 
+// UmsAdminPage 用户分页查询请求参数
 type UmsAdminPage struct {
 	base.PageDTO
 	// 用户名
 	Username string `json:"username" form:"username"`
+}
+
+// UmsAdminUpdate 用户更新请求参数
+type UmsAdminUpdate struct {
+	// 用户名
+	Username string `json:"username" form:"username" binding:"required"`
+	// 密文密码
+	Password string `json:"password" form:"password" binding:"required"`
+	// 用户头像
+	Icon string `json:"icon" form:"icon"`
+	// 邮箱
+	Email string `json:"email" form:"email"`
+	// 用户昵称
+	Nickname string `json:"nickname" form:"nickname"`
+	// 备注
+	Note string `json:"note" form:"note"`
 }

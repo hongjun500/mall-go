@@ -7,10 +7,10 @@ import (
 )
 
 type UmsAdminRouter struct {
-	*services.UmsAdminService
+	services.UmsAdminService
 }
 
-func CreateUmsAdminRouter(service *services.UmsAdminService) *UmsAdminRouter {
+func CreateUmsAdminRouter(service services.UmsAdminService) *UmsAdminRouter {
 	return &UmsAdminRouter{UmsAdminService: service}
 }
 
@@ -34,11 +34,14 @@ func (router *UmsAdminRouter) GroupUmsAdminRouter(routerEngine *gin.Engine) {
 		// 刷新 token
 		authGroup.POST("/refreshToken", router.UmsAdminService.UmsAdminRefreshToken)
 		// 根据用户 ID 获取用户信息
-		authGroup.GET("/info/:user_id", router.UmsAdminService.UmsAdminInfo)
+		authGroup.GET("/info", router.UmsAdminService.UmsAdminInfo)
 		// authGroup.GET("/info/:user_id", router.UmsAdminService.UmsAdminInfo)
 		// 用户列表分页
 		authGroup.POST("/list", router.UmsAdminService.UmsAdminListPage)
-
+		// 指定用户 ID 获取用户信息
+		authGroup.GET("/:user_id", router.UmsAdminService.UmsAdminItem)
+		// 修改指定用户信息
+		authGroup.POST("/update/:user_id", router.UmsAdminService.UmsAdminUpdate)
 	}
 
 }

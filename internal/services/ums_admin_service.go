@@ -6,10 +6,10 @@ import (
 	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/gin_common"
-	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/models"
 	"github.com/hongjun500/mall-go/internal/request_dto/base"
 	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
+	"github.com/hongjun500/mall-go/pkg/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -17,8 +17,8 @@ type UmsAdminService struct {
 	DbFactory *database.DbFactory
 }
 
-func NewUmsAdminService(dbFactory *database.DbFactory) *UmsAdminService {
-	return &UmsAdminService{DbFactory: dbFactory}
+func NewUmsAdminService(dbFactory *database.DbFactory) UmsAdminService {
+	return UmsAdminService{DbFactory: dbFactory}
 }
 
 // UmsAdminRegister 用户注册
@@ -30,7 +30,7 @@ func NewUmsAdminService(dbFactory *database.DbFactory) *UmsAdminService {
 // @Param request body ums_admin.UmsAdminRegisterRequest true "用户注册"
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/register [post]
-func (s *UmsAdminService) UmsAdminRegister(context *gin.Context) {
+func (s UmsAdminService) UmsAdminRegister(context *gin.Context) {
 	var request ums_admin.UmsAdminRegisterRequest
 	err := context.ShouldBind(&request)
 	if err != nil {
@@ -106,7 +106,7 @@ func VerifyPassword(password, hashedPassword string) bool {
 // @Param request body ums_admin.UmsAdminLogin true "用户登录"
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/login [post]
-func (s *UmsAdminService) UmsAdminLogin(context *gin.Context) {
+func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 	var umsAdminLogin ums_admin.UmsAdminLogin
 	err := context.ShouldBind(&umsAdminLogin)
 	if err != nil {
@@ -134,7 +134,7 @@ func (s *UmsAdminService) UmsAdminLogin(context *gin.Context) {
 		return
 	}
 
-	token := mid.GenerateToken(umsAdmin.Username)
+	token := jwt.GenerateToken(umsAdmin.Username)
 	// todo 添加登录记录
 
 	if token == "" {
@@ -148,7 +148,7 @@ func (s *UmsAdminService) UmsAdminLogin(context *gin.Context) {
 }
 
 // UmsAdminLogout 用户登出
-func (s *UmsAdminService) UmsAdminLogout(context *gin.Context) {
+func (s UmsAdminService) UmsAdminLogout(context *gin.Context) {
 	gin_common.Create(context)
 }
 
@@ -161,9 +161,9 @@ func (s *UmsAdminService) UmsAdminLogout(context *gin.Context) {
 // @Param Authorization header string true "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJob25nanVuNTAwIiwiY3JlYXRlZCI6IjIwMjMtMDYtMDVUMTQ6Mjk6NDIuODg5MjMzNCswODowMCIsImV4cCI6MTY4NjU1MTM4Mn0.O1KpbIsAXWkyFgUXXN3isTXUSRq9202cNDjiOz4hDOITNA9Scmrmw_3_T1Bk53hKORpm8cbzL4F6_y0eGqs2nw"
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/refreshToken [post]
-func (s *UmsAdminService) UmsAdminRefreshToken(context *gin.Context) {
+func (s UmsAdminService) UmsAdminRefreshToken(context *gin.Context) {
 	header := context.GetHeader(conf.GlobalJwtConfigProperties.TokenHeader)
-	refreshToken, _ := mid.RefreshToken(header)
+	refreshToken, _ := jwt.RefreshToken(header)
 	if refreshToken == "" {
 		gin_common.CreateFail(gin_common.TokenExpired, context)
 		return
@@ -174,7 +174,7 @@ func (s *UmsAdminService) UmsAdminRefreshToken(context *gin.Context) {
 	gin_common.CreateSuccess(tokenMap, context)
 }
 
-func (s *UmsAdminService) UmsRoleList(adminId int64) []*models.UmsRole {
+func (s UmsAdminService) UmsRoleList(adminId int64) []*models.UmsRole {
 	var umsRoleRelation models.UmsAdminRoleRelation
 	roles, _ := umsRoleRelation.SelectAllByAdminId(s.DbFactory.GormMySQL, adminId)
 	return roles
@@ -186,10 +186,9 @@ func (s *UmsAdminService) UmsRoleList(adminId int64) []*models.UmsRole {
 // @Tags 后台用户管理
 // @Accept  json
 // @Produce  json
-// @Param userId path int true "用户 ID"
 // @Success 200 {object}  gin_common.GinCommonResponse
-// @Router /admin/{userId} [get]
-func (s *UmsAdminService) UmsAdminInfo(context *gin.Context) {
+// @Router /admin/info [get]
+func (s UmsAdminService) UmsAdminInfo(context *gin.Context) {
 	var userDTO base.UserDTO
 	err := context.ShouldBindUri(&userDTO)
 	// 占位符
@@ -240,7 +239,7 @@ func (s *UmsAdminService) UmsAdminInfo(context *gin.Context) {
 // @Param request body ums_admin.UmsAdminPage true "分页查询用户"
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/list [post]
-func (s *UmsAdminService) UmsAdminListPage(context *gin.Context) {
+func (s UmsAdminService) UmsAdminListPage(context *gin.Context) {
 	var request ums_admin.UmsAdminPage
 	err := context.ShouldBind(&request)
 	if err != nil {
@@ -254,4 +253,71 @@ func (s *UmsAdminService) UmsAdminListPage(context *gin.Context) {
 		return
 	}
 	gin_common.CreateSuccess(umsAdmins, context)
+}
+
+// UmsAdminItem 根据用户 ID 获取用户信息
+// @Summary 根据用户 ID 获取用户信息
+// @Description 根据用户 ID 获取用户信息
+// @Tags 后台用户管理
+// @Accept  json
+// @Produce  json
+// @Param id path int true "用户 ID"
+// @Success 200 {object}  gin_common.GinCommonResponse
+// @Router /admin/{user_id} [get]
+func (s UmsAdminService) UmsAdminItem(context *gin.Context) {
+	var userDTO base.UserDTO
+	err := context.ShouldBindUri(&userDTO)
+	// 占位符
+	if err != nil {
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		return
+	}
+	var umsAdmin models.UmsAdmin
+	result, err := umsAdmin.SelectUmsAdminByUserId(s.DbFactory.GormMySQL, userDTO.UserId)
+	if err != nil {
+		gin_common.CreateFail(gin_common.UnknownError, context)
+		return
+	}
+	gin_common.CreateSuccess(result, context)
+}
+
+// UmsAdminUpdate 更新用户信息
+// @Summary 更新用户信息
+// @Description 更新用户信息
+// @Tags 后台用户管理
+// @Accept  json
+// @Produce  json
+// @Param id path int true "用户 ID"
+// @Param request body ums_admin.UmsAdminUpdate true "更新用户信息"
+// @Success 200 {object}  gin_common.GinCommonResponse
+// @Router /admin/{user_id} [post]
+func (s UmsAdminService) UmsAdminUpdate(context *gin.Context) {
+	umsAdminUpdate := new(ums_admin.UmsAdminUpdate)
+	userDTO := new(base.UserDTO)
+	err := context.ShouldBindUri(&userDTO)
+	if err != nil {
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		return
+	}
+	err = context.ShouldBind(&umsAdminUpdate)
+	if err != nil {
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		return
+	}
+	var umsAdmin models.UmsAdmin
+	umsAdmin.Username = umsAdminUpdate.Username
+	umsAdmin.Nickname = umsAdminUpdate.Nickname
+	umsAdmin.Email = umsAdminUpdate.Email
+	umsAdmin.Icon = umsAdminUpdate.Icon
+	umsAdmin.Note = umsAdminUpdate.Note
+	id, err := umsAdmin.UpdateUmsAdminByUserId(s.DbFactory.GormMySQL, userDTO.UserId)
+	if err != nil {
+		gin_common.CreateFail(gin_common.UnknownError, context)
+		return
+	}
+	if err != nil {
+		gin_common.CreateFail(gin_common.UnknownError, context)
+		return
+	}
+	gin_common.CreateSuccess(id, context)
 }
