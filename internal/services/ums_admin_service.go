@@ -263,7 +263,7 @@ func (s UmsAdminService) UmsAdminListPage(context *gin.Context) {
 // @Produce  json
 // @Param id path int true "用户 ID"
 // @Success 200 {object}  gin_common.GinCommonResponse
-// @Router /admin/{user_id} [get]
+// @Router /admin/:user_id [get]
 func (s UmsAdminService) UmsAdminItem(context *gin.Context) {
 	var userDTO base.UserDTO
 	err := context.ShouldBindUri(&userDTO)

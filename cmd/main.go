@@ -15,6 +15,15 @@ var (
 	g errgroup.Group
 )
 
+// @title mall-go API
+// @description mall-go API
+// @version v1
+// @host localhost:8080
+// @BasePath /
+// @schemes http https
+// @securityDefinitions.apikey mid.GinJWTMiddleware
+// @in HEADER
+// @name Authorization
 func main() {
 
 	// 初始化全部配置

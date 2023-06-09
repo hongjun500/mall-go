@@ -11,5 +11,10 @@ import "github.com/gin-gonic/gin"
 func GinParamToBody() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		// todo 从请求头中获取参数，将参数解析加到请求体中
+		// context.Request.Body
+		// 请求前
+		context.Next()
+		// 请求后
+
 	}
 }
