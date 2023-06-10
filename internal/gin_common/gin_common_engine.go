@@ -37,6 +37,7 @@ type GinCommonError struct {
 // 通用错误码
 const (
 	UnknownError = 100000
+	CustomError  = 100001
 
 	ParameterValidationError = 200000
 
@@ -52,6 +53,7 @@ const (
 
 var CommonErrorConst = map[int]string{
 	UnknownError: "未知错误",
+	CustomError:  "自定义错误",
 
 	ParameterValidationError: "参数不合法",
 
@@ -85,11 +87,14 @@ func Create(context *gin.Context) {
 
 // CreateFail 创建一个失败的返回信息
 func CreateFail(result any, context *gin.Context) {
-	switch errCode := result.(type) {
+	switch errCodeMsg := result.(type) {
 	case int:
 		// 失败时将错误信息封装到 Data 中
-		commonError := GinCommonError{ErrCode: errCode, ErrMsg: CommonErrorConst[errCode]}
+		commonError := GinCommonError{ErrCode: errCodeMsg, ErrMsg: CommonErrorConst[errCodeMsg]}
 		CreateAny(commonError, "fail", context)
+	// 接收一个自定义错误信息
+	case string:
+		CreateAny(GinCommonError{ErrCode: CustomError, ErrMsg: errCodeMsg}, "fail", context)
 	default:
 		CreateAny(GinCommonError{ErrCode: UnknownError, ErrMsg: CommonErrorConst[UnknownError]}, "fail", context)
 	}

@@ -16,45 +16,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admin/:user_id": {
-            "get": {
-                "security": [
-                    {
-                        "GinJWTMiddleware": []
-                    }
-                ],
-                "description": "更新用户密码",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "后台用户管理"
-                ],
-                "summary": "更新用户密码",
-                "parameters": [
-                    {
-                        "description": "更新用户密码",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsAdminUpdatePasswordDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/gin_common.GinCommonResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/admin/authTest": {
             "get": {
                 "description": "用户鉴权测试",
@@ -274,6 +235,45 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/ums_admin.UmsAdminUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/updatePassword": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "更新用户密码",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台用户管理"
+                ],
+                "summary": "更新用户密码",
+                "parameters": [
+                    {
+                        "description": "更新用户密码",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ums_admin.UmsAdminUpdatePasswordDTO"
                         }
                     }
                 ],

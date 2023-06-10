@@ -42,6 +42,8 @@ func (router *UmsAdminRouter) GroupUmsAdminRouter(routerEngine *gin.Engine) {
 		authGroup.GET("/:user_id", router.UmsAdminService.UmsAdminItem)
 		// 修改指定用户信息
 		authGroup.POST("/update/:user_id", router.UmsAdminService.UmsAdminUpdate)
+		// 修改指定用户密码
+		authGroup.POST("/updatePassword", router.UmsAdminService.UmsAdminUpdatePassword)
 	}
 
 }

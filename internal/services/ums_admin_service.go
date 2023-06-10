@@ -348,16 +348,46 @@ func (s UmsAdminService) UmsAdminUpdate(context *gin.Context) {
 	gin_common.CreateSuccess(id, context)
 }
 
-// UmsAdminUpdatePassword 更新用户密码
-// @Summary 更新用户密码
-// @Description 更新用户密码
+// UmsAdminUpdatePassword 修改指定用户密码
+// @Summary 修改指定用户密码
+// @Description 修改指定用户密码
 // @Tags 后台用户管理
 // @Accept  json
 // @Produce  json
-// @Param request body ums_admin.UmsAdminUpdatePasswordDTO true "更新用户密码"
+// @Param request body ums_admin.UmsAdminUpdatePasswordDTO true "修改指定用户密码"
 // @Security GinJWTMiddleware
 // @Success 200 {object}  gin_common.GinCommonResponse
-// @Router /admin/:user_id [get]
+// @Router /admin/updatePassword [post]
 func (s UmsAdminService) UmsAdminUpdatePassword(context *gin.Context) {
+	umsAdminUpdatePassword := new(ums_admin.UmsAdminUpdatePasswordDTO)
+	err := context.ShouldBind(&umsAdminUpdatePassword)
+	if err != nil {
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		return
+	}
 
+	var umsAdmin models.UmsAdmin
+	umsAdmins, err := umsAdmin.SelectUmsAdminByUsername(s.DbFactory.GormMySQL, umsAdminUpdatePassword.Username)
+	if err != nil {
+		return
+	}
+	if umsAdmins == nil || len(umsAdmins) == 0 {
+		gin_common.CreateFail("找不到该用户", context)
+		return
+	}
+
+	getAdmin := umsAdmins[0]
+
+	if !VerifyPassword(umsAdminUpdatePassword.OldPassword, getAdmin.Password) {
+		gin_common.CreateFail("旧密码错误", context)
+		return
+	}
+
+	getAdmin.Password, _ = HashPassword(umsAdminUpdatePassword.NewPassword)
+	status, err := umsAdmin.UpdateUmsAdminByUserId(s.DbFactory.GormMySQL, getAdmin.Id)
+	if err != nil {
+		return
+	}
+	// todo 删除缓存的用户数据
+	gin_common.CreateSuccess(status, context)
 }

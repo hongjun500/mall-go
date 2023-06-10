@@ -109,30 +109,6 @@ info:
   title: mall-go API
   version: v1
 paths:
-  /admin/:user_id:
-    get:
-      consumes:
-      - application/json
-      description: 更新用户密码
-      parameters:
-      - description: 更新用户密码
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/ums_admin.UmsAdminUpdatePasswordDTO'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/gin_common.GinCommonResponse'
-      security:
-      - GinJWTMiddleware: []
-      summary: 更新用户密码
-      tags:
-      - 后台用户管理
   /admin/{user_id}:
     get:
       consumes:
@@ -300,6 +276,30 @@ paths:
       security:
       - GinJWTMiddleware: []
       summary: 更新用户信息
+      tags:
+      - 后台用户管理
+  /admin/updatePassword:
+    post:
+      consumes:
+      - application/json
+      description: 更新用户密码
+      parameters:
+      - description: 更新用户密码
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsAdminUpdatePasswordDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 更新用户密码
       tags:
       - 后台用户管理
 schemes:
