@@ -11,6 +11,7 @@ import (
 	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
 	"github.com/hongjun500/mall-go/pkg/jwt"
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 type UmsAdminService struct {
@@ -133,14 +134,17 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 		gin_common.CreateFail(gin_common.AccountLocked, context)
 		return
 	}
-
 	token := jwt.GenerateToken(umsAdmin.Username, umsAdmin.Id)
-	// todo 添加登录记录
-
 	if token == "" {
 		gin_common.CreateFail(gin_common.TokenGenFail, context)
 		return
 	}
+	now := time.Now()
+	umsAdmin.LoginTime = &now
+	_, _ = umsAdmin.UpdateUmsAdminLoginTimeByUserId(s.DbFactory.GormMySQL)
+
+	// todo 添加登录记录
+
 	tokenMap := make(map[string]string)
 	tokenMap["token"] = token
 	tokenMap["tokenHead"] = conf.GlobalJwtConfigProperties.TokenHead
@@ -382,10 +386,15 @@ func (s UmsAdminService) UmsAdminUpdatePassword(context *gin.Context) {
 		gin_common.CreateFail("旧密码错误", context)
 		return
 	}
-
-	getAdmin.Password, _ = HashPassword(umsAdminUpdatePassword.NewPassword)
-	status, err := umsAdmin.UpdateUmsAdminByUserId(s.DbFactory.GormMySQL, getAdmin.Id)
+	hashPassword, err := HashPassword(umsAdminUpdatePassword.NewPassword)
 	if err != nil {
+		gin_common.CreateFail(gin_common.UnknownError, context)
+		return
+	}
+	getAdmin.Password = hashPassword
+	status, err := getAdmin.UpdateUmsAdminPasswordByUserId(s.DbFactory.GormMySQL)
+	if err != nil {
+		gin_common.CreateFail(gin_common.UnknownError, context)
 		return
 	}
 	// todo 删除缓存的用户数据

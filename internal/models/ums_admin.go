@@ -93,3 +93,21 @@ func (umsAdmin *UmsAdmin) UpdateUmsAdminByUserId(db *gorm.DB, userId int64) (int
 	}
 	return tx.RowsAffected, nil
 }
+
+// UpdateUmsAdminPasswordByUserId 更改用户密码
+func (umsAdmin *UmsAdmin) UpdateUmsAdminPasswordByUserId(db *gorm.DB) (int64, error) {
+	tx := db.Model(umsAdmin).Select("password").Updates(UmsAdmin{Password: umsAdmin.Password})
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return tx.RowsAffected, nil
+}
+
+// UpdateUmsAdminLoginTimeByUserId 更改用户登录时间
+func (umsAdmin *UmsAdmin) UpdateUmsAdminLoginTimeByUserId(db *gorm.DB) (int64, error) {
+	tx := db.Model(umsAdmin).Select("login_time").Updates(UmsAdmin{LoginTime: umsAdmin.LoginTime})
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return tx.RowsAffected, nil
+}

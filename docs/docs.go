@@ -255,7 +255,7 @@ const docTemplate = `{
                         "GinJWTMiddleware": []
                     }
                 ],
-                "description": "更新用户密码",
+                "description": "修改指定用户密码",
                 "consumes": [
                     "application/json"
                 ],
@@ -265,10 +265,10 @@ const docTemplate = `{
                 "tags": [
                     "后台用户管理"
                 ],
-                "summary": "更新用户密码",
+                "summary": "修改指定用户密码",
                 "parameters": [
                     {
-                        "description": "更新用户密码",
+                        "description": "修改指定用户密码",
                         "name": "request",
                         "in": "body",
                         "required": true,

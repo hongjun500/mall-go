@@ -282,9 +282,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: 更新用户密码
+      description: 修改指定用户密码
       parameters:
-      - description: 更新用户密码
+      - description: 修改指定用户密码
         in: body
         name: request
         required: true
@@ -299,7 +299,7 @@ paths:
             $ref: '#/definitions/gin_common.GinCommonResponse'
       security:
       - GinJWTMiddleware: []
-      summary: 更新用户密码
+      summary: 修改指定用户密码
       tags:
       - 后台用户管理
 schemes:
