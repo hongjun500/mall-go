@@ -1,11 +1,76 @@
 {
+    "schemes": [
+        "http",
+        "https"
+    ],
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "mall-go API",
+        "title": "mall-go API",
+        "contact": {},
+        "version": "v1"
     },
+    "host": "localhost:8080",
+    "basePath": "/",
     "paths": {
+        "/admin/authTest": {
+            "get": {
+                "description": "用户鉴权测试",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台用户管理"
+                ],
+                "summary": "用户鉴权测试",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/info": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "根据用户 ID 获取用户信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台用户管理"
+                ],
+                "summary": "根据用户 ID 获取用户信息",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/list": {
             "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
                 "description": "分页查询用户",
                 "consumes": [
                     "application/json"
@@ -74,6 +139,11 @@
         },
         "/admin/refreshToken": {
             "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
                 "description": "刷新 token",
                 "consumes": [
                     "application/json"
@@ -85,15 +155,6 @@
                     "后台用户管理"
                 ],
                 "summary": "刷新 token",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJob25nanVuNTAwIiwiY3JlYXRlZCI6IjIwMjMtMDYtMDVUMTQ6Mjk6NDIuODg5MjMzNCswODowMCIsImV4cCI6MTY4NjU1MTM4Mn0.O1KpbIsAXWkyFgUXXN3isTXUSRq9202cNDjiOz4hDOITNA9Scmrmw_3_T1Bk53hKORpm8cbzL4F6_y0eGqs2nw",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -138,8 +199,59 @@
                 }
             }
         },
-        "/admin/{userId}": {
+        "/admin/update/{user_id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "更新用户信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台用户管理"
+                ],
+                "summary": "更新用户信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户 ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "更新用户信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ums_admin.UmsAdminUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/{user_id}": {
             "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
                 "description": "根据用户 ID 获取用户信息",
                 "consumes": [
                     "application/json"
@@ -155,7 +267,7 @@
                     {
                         "type": "integer",
                         "description": "用户 ID",
-                        "name": "userId",
+                        "name": "user_id",
                         "in": "path",
                         "required": true
                     }
@@ -256,6 +368,47 @@
                     "type": "string"
                 }
             }
+        },
+        "ums_admin.UmsAdminUpdate": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "icon": {
+                    "description": "用户头像",
+                    "type": "string"
+                },
+                "nickname": {
+                    "description": "用户昵称",
+                    "type": "string"
+                },
+                "note": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密文密码",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "GinJWTMiddleware": {
+            "description": "Description for what is this security definition being used",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

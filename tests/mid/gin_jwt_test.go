@@ -20,7 +20,7 @@ func TestToken(t *testing.T) {
 
 	conf.InitAdminConfigProperties()
 
-	token := jwt.GenerateToken("hongjun500")
+	token := jwt.GenerateToken("hongjun500", 11)
 	assert.NotEmpty(t, token)
 	fmt.Println("GenerateToken token: ", token)
 	time := jwt.GetTokenExpireTime(token)
@@ -29,7 +29,7 @@ func TestToken(t *testing.T) {
 	expired := jwt.TokenIsExpired(token)
 	assert.False(t, expired)
 	fmt.Println("IsTokenExpired expired: ", expired)
-	username, _ := jwt.GetUsernameFromToken(token)
+	username, _, _ := jwt.GetUsernameAndUserIdFromToken(token)
 	assert.Equal(t, "hongjun500", username)
 	fmt.Println("GetUsernameFromToken username: ", username)
 	valid := jwt.TokenValid(token, username)

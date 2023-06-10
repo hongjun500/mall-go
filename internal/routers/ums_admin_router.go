@@ -26,7 +26,7 @@ func (router *UmsAdminRouter) GroupUmsAdminRouter(routerEngine *gin.Engine) {
 		umsAdminGroup.POST("/login", router.UmsAdminService.UmsAdminLogin)
 		// 用户登出
 		umsAdminGroup.POST("/logout", router.UmsAdminService.UmsAdminLogout)
-
+		umsAdminGroup.GET("/authTest", router.UmsAdminService.UmsAdminAuthTest)
 	}
 
 	authGroup := routerEngine.Group("/admin").Use(mid.GinJWTMiddleware())

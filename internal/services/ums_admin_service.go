@@ -134,7 +134,7 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 		return
 	}
 
-	token := jwt.GenerateToken(umsAdmin.Username)
+	token := jwt.GenerateToken(umsAdmin.Username, umsAdmin.Id)
 	// todo 添加登录记录
 
 	if token == "" {
@@ -152,13 +152,35 @@ func (s UmsAdminService) UmsAdminLogout(context *gin.Context) {
 	gin_common.Create(context)
 }
 
+// UmsAdminAuthTest 用户鉴权测试
+// @Summary 用户鉴权测试
+// @Description 用户鉴权测试
+// @Tags 后台用户管理
+// @Accept  json
+// @Produce  json
+// @Success 200 {object}  gin_common.GinCommonResponse
+// @Router /admin/authTest [get]
+func (s UmsAdminService) UmsAdminAuthTest(context *gin.Context) {
+	m := map[string]any{
+		"admin": map[string]any{
+			"username": "admin",
+			"token":    "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJob25nanVuNTAwIiwidXNlcl9pZCI6MTEsImNyZWF0ZWQiOiIyMDIzLTA2LTEwVDE0OjQ1OjA4LjEwMzc3NDYrMDg6MDAiLCJleHAiOjE2ODY5ODQzMDh9.PcLmIhxjenF36OPKmBX5ghPFgrfewSh_OUfT3dS-gUUL8UtyZFrg1gvxMbN8jZpOwJZIP5FQ7A1Yz1cfLl-Exg",
+		},
+		"hongjun500": map[string]any{
+			"username": "hongjun500",
+			"token":    "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJob25nanVuNTAwIiwidXNlcl9pZCI6MTEsImNyZWF0ZWQiOiIyMDIzLTA2LTEwVDE0OjQzOjEzLjkxNzYwNzgrMDg6MDAiLCJleHAiOjE2ODY5ODQxOTN9.rdIYbb_MkkuudnFHl-1HAR-W0x671FHHy4QUjvtV1Y3kMvHnNwkO-_MxUt6ypkvcqYHLt1MGHYtTIPScUwYWig",
+		},
+	}
+	gin_common.CreateSuccess(m, context)
+}
+
 // UmsAdminRefreshToken 刷新 token
 // @Summary 刷新 token
 // @Description 刷新 token
 // @Tags 后台用户管理
 // @Accept  json
 // @Produce  json
-// @Param Authorization header string true "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJob25nanVuNTAwIiwiY3JlYXRlZCI6IjIwMjMtMDYtMDVUMTQ6Mjk6NDIuODg5MjMzNCswODowMCIsImV4cCI6MTY4NjU1MTM4Mn0.O1KpbIsAXWkyFgUXXN3isTXUSRq9202cNDjiOz4hDOITNA9Scmrmw_3_T1Bk53hKORpm8cbzL4F6_y0eGqs2nw"
+// @Security GinJWTMiddleware
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/refreshToken [post]
 func (s UmsAdminService) UmsAdminRefreshToken(context *gin.Context) {
@@ -186,6 +208,7 @@ func (s UmsAdminService) UmsRoleList(adminId int64) []*models.UmsRole {
 // @Tags 后台用户管理
 // @Accept  json
 // @Produce  json
+// @Security GinJWTMiddleware
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/info [get]
 func (s UmsAdminService) UmsAdminInfo(context *gin.Context) {
@@ -237,6 +260,7 @@ func (s UmsAdminService) UmsAdminInfo(context *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param request body ums_admin.UmsAdminPage true "分页查询用户"
+// @Security GinJWTMiddleware
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/list [post]
 func (s UmsAdminService) UmsAdminListPage(context *gin.Context) {
@@ -261,9 +285,10 @@ func (s UmsAdminService) UmsAdminListPage(context *gin.Context) {
 // @Tags 后台用户管理
 // @Accept  json
 // @Produce  json
-// @Param id path int true "用户 ID"
+// @Param user_id path int true "用户 ID"
+// @Security GinJWTMiddleware
 // @Success 200 {object}  gin_common.GinCommonResponse
-// @Router /admin/:user_id [get]
+// @Router /admin/{user_id} [get]
 func (s UmsAdminService) UmsAdminItem(context *gin.Context) {
 	var userDTO base.UserDTO
 	err := context.ShouldBindUri(&userDTO)
@@ -287,10 +312,11 @@ func (s UmsAdminService) UmsAdminItem(context *gin.Context) {
 // @Tags 后台用户管理
 // @Accept  json
 // @Produce  json
-// @Param id path int true "用户 ID"
+// @Param user_id path int true "用户 ID"
 // @Param request body ums_admin.UmsAdminUpdate true "更新用户信息"
+// @Security GinJWTMiddleware
 // @Success 200 {object}  gin_common.GinCommonResponse
-// @Router /admin/{user_id} [post]
+// @Router /admin/update/{user_id} [post]
 func (s UmsAdminService) UmsAdminUpdate(context *gin.Context) {
 	umsAdminUpdate := new(ums_admin.UmsAdminUpdate)
 	userDTO := new(base.UserDTO)

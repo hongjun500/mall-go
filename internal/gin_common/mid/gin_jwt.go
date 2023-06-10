@@ -25,7 +25,7 @@ func GinJWTMiddleware() gin.HandlerFunc {
 		header := context.GetHeader(conf.GlobalJwtConfigProperties.TokenHeader)
 		if header != "" && strings.HasPrefix(header, conf.GlobalJwtConfigProperties.TokenHead) {
 			authToken := header[len(conf.GlobalJwtConfigProperties.TokenHead):]
-			username, err := jwt.GetUsernameFromToken(authToken)
+			username, userId, err := jwt.GetUsernameAndUserIdFromToken(authToken)
 			if err != nil {
 				log.Printf("get username from token[%v] is fail %d\n", authToken, err)
 				status = gin_common.TokenInvalid
@@ -40,6 +40,8 @@ func GinJWTMiddleware() gin.HandlerFunc {
 			}
 			log.Printf("authenticated user: %v", username)
 			context.Set("username", username)
+			context.Set("user_id", userId)
+
 		} else {
 			status = gin_common.Unauthorized
 		}

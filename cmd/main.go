@@ -21,9 +21,10 @@ var (
 // @host localhost:8080
 // @BasePath /
 // @schemes http https
-// @securityDefinitions.apikey mid.GinJWTMiddleware
-// @in HEADER
+// @securityDefinitions.apikey GinJWTMiddleware
+// @in header
 // @name Authorization
+// @description Description for what is this security definition being used
 func main() {
 
 	// 初始化全部配置

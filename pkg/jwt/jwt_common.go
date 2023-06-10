@@ -17,12 +17,14 @@ import (
 
 const (
 	sub     = "sub"
+	id      = "id"
 	created = "created"
 	expired = "expired"
 )
 
 type CustomClaims struct {
 	Sub     string    `json:"sub"`
+	UserId  int64     `json:"user_id"`
 	Created time.Time `json:"created"`
 	jwt.RegisteredClaims
 }
@@ -46,6 +48,7 @@ func GenerateTokenFromClaims(claimsMap map[string]any) string {
 	}
 	claims := CustomClaims{
 		claimsMap[sub].(string),
+		claimsMap[id].(int64),
 		claimsMap[created].(time.Time),
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expiredTime),
@@ -58,9 +61,10 @@ func GenerateTokenFromClaims(claimsMap map[string]any) string {
 }
 
 // GenerateToken 根据用户名生成 token
-func GenerateToken(username string) string {
+func GenerateToken(username string, userId int64) string {
 	claimsMap := make(map[string]any)
 	claimsMap[sub] = username
+	claimsMap[id] = userId
 	claimsMap[created] = time.Now()
 	return GenerateTokenFromClaims(claimsMap)
 }
@@ -81,13 +85,13 @@ func GetClaimsFromToken(tokenString string) (CustomClaims, error) {
 	return claims, err
 }
 
-// GetUsernameFromToken 从 token 中获取 username
-func GetUsernameFromToken(tokenString string) (string, error) {
+// GetUsernameAndUserIdFromToken 从 token 中获取 username
+func GetUsernameAndUserIdFromToken(tokenString string) (string, int64, error) {
 	claims, err := GetClaimsFromToken(tokenString)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
-	return claims.Sub, nil
+	return claims.Sub, claims.UserId, nil
 }
 
 // TokenIsExpired 判断 token 是否过期
@@ -151,7 +155,7 @@ func RefreshToken(oldTokenString string) (string, error) {
 	} else {
 		// 重新生成token
 		// todo 这里会有一个问题：原先的 token 只要在有效期内仍然可以使用
-		newToken := GenerateToken(claims.Sub)
+		newToken := GenerateToken(claims.Sub, claims.UserId)
 		return newToken, nil
 	}
 }

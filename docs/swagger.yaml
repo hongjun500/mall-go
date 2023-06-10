@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   gin_common.GinCommonResponse:
     properties:
@@ -61,10 +62,38 @@ definitions:
     - password
     - username
     type: object
+  ums_admin.UmsAdminUpdate:
+    properties:
+      email:
+        description: 邮箱
+        type: string
+      icon:
+        description: 用户头像
+        type: string
+      nickname:
+        description: 用户昵称
+        type: string
+      note:
+        description: 备注
+        type: string
+      password:
+        description: 密文密码
+        type: string
+      username:
+        description: 用户名
+        type: string
+    required:
+    - password
+    - username
+    type: object
+host: localhost:8080
 info:
   contact: {}
+  description: mall-go API
+  title: mall-go API
+  version: v1
 paths:
-  /admin/{userId}:
+  /admin/{user_id}:
     get:
       consumes:
       - application/json
@@ -72,7 +101,7 @@ paths:
       parameters:
       - description: 用户 ID
         in: path
-        name: userId
+        name: user_id
         required: true
         type: integer
       produces:
@@ -82,6 +111,40 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 根据用户 ID 获取用户信息
+      tags:
+      - 后台用户管理
+  /admin/authTest:
+    get:
+      consumes:
+      - application/json
+      description: 用户鉴权测试
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      summary: 用户鉴权测试
+      tags:
+      - 后台用户管理
+  /admin/info:
+    get:
+      consumes:
+      - application/json
+      description: 根据用户 ID 获取用户信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
       summary: 根据用户 ID 获取用户信息
       tags:
       - 后台用户管理
@@ -104,6 +167,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
       summary: 分页查询用户
       tags:
       - 后台用户管理
@@ -134,12 +199,6 @@ paths:
       consumes:
       - application/json
       description: 刷新 token
-      parameters:
-      - description: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJob25nanVuNTAwIiwiY3JlYXRlZCI6IjIwMjMtMDYtMDVUMTQ6Mjk6NDIuODg5MjMzNCswODowMCIsImV4cCI6MTY4NjU1MTM4Mn0.O1KpbIsAXWkyFgUXXN3isTXUSRq9202cNDjiOz4hDOITNA9Scmrmw_3_T1Bk53hKORpm8cbzL4F6_y0eGqs2nw
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -147,6 +206,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
       summary: 刷新 token
       tags:
       - 后台用户管理
@@ -172,4 +233,42 @@ paths:
       summary: 用户注册
       tags:
       - 后台用户管理
+  /admin/update/{user_id}:
+    post:
+      consumes:
+      - application/json
+      description: 更新用户信息
+      parameters:
+      - description: 用户 ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: 更新用户信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsAdminUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 更新用户信息
+      tags:
+      - 后台用户管理
+schemes:
+- http
+- https
+securityDefinitions:
+  GinJWTMiddleware:
+    description: Description for what is this security definition being used
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
