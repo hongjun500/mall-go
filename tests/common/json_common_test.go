@@ -4,7 +4,7 @@
 // Created with 2022.2.2.IntelliJ IDEA
 // Description:
 
-package mid
+package common
 
 import (
 	"github.com/hongjun500/mall-go/pkg/convert"

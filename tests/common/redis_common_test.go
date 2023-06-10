@@ -1,4 +1,4 @@
-package mid
+package common
 
 import (
 	"github.com/hongjun500/mall-go/pkg/redis"

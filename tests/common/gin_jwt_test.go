@@ -6,7 +6,7 @@
  * Description: gin_jwt_test.go
  */
 
-package mid
+package common
 
 import (
 	"fmt"

@@ -271,12 +271,12 @@ func (s UmsAdminService) UmsAdminListPage(context *gin.Context) {
 		return
 	}
 	var umsAdmin *models.UmsAdmin
-	umsAdmins, err := umsAdmin.SelectUmsAdminPage(s.DbFactory.GormMySQL, request.Username, request.PageNum, request.PageSize)
+	page, err := umsAdmin.SelectUmsAdminPage(s.DbFactory.GormMySQL, request.Username, request.PageNum, request.PageSize)
 	if err != nil {
 		gin_common.CreateFail(gin_common.UnknownError, context)
 		return
 	}
-	gin_common.CreateSuccess(umsAdmins, context)
+	gin_common.CreateSuccess(page, context)
 }
 
 // UmsAdminItem 根据用户 ID 获取用户信息

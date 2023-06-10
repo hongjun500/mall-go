@@ -78,7 +78,7 @@ func CreateSuccess(result any, context *gin.Context) {
 	CreateAny(result, "success", context)
 }
 
-// Create 创建一个成功的没有返回值的返回信息
+// Create 创建一个成功但没有返回值的返回信息
 func Create(context *gin.Context) {
 	CreateSuccess(nil, context)
 }

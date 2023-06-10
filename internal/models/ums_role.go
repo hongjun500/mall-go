@@ -106,7 +106,7 @@ func (role *UmsRole) SelectMenuByRoleId(db *gorm.DB, roleId int64) ([]*UmsRole, 
 	return menus, nil
 }
 
-// ListResourceByRoleId 根据角色 ID 获取角色的资源
+// SelectResourceByRoleId  根据角色 ID 获取角色的资源
 func (role *UmsRole) SelectResourceByRoleId(db *gorm.DB, roleId int64) ([]*UmsResource, error) {
 	var resources []*UmsResource
 	sql := "SELECT r.id id, r.create_time createTime, r.`name` `name`, r.url url, r.description description, r.category_id categoryId FROM ums_role_resource_relation rrr LEFT JOIN ums_resource r ON rrr.resource_id = r.id WHERE rrr.role_id = ? AND r.id IS NOT NULL GROUP BY r.id"
