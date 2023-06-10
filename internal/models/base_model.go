@@ -8,17 +8,20 @@ import (
 
 // Model  基础Model
 type Model struct {
-	Id        int64                 `gorm:"column:id;primaryKey;autoIncrement;not null" json:"id"`
-	CreateAt  *time.Time            `gorm:"column:created_at;not null" json:"createdAt"`
-	UpdateAt  *time.Time            `gorm:"column:updated_at;not null" json:"updatedAt"`
-	DeletedAt *time.Time            `gorm:"column:deleted_at;" json:"deletedAt"`
-	IsDel     soft_delete.DeletedAt `gorm:"softDelete:flag,DeletedAtField:DeletedAt" json:"isDel"`
+	Id        int64      `gorm:"column:id;primaryKey;autoIncrement;not null" json:"id"`
+	CreateAt  *time.Time `gorm:"column:created_at;not null" json:"createdAt"`
+	UpdateAt  *time.Time `gorm:"column:updated_at;not null" json:"updatedAt"`
+	DeletedAt *time.Time `gorm:"column:deleted_at;" json:"deletedAt"`
+	// 原有表结构字段 用于兼容
+	CreateTime *time.Time            `gorm:"column:create_time;" json:"createTime"`
+	IsDel      soft_delete.DeletedAt `gorm:"softDelete:flag,DeletedAtField:DeletedAt" json:"isDel"`
 }
 
 func (*Model) BeforeCreate(tx *gorm.DB) (err error) {
 	now := time.Now()
 	tx.Statement.SetColumn("created_at", now)
 	tx.Statement.SetColumn("updated_at", now)
+	tx.Statement.SetColumn("create_time", now)
 	tx.Statement.SetColumn("deleted_at", nil)
 	return
 }

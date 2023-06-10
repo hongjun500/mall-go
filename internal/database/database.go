@@ -13,7 +13,7 @@ type DbFactory struct {
 	// 基于 gorm 的 MySQL 连接
 	GormMySQL *gorm.DB
 
-	// todo 改写 redis
+	// 基于 go-redis 的 Redis 连接
 	RedisCli *redis.Client
 	// todo 改写 es
 	Es *Es
@@ -30,7 +30,6 @@ func NewDbFactory(args ...any) *DbFactory {
 		case *gorm.DB:
 			factory.GormMySQL = val
 		case *redis.Client:
-			// todo 改写 redis
 			factory.RedisCli = val
 		case Es:
 			// todo 改写 es

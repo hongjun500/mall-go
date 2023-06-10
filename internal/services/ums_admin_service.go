@@ -141,14 +141,22 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 	}
 	now := time.Now()
 	umsAdmin.LoginTime = &now
+	// 更新登录时间
 	_, _ = umsAdmin.UpdateUmsAdminLoginTimeByUserId(s.DbFactory.GormMySQL)
 
-	// todo 添加登录记录
+	umsAdminLoginLog := new(models.UmsAdminLoginLog)
+	umsAdminLoginLog.AdminId = umsAdmin.Id
+	umsAdminLoginLog.Ip = context.ClientIP()
+	umsAdminLoginLog.Address = context.Request.Host
+	umsAdminLoginLog.UserAgent = context.Request.UserAgent()
+	// 记录登录日志
+	_, _ = umsAdminLoginLog.SaveLoginLog(s.DbFactory.GormMySQL)
 
 	tokenMap := make(map[string]string)
 	tokenMap["token"] = token
 	tokenMap["tokenHead"] = conf.GlobalJwtConfigProperties.TokenHead
 	gin_common.CreateSuccess(tokenMap, context)
+
 }
 
 // UmsAdminLogout 用户登出
