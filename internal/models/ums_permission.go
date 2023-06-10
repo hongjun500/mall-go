@@ -3,7 +3,7 @@ package models
 type UmsPermission struct {
 	Model
 	// 父级ID
-	ParentID int64 `gorm:"column:parent_id;" json:"parent_id"`
+	ParentID int64 `gorm:"column:parent_id;" json:"parentId"`
 	// 名称
 	Name string `gorm:"column:name;not null" json:"name"`
 	// 权限值

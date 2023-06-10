@@ -13,7 +13,7 @@ type UmsResource struct {
 	// 描述
 	Description string `gorm:"column:description;" json:"description"`
 	// 资源分类ID
-	CategoryId int64 `gorm:"column:category_id;not null" json:"category_id"`
+	CategoryId int64 `gorm:"column:category_id;not null" json:"categoryId"`
 }
 
 func (*UmsResource) TableName() string {

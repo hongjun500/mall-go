@@ -10,7 +10,7 @@ package base
 
 type PageDTO struct {
 	// 页码
-	PageNum int `json:"page_num" form:"page_num" binding:"required" default:"1"`
+	PageNum int `json:"pageNum" form:"pageNum" binding:"required" default:"1"`
 	// 每页数量
-	PageSize int `json:"page_size" form:"page_size" binding:"required" default:"10"`
+	PageSize int `json:"pageSize" form:"pageSize" binding:"required" default:"10"`
 }

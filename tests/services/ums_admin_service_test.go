@@ -29,7 +29,7 @@ func TestVerifyPassword(t *testing.T) {
 
 func TestUmsAdminRegister(t *testing.T) {
 
-	var umsAdminRequest ums_admin.UmsAdminRegisterRequest
+	var umsAdminRequest ums_admin.UmsAdminRegisterDTO
 	umsAdminRequest.Username = "hongjun"
 	umsAdminRequest.Password = "123456"
 	umsAdminRequest.Icon = "http://www.baidu.com"
@@ -52,7 +52,7 @@ func TestUmsAdminRegister(t *testing.T) {
 }
 
 func TestUmsAdminLogin(t *testing.T) {
-	var umsAdminLogin ums_admin.UmsAdminLogin
+	var umsAdminLogin ums_admin.UmsAdminLoginDTO
 	umsAdminLogin.Username = "hongjun500"
 	umsAdminLogin.Password = "123456"
 	body, err := json.Marshal(umsAdminLogin)

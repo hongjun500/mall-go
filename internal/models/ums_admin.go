@@ -17,11 +17,11 @@ type UmsAdmin struct {
 	// 邮箱
 	Email string `gorm:"column:email;" json:"email"`
 	// 昵称
-	Nickname string `gorm:"column:nick_name;" json:"nick_name"`
+	Nickname string `gorm:"column:nick_name;" json:"nickName"`
 	// 备注信息
 	Note string `gorm:"column:note;" json:"note"`
 	// 最后登录时间
-	LoginTime *time.Time `gorm:"column:login_time;" json:"login_time"`
+	LoginTime *time.Time `gorm:"column:login_time;" json:"loginTime"`
 	// 帐号启用状态：0->禁用；1->启用
 	Status int64 `gorm:"column:status;default:1" json:"status"`
 }

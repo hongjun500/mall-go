@@ -24,7 +24,7 @@ const (
 
 type CustomClaims struct {
 	Sub     string    `json:"sub"`
-	UserId  int64     `json:"user_id"`
+	UserId  int64     `json:"userId"`
 	Created time.Time `json:"created"`
 	jwt.RegisteredClaims
 }

@@ -12,17 +12,17 @@ import (
 
 type GormCommonPage struct {
 	// 当前页
-	PageNum int `json:"page_num" form:"page_num" binding:"required" default:"1"`
+	PageNum int `json:"pageNum" form:"page_num" binding:"required" default:"1"`
 	// 每页数量
-	PageSize int `json:"page_size" form:"page_size" binding:"required" default:"10"`
+	PageSize int `json:"pageSize" form:"page_size" binding:"required" default:"10"`
 	// 总页数
-	TotalPage int64 `json:"total_page" form:"total_page"`
+	TotalPage int64 `json:"totalPage" form:"total_page"`
 	// 总记录数
 	Total int64 `json:"total" form:"total"`
 	// 分页数据
 	List any `json:"list" form:"list"`
 	// 排序
-	OrderBy string `json:"order_by" form:"order_by"`
+	OrderBy string `json:"orderBy" form:"order_by"`
 	// 排序方式
 	Sort string `json:"sort" form:"sort"`
 }

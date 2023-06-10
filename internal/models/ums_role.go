@@ -11,7 +11,7 @@ type UmsRole struct {
 	// 描述
 	Description string `gorm:"column:description;type:varchar(500);" json:"description"`
 	// 后台用户数量
-	AdminCount int `gorm:"column:admin_count;type:int(11);" json:"admin_count"`
+	AdminCount int `gorm:"column:admin_count;type:int(11);" json:"adminCount"`
 	// 0->禁用；1->启用
 	Status int `gorm:"column:status;type:tinyint(1);default:1;" json:"status"`
 	// 排序

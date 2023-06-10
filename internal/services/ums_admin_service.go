@@ -27,11 +27,11 @@ func NewUmsAdminService(dbFactory *database.DbFactory) UmsAdminService {
 // @Tags 后台用户管理
 // @Accept  json
 // @Produce  json
-// @Param request body ums_admin.UmsAdminRegisterRequest true "用户注册"
+// @Param request body ums_admin.UmsAdminRegisterDTO true "用户注册"
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/register [post]
 func (s UmsAdminService) UmsAdminRegister(context *gin.Context) {
-	var request ums_admin.UmsAdminRegisterRequest
+	var request ums_admin.UmsAdminRegisterDTO
 	err := context.ShouldBind(&request)
 	if err != nil {
 		gin_common.CreateFail(gin_common.ParameterValidationError, context)
@@ -103,11 +103,11 @@ func VerifyPassword(password, hashedPassword string) bool {
 // @Tags 后台用户管理
 // @Accept  json
 // @Produce  json
-// @Param request body ums_admin.UmsAdminLogin true "用户登录"
+// @Param request body ums_admin.UmsAdminLoginDTO true "用户登录"
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/login [post]
 func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
-	var umsAdminLogin ums_admin.UmsAdminLogin
+	var umsAdminLogin ums_admin.UmsAdminLoginDTO
 	err := context.ShouldBind(&umsAdminLogin)
 	if err != nil {
 		gin_common.CreateFail(gin_common.ParameterValidationError, context)
@@ -259,12 +259,12 @@ func (s UmsAdminService) UmsAdminInfo(context *gin.Context) {
 // @Tags 后台用户管理
 // @Accept  json
 // @Produce  json
-// @Param request body ums_admin.UmsAdminPage true "分页查询用户"
+// @Param request body ums_admin.UmsAdminPageDTO true "分页查询用户"
 // @Security GinJWTMiddleware
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/list [post]
 func (s UmsAdminService) UmsAdminListPage(context *gin.Context) {
-	var request ums_admin.UmsAdminPage
+	var request ums_admin.UmsAdminPageDTO
 	err := context.ShouldBind(&request)
 	if err != nil {
 		gin_common.CreateFail(gin_common.ParameterValidationError, context)
@@ -313,12 +313,12 @@ func (s UmsAdminService) UmsAdminItem(context *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param user_id path int true "用户 ID"
-// @Param request body ums_admin.UmsAdminUpdate true "更新用户信息"
+// @Param request body ums_admin.UmsAdminUpdateDTO true "更新用户信息"
 // @Security GinJWTMiddleware
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/update/{user_id} [post]
 func (s UmsAdminService) UmsAdminUpdate(context *gin.Context) {
-	umsAdminUpdate := new(ums_admin.UmsAdminUpdate)
+	umsAdminUpdate := new(ums_admin.UmsAdminUpdateDTO)
 	userDTO := new(base.UserDTO)
 	err := context.ShouldBindUri(&userDTO)
 	if err != nil {
@@ -346,4 +346,18 @@ func (s UmsAdminService) UmsAdminUpdate(context *gin.Context) {
 		return
 	}
 	gin_common.CreateSuccess(id, context)
+}
+
+// UmsAdminUpdatePassword 更新用户密码
+// @Summary 更新用户密码
+// @Description 更新用户密码
+// @Tags 后台用户管理
+// @Accept  json
+// @Produce  json
+// @Param request body ums_admin.UmsAdminUpdatePasswordDTO true "更新用户密码"
+// @Security GinJWTMiddleware
+// @Success 200 {object}  gin_common.GinCommonResponse
+// @Router /admin/:user_id [get]
+func (s UmsAdminService) UmsAdminUpdatePassword(context *gin.Context) {
+
 }

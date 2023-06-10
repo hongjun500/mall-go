@@ -6,8 +6,8 @@ import (
 
 type UmsAdminRoleRelation struct {
 	Model
-	AdminId int64 `gorm:"column:admin_id;not null" json:"admin_id"`
-	RoleId  int64 `gorm:"column:role_id;not null" json:"role_id"`
+	AdminId int64 `gorm:"column:admin_id;not null" json:"adminId"`
+	RoleId  int64 `gorm:"column:role_id;not null" json:"roleId"`
 }
 
 func (*UmsAdminRoleRelation) TableName() string {

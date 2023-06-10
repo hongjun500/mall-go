@@ -16,6 +16,45 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/:user_id": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "更新用户密码",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台用户管理"
+                ],
+                "summary": "更新用户密码",
+                "parameters": [
+                    {
+                        "description": "更新用户密码",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ums_admin.UmsAdminUpdatePasswordDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/authTest": {
             "get": {
                 "description": "用户鉴权测试",
@@ -92,7 +131,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsAdminPage"
+                            "$ref": "#/definitions/ums_admin.UmsAdminPageDTO"
                         }
                     }
                 ],
@@ -126,7 +165,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsAdminLogin"
+                            "$ref": "#/definitions/ums_admin.UmsAdminLoginDTO"
                         }
                     }
                 ],
@@ -188,7 +227,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsAdminRegisterRequest"
+                            "$ref": "#/definitions/ums_admin.UmsAdminRegisterDTO"
                         }
                     }
                 ],
@@ -234,7 +273,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsAdminUpdate"
+                            "$ref": "#/definitions/ums_admin.UmsAdminUpdateDTO"
                         }
                     }
                 ],
@@ -299,7 +338,7 @@ const docTemplate = `{
                 }
             }
         },
-        "ums_admin.UmsAdminLogin": {
+        "ums_admin.UmsAdminLoginDTO": {
             "type": "object",
             "required": [
                 "password",
@@ -316,19 +355,19 @@ const docTemplate = `{
                 }
             }
         },
-        "ums_admin.UmsAdminPage": {
+        "ums_admin.UmsAdminPageDTO": {
             "type": "object",
             "required": [
-                "page_num",
-                "page_size"
+                "pageNum",
+                "pageSize"
             ],
             "properties": {
-                "page_num": {
+                "pageNum": {
                     "description": "页码",
                     "type": "integer",
                     "default": 1
                 },
-                "page_size": {
+                "pageSize": {
                     "description": "每页数量",
                     "type": "integer",
                     "default": 10
@@ -339,7 +378,7 @@ const docTemplate = `{
                 }
             }
         },
-        "ums_admin.UmsAdminRegisterRequest": {
+        "ums_admin.UmsAdminRegisterDTO": {
             "type": "object",
             "required": [
                 "password",
@@ -372,7 +411,7 @@ const docTemplate = `{
                 }
             }
         },
-        "ums_admin.UmsAdminUpdate": {
+        "ums_admin.UmsAdminUpdateDTO": {
             "type": "object",
             "required": [
                 "password",
@@ -397,6 +436,28 @@ const docTemplate = `{
                 },
                 "password": {
                     "description": "密文密码",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "ums_admin.UmsAdminUpdatePasswordDTO": {
+            "type": "object",
+            "required": [
+                "newPassword",
+                "oldPassword",
+                "username"
+            ],
+            "properties": {
+                "newPassword": {
+                    "description": "新密码",
+                    "type": "string"
+                },
+                "oldPassword": {
+                    "description": "旧密码",
                     "type": "string"
                 },
                 "username": {

@@ -9,7 +9,7 @@ definitions:
         description: success or fail
         type: string
     type: object
-  ums_admin.UmsAdminLogin:
+  ums_admin.UmsAdminLoginDTO:
     properties:
       password:
         description: 密文密码
@@ -21,13 +21,13 @@ definitions:
     - password
     - username
     type: object
-  ums_admin.UmsAdminPage:
+  ums_admin.UmsAdminPageDTO:
     properties:
-      page_num:
+      pageNum:
         default: 1
         description: 页码
         type: integer
-      page_size:
+      pageSize:
         default: 10
         description: 每页数量
         type: integer
@@ -35,10 +35,10 @@ definitions:
         description: 用户名
         type: string
     required:
-    - page_num
-    - page_size
+    - pageNum
+    - pageSize
     type: object
-  ums_admin.UmsAdminRegisterRequest:
+  ums_admin.UmsAdminRegisterDTO:
     properties:
       email:
         description: 邮箱
@@ -62,7 +62,7 @@ definitions:
     - password
     - username
     type: object
-  ums_admin.UmsAdminUpdate:
+  ums_admin.UmsAdminUpdateDTO:
     properties:
       email:
         description: 邮箱
@@ -84,6 +84,22 @@ definitions:
         type: string
     required:
     - password
+    - username
+    type: object
+  ums_admin.UmsAdminUpdatePasswordDTO:
+    properties:
+      newPassword:
+        description: 新密码
+        type: string
+      oldPassword:
+        description: 旧密码
+        type: string
+      username:
+        description: 用户名
+        type: string
+    required:
+    - newPassword
+    - oldPassword
     - username
     type: object
 host: localhost:8080
@@ -93,6 +109,30 @@ info:
   title: mall-go API
   version: v1
 paths:
+  /admin/:user_id:
+    get:
+      consumes:
+      - application/json
+      description: 更新用户密码
+      parameters:
+      - description: 更新用户密码
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsAdminUpdatePasswordDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 更新用户密码
+      tags:
+      - 后台用户管理
   /admin/{user_id}:
     get:
       consumes:
@@ -159,7 +199,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsAdminPage'
+          $ref: '#/definitions/ums_admin.UmsAdminPageDTO'
       produces:
       - application/json
       responses:
@@ -183,7 +223,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsAdminLogin'
+          $ref: '#/definitions/ums_admin.UmsAdminLoginDTO'
       produces:
       - application/json
       responses:
@@ -222,7 +262,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsAdminRegisterRequest'
+          $ref: '#/definitions/ums_admin.UmsAdminRegisterDTO'
       produces:
       - application/json
       responses:
@@ -249,7 +289,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsAdminUpdate'
+          $ref: '#/definitions/ums_admin.UmsAdminUpdateDTO'
       produces:
       - application/json
       responses:
