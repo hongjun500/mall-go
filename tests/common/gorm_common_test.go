@@ -9,11 +9,29 @@ package common
 import (
 	"github.com/hongjun500/mall-go/internal/gorm_common"
 	"github.com/hongjun500/mall-go/internal/models"
+	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 	"testing"
 )
 
 func TestExecutePagedQuery(t *testing.T) {
-	// TODO
+	page := gorm_common.NewPage(1, 10)
+	var admins []*models.UmsAdmin
+	keywords := "hongjun500"
+
+	err := gorm_common.ExecutePagedQuery(db, page, &admins, func(db *gorm.DB) *gorm.DB {
+		if keywords != "" {
+			return db.Where("username LIKE ? OR nick_name LIKE ?", "%"+keywords+"%", "%"+keywords+"%")
+		}
+		return db
+	})
+	if err != nil {
+		return
+	}
+	assert.Len(t, admins, 1)
+	assert.Equal(t, page.GetTotal(), int64(1))
+	t.Log("ExecutePagedQuery admins: ", admins)
+	t.Log("ExecutePagedQuery page: ", page)
 }
 
 func TestExecutePageSqlQuery(t *testing.T) {

@@ -155,9 +155,10 @@ func ExecutePagedQuery(db *gorm.DB, page CommonPage, result any, queryFunc func(
 	}
 
 	totalPage := count / int64(page.GetPageSize())
-	if int(count)%page.GetPageSize() > 0 {
+	if count%int64(page.GetPageSize()) > 0 {
 		totalPage++
 	}
+
 	if int64(page.GetPageNum()) > totalPage {
 		page.SetPageNum(int(totalPage))
 	}
