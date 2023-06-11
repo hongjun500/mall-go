@@ -327,6 +327,14 @@ func LPush(client *redis.Client, ctx context.Context, key string, values ...any)
 	}
 }
 
+// LRPush 将一个或多个值插入到列表尾部
+func LRPush(client *redis.Client, ctx context.Context, key string, values ...any) {
+	err := client.RPush(ctx, key, values...).Err()
+	if err != nil {
+		log.Fatalln("LRPush -> redis rpush error: ", err)
+	}
+}
+
 // LRem 根据参数 count 的值，移除列表中与参数 value 相等的元素
 func LRem(client *redis.Client, ctx context.Context, key string, count int64, value any) {
 	err := client.LRem(ctx, key, count, value).Err()

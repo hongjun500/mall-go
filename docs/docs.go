@@ -39,6 +39,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/delete/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "删除指定用户信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台用户管理"
+                ],
+                "summary": "删除指定用户信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户 ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/info": {
             "get": {
                 "security": [
@@ -202,14 +239,95 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/update/{user_id}": {
+        "/admin/role/update": {
             "post": {
                 "security": [
                     {
                         "GinJWTMiddleware": []
                     }
                 ],
-                "description": "更新用户信息",
+                "description": "修改指定用户角色",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台用户管理"
+                ],
+                "summary": "修改指定用户角色",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户 ID",
+                        "name": "adminId",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "description": "角色 ID",
+                        "name": "roleIds",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/role/{adminId}": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "获取指定用户的角色",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台用户管理"
+                ],
+                "summary": "获取指定用户的角色",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户 ID",
+                        "name": "adminId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/update/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "修改指定用户信息",
                 "consumes": [
                     "application/json"
                 ],
@@ -219,7 +337,7 @@ const docTemplate = `{
                 "tags": [
                     "后台用户管理"
                 ],
-                "summary": "更新用户信息",
+                "summary": "修改指定用户信息",
                 "parameters": [
                     {
                         "type": "integer",
@@ -229,7 +347,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "更新用户信息",
+                        "description": "修改指定用户信息",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -287,14 +405,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/{user_id}": {
-            "get": {
+        "/admin/updateStatus/{user_id}": {
+            "post": {
                 "security": [
                     {
                         "GinJWTMiddleware": []
                     }
                 ],
-                "description": "根据用户 ID 获取用户信息",
+                "description": "修改指定用户状态",
                 "consumes": [
                     "application/json"
                 ],
@@ -304,12 +422,56 @@ const docTemplate = `{
                 "tags": [
                     "后台用户管理"
                 ],
-                "summary": "根据用户 ID 获取用户信息",
+                "summary": "修改指定用户状态",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "用户 ID",
                         "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用户状态",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "获取指定用户信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台用户管理"
+                ],
+                "summary": "获取指定用户信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户 ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -480,7 +642,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "v1",
-	Host:             "localhost:8080",
+	Host:             "",
 	BasePath:         "/",
 	Schemes:          []string{"http", "https"},
 	Title:            "mall-go API",

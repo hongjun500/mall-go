@@ -18,7 +18,6 @@ var (
 // @title mall-go API
 // @description mall-go API
 // @version v1
-// @host localhost:8080
 // @BasePath /
 // @schemes http https
 // @securityDefinitions.apikey GinJWTMiddleware

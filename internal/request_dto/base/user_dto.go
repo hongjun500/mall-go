@@ -10,5 +10,6 @@
 package base
 
 type UserDTO struct {
-	UserId int64 `json:"userId" uri:"user_id" binding:"required"`
+	UserId int64 `json:"userId" uri:"user_id"`
+	Id     int64 `json:"id" uri:"id"`
 }

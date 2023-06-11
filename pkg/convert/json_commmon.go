@@ -45,7 +45,7 @@ func SliceMapToJson(obj []map[string]any) string {
 }
 
 // SliceStructToJson 将切片结构体转换成 json 字符串
-func SliceStructToJson(obj []any) string {
+func SliceStructToJson(obj any) string {
 	jsonBytes, err := json.Marshal(obj)
 	if err != nil {
 		return ""

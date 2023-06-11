@@ -38,10 +38,18 @@ func (router *UmsAdminRouter) GroupUmsAdminRouter(routerEngine *gin.Engine) {
 		// authGroup.GET("/info/:user_id", router.UmsAdminService.UmsAdminInfo)
 		// 用户列表分页
 		authGroup.POST("/list", router.UmsAdminService.UmsAdminListPage)
-		// 指定用户 ID 获取用户信息
-		authGroup.GET("/:user_id", router.UmsAdminService.UmsAdminItem)
+		// 获取指定用户信息
+		authGroup.GET("/:id", router.UmsAdminService.UmsAdminItem)
 		// 修改指定用户信息
-		authGroup.POST("/update/:user_id", router.UmsAdminService.UmsAdminUpdate)
+		authGroup.POST("/update/:id", router.UmsAdminService.UmsAdminUpdate)
+		// 删除指定用户
+		authGroup.POST("/delete/:id", router.UmsAdminService.UmsAdminDelete)
+		// 修改指定用户状态
+		authGroup.POST("/updateStatus/:id", router.UmsAdminService.UmsAdminUpdateStatus)
+		// 给用户分配角色
+		authGroup.POST("/role/update", router.UmsAdminService.UmsAdminRoleUpdate)
+		// 获取指定用户的角色
+		authGroup.GET("/role/:adminId", router.UmsAdminService.UmsAdminRoleItem)
 		// 修改指定用户密码
 		authGroup.POST("/updatePassword", router.UmsAdminService.UmsAdminUpdatePassword)
 	}

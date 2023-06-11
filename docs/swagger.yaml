@@ -102,22 +102,21 @@ definitions:
     - oldPassword
     - username
     type: object
-host: localhost:8080
 info:
   contact: {}
   description: mall-go API
   title: mall-go API
   version: v1
 paths:
-  /admin/{user_id}:
+  /admin/{id}:
     get:
       consumes:
       - application/json
-      description: 根据用户 ID 获取用户信息
+      description: 获取指定用户信息
       parameters:
       - description: 用户 ID
         in: path
-        name: user_id
+        name: id
         required: true
         type: integer
       produces:
@@ -129,7 +128,7 @@ paths:
             $ref: '#/definitions/gin_common.GinCommonResponse'
       security:
       - GinJWTMiddleware: []
-      summary: 根据用户 ID 获取用户信息
+      summary: 获取指定用户信息
       tags:
       - 后台用户管理
   /admin/authTest:
@@ -145,6 +144,29 @@ paths:
           schema:
             $ref: '#/definitions/gin_common.GinCommonResponse'
       summary: 用户鉴权测试
+      tags:
+      - 后台用户管理
+  /admin/delete/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 删除指定用户信息
+      parameters:
+      - description: 用户 ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 删除指定用户信息
       tags:
       - 后台用户管理
   /admin/info:
@@ -249,18 +271,69 @@ paths:
       summary: 用户注册
       tags:
       - 后台用户管理
-  /admin/update/{user_id}:
+  /admin/role/{adminId}:
+    get:
+      description: 获取指定用户的角色
+      parameters:
+      - description: 用户 ID
+        in: path
+        name: adminId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 获取指定用户的角色
+      tags:
+      - 后台用户管理
+  /admin/role/update:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 修改指定用户角色
+      parameters:
+      - description: 用户 ID
+        in: formData
+        name: adminId
+        required: true
+        type: integer
+      - description: 角色 ID
+        in: formData
+        items:
+          type: integer
+        name: roleIds
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改指定用户角色
+      tags:
+      - 后台用户管理
+  /admin/update/{id}:
     post:
       consumes:
       - application/json
-      description: 更新用户信息
+      description: 修改指定用户信息
       parameters:
       - description: 用户 ID
         in: path
         name: user_id
         required: true
         type: integer
-      - description: 更新用户信息
+      - description: 修改指定用户信息
         in: body
         name: request
         required: true
@@ -275,7 +348,7 @@ paths:
             $ref: '#/definitions/gin_common.GinCommonResponse'
       security:
       - GinJWTMiddleware: []
-      summary: 更新用户信息
+      summary: 修改指定用户信息
       tags:
       - 后台用户管理
   /admin/updatePassword:
@@ -300,6 +373,34 @@ paths:
       security:
       - GinJWTMiddleware: []
       summary: 修改指定用户密码
+      tags:
+      - 后台用户管理
+  /admin/updateStatus/{user_id}:
+    post:
+      consumes:
+      - application/json
+      description: 修改指定用户状态
+      parameters:
+      - description: 用户 ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: 用户状态
+        in: formData
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改指定用户状态
       tags:
       - 后台用户管理
 schemes:

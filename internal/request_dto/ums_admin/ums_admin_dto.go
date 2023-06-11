@@ -68,3 +68,10 @@ type UmsAdminUpdatePasswordDTO struct {
 	// 新密码
 	NewPassword string `json:"newPassword" form:"new_password" binding:"required"`
 }
+
+type UmsAdminRoleDTO struct {
+	// 用户 ID
+	AdminId int64 `json:"adminId" form:"adminId" uri:"adminId"`
+	// 角色 ID
+	RoleIds []int64 `json:"roleIds" form:"roleIds"`
+}

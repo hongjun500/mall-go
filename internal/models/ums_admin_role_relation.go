@@ -14,9 +14,50 @@ func (*UmsAdminRoleRelation) TableName() string {
 	return "ums_admin_role_relation"
 }
 
-func (m *UmsAdminRoleRelation) SelectAllByAdminId(db *gorm.DB, adminId int64) ([]*UmsRole, error) {
+func (re *UmsAdminRoleRelation) SelectAllByAdminId(db *gorm.DB, adminId int64) ([]*UmsRole, error) {
 	var list []*UmsRole
 	tx := db.Raw("select r.* from ums_admin_role_relation ar left join ums_role r on ar.role_id = r.id where ar.admin_id = ?", adminId).Scan(&list)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return list, nil
+}
+
+func (re *UmsAdminRoleRelation) SelectUmsAdminRoleRelationByRoleId(db *gorm.DB, roleId int64) ([]*UmsAdminRoleRelation, error) {
+	var list []*UmsAdminRoleRelation
+	tx := db.Where("role_id = ?", roleId).Find(&list)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return list, nil
+}
+
+func (re *UmsAdminRoleRelation) SelectUmsAdminRoleRelationInRoleId(db *gorm.DB, roleId []int64) ([]*UmsAdminRoleRelation, error) {
+	var list []*UmsAdminRoleRelation
+	tx := db.Where("role_id in ?", roleId).Find(&list)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return list, nil
+}
+
+func (re *UmsAdminRoleRelation) DelByAdminId(db *gorm.DB, adminId int64) {
+	db.Where("admin_id = ?", adminId).Delete(&UmsAdminRoleRelation{})
+}
+
+// InsertList 批量插入用户角色关系
+func (re *UmsAdminRoleRelation) InsertList(db *gorm.DB, list []*UmsAdminRoleRelation) (int64, error) {
+	tx := db.Create(&list)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return tx.RowsAffected, nil
+}
+
+// SelectRoleList 获取用于所有角色
+func (re *UmsAdminRoleRelation) SelectRoleList(db *gorm.DB, adminId int64) ([]*UmsRole, error) {
+	var list []*UmsRole
+	tx := db.Select("r.*").Table("ums_admin_role_relation ar").Joins("left join ums_role r on ar.role_id = r.id").Where("ar.admin_id = ?", adminId).Scan(&list)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}

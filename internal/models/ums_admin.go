@@ -94,6 +94,15 @@ func (umsAdmin *UmsAdmin) UpdateUmsAdminByUserId(db *gorm.DB, userId int64) (int
 	return tx.RowsAffected, nil
 }
 
+// DeleteUmsAdminByUserId 删除用户信息
+func (umsAdmin *UmsAdmin) DeleteUmsAdminByUserId(db *gorm.DB, userId int64) (int64, error) {
+	tx := db.Where("id = ?", userId).Delete(umsAdmin)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return tx.RowsAffected, nil
+}
+
 // UpdateUmsAdminPasswordByUserId 更改用户密码
 func (umsAdmin *UmsAdmin) UpdateUmsAdminPasswordByUserId(db *gorm.DB) (int64, error) {
 	tx := db.Model(umsAdmin).Select("password").Updates(UmsAdmin{Password: umsAdmin.Password})
@@ -106,6 +115,15 @@ func (umsAdmin *UmsAdmin) UpdateUmsAdminPasswordByUserId(db *gorm.DB) (int64, er
 // UpdateUmsAdminLoginTimeByUserId 更改用户登录时间
 func (umsAdmin *UmsAdmin) UpdateUmsAdminLoginTimeByUserId(db *gorm.DB) (int64, error) {
 	tx := db.Model(umsAdmin).Select("login_time").Updates(UmsAdmin{LoginTime: umsAdmin.LoginTime})
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return tx.RowsAffected, nil
+}
+
+// UpdateUmsAdminStatusByUserId 更改用户状态
+func (umsAdmin *UmsAdmin) UpdateUmsAdminStatusByUserId(db *gorm.DB) (int64, error) {
+	tx := db.Model(umsAdmin).Select("status").Updates(UmsAdmin{Status: umsAdmin.Status})
 	if tx.Error != nil {
 		return 0, tx.Error
 	}
