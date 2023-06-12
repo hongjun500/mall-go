@@ -102,6 +102,32 @@ definitions:
     - oldPassword
     - username
     type: object
+  ums_admin.UmsMenuCreateDTO:
+    properties:
+      hidden:
+        description: 前端隐藏
+        type: integer
+      icon:
+        description: 前端图标
+        type: string
+      id:
+        type: integer
+      level:
+        description: 菜单级数
+        type: integer
+      name:
+        description: 前端名称
+        type: string
+      parentId:
+        description: 父级ID
+        type: integer
+      sort:
+        description: 菜单排序
+        type: integer
+      title:
+        description: 菜单名称
+        type: string
+    type: object
 info:
   contact: {}
   description: mall-go API
@@ -303,7 +329,8 @@ paths:
         name: adminId
         required: true
         type: integer
-      - description: 角色 ID
+      - collectionFormat: csv
+        description: 角色 ID
         in: formData
         items:
           type: integer
@@ -403,6 +430,195 @@ paths:
       summary: 修改指定用户状态
       tags:
       - 后台用户管理
+  /menu/{id}:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        根据ID获取菜单详情
+        根据ID获取菜单详情
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 根据ID获取菜单详情
+      tags:
+      - 后台菜单管理
+  /menu/create:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        添加后台菜单
+        添加后台菜单
+      parameters:
+      - description: 添加后台菜单
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsMenuCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 添加后台菜单
+      tags:
+      - 后台菜单管理
+  /menu/delete/{id}:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        删除后台菜单
+        删除后台菜单
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 删除后台菜单
+      tags:
+      - 后台菜单管理
+  /menu/list/{parentId}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: 分页查询后台菜单
+      parameters:
+      - description: 父级菜单ID
+        in: path
+        name: parentId
+        required: true
+        type: integer
+      - description: 页码
+        in: formData
+        name: pageNum
+        required: true
+        type: integer
+      - description: 每页数量
+        in: formData
+        name: pageSize
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 分页查询后台菜单
+      tags:
+      - 后台菜单管理
+  /menu/treeList:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        树形结构返回所有菜单列表
+        树形结构返回所有菜单列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 树形结构返回所有菜单列表
+      tags:
+      - 后台菜单管理
+  /menu/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        修改后台菜单
+        修改后台菜单
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改后台菜单
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsMenuCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改后台菜单
+      tags:
+      - 后台菜单管理
+  /menu/updateHidden/{id}:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        修改菜单显示状态
+        修改菜单显示状态
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 是否隐藏
+        in: formData
+        name: hidden
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改菜单显示状态
+      tags:
+      - 后台菜单管理
 schemes:
 - http
 - https

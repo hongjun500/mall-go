@@ -266,6 +266,7 @@
                         "items": {
                             "type": "integer"
                         },
+                        "collectionFormat": "csv",
                         "description": "角色 ID",
                         "name": "roleIds",
                         "in": "formData",
@@ -481,6 +482,288 @@
                     }
                 }
             }
+        },
+        "/menu/create": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "添加后台菜单\n添加后台菜单",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台菜单管理"
+                ],
+                "summary": "添加后台菜单",
+                "parameters": [
+                    {
+                        "description": "添加后台菜单",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ums_admin.UmsMenuCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu/delete/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "删除后台菜单\n删除后台菜单",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台菜单管理"
+                ],
+                "summary": "删除后台菜单",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu/list/{parentId}": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "分页查询后台菜单",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台菜单管理"
+                ],
+                "summary": "分页查询后台菜单",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "父级菜单ID",
+                        "name": "parentId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "pageNum",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "pageSize",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu/treeList": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "树形结构返回所有菜单列表\n树形结构返回所有菜单列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台菜单管理"
+                ],
+                "summary": "树形结构返回所有菜单列表",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu/update/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "修改后台菜单\n修改后台菜单",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台菜单管理"
+                ],
+                "summary": "修改后台菜单",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改后台菜单",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ums_admin.UmsMenuCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu/updateHidden/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "修改菜单显示状态\n修改菜单显示状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台菜单管理"
+                ],
+                "summary": "修改菜单显示状态",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "是否隐藏",
+                        "name": "hidden",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "根据ID获取菜单详情\n根据ID获取菜单详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台菜单管理"
+                ],
+                "summary": "根据ID获取菜单详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -620,6 +903,42 @@
                 },
                 "username": {
                     "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "ums_admin.UmsMenuCreateDTO": {
+            "type": "object",
+            "properties": {
+                "hidden": {
+                    "description": "前端隐藏",
+                    "type": "integer"
+                },
+                "icon": {
+                    "description": "前端图标",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "level": {
+                    "description": "菜单级数",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "前端名称",
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "父级ID",
+                    "type": "integer"
+                },
+                "sort": {
+                    "description": "菜单排序",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "菜单名称",
                     "type": "string"
                 }
             }

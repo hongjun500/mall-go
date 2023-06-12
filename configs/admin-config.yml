@@ -25,9 +25,9 @@ database:
     ParseTime: true
 
     GormSlowThreshold: time.Duration
-    GormColorful: bool
-    GormIgnoreRecordNotFoundError: bool
-    GormParameterizedQueries: bool
+    GormColorful: true
+    GormIgnoreRecordNotFoundError: true
+    GormParameterizedQueries: true
     # Gorm 日志级别
     # 1 Silent，2 Error，3 Warn，4 Info
     GormLogLevel: 4

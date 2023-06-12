@@ -8,6 +8,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/services"
 )
 
@@ -19,13 +20,9 @@ func NewUmsMenuRouter(service services.UmsMenuService) *UmsMenuRouter {
 	return &UmsMenuRouter{UmsMenuService: service}
 }
 
-func (u UmsMenuRouter) InitCoreRouter(service *services.CoreService) {
-
-}
-
 // GroupUmsMenuRouter 后台菜单路由
 func (router *UmsMenuRouter) GroupUmsMenuRouter(routerEngine *gin.Engine) {
-	umsMenuGroup := routerEngine.Group("/menu")
+	umsMenuGroup := routerEngine.Group("/menu").Use(mid.GinJWTMiddleware())
 	{
 		// 新增菜单
 		umsMenuGroup.POST("/create", router.UmsMenuService.UmsMenuCreate)
@@ -33,11 +30,13 @@ func (router *UmsMenuRouter) GroupUmsMenuRouter(routerEngine *gin.Engine) {
 		umsMenuGroup.POST("/update/:id", router.UmsMenuService.UmsMenuUpdate)
 		// 删除菜单
 		umsMenuGroup.POST("/delete/:id", router.UmsMenuService.UmsMenuDelete)
-		// 获取菜单详情
+		// 根据ID获取菜单详情
 		umsMenuGroup.GET("/:id", router.UmsMenuService.UmsMenuItem)
 		// 分页获取菜单列表
-		umsMenuGroup.POST("/list/:parentId", router.UmsMenuService.UmsMenuListPage)
+		umsMenuGroup.GET("/list/:parentId", router.UmsMenuService.UmsMenuPageList)
 		// 修改菜单显示状态
 		umsMenuGroup.POST("/updateHidden/:id", router.UmsMenuService.UmsMenuUpdateHidden)
+		// 树形结构返回所有菜单列表
+		umsMenuGroup.GET("/treeList", router.UmsMenuService.UmsMenuTreeList)
 	}
 }
