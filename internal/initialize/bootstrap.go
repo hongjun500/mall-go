@@ -72,6 +72,9 @@ func initGroupRouter(coreRouter *routers.CoreRouter, ginEngine *gin.Engine) {
 	// 多个路由
 	coreRouter.GroupUmsAdminRouter(ginEngine)
 	coreRouter.GroupUmsMenuRouter(ginEngine)
+	coreRouter.GroupUmsResourceCategoryRouter(ginEngine)
+	coreRouter.GroupUmsResourceRouter(ginEngine)
+	coreRouter.GroupUmsRoleRouter(ginEngine)
 }
 
 // StartUpPortal portal 模块启动初始化

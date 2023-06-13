@@ -7,6 +7,9 @@ import (
 type CoreRouter struct {
 	*UmsAdminRouter
 	*UmsMenuRouter
+	*UmsResourceCategoryRouter
+	*UmsResourceRouter
+	*UmsRoleRouter
 }
 
 type CoreRouterInterface interface {
@@ -15,7 +18,10 @@ type CoreRouterInterface interface {
 
 func NewCoreRouter(service *services.CoreService) *CoreRouter {
 	return &CoreRouter{
-		UmsAdminRouter: NewUmsAdminRouter(service.UmsAdminService),
-		UmsMenuRouter:  NewUmsMenuRouter(service.UmsMenuService),
+		UmsAdminRouter:            NewUmsAdminRouter(service.UmsAdminService),
+		UmsMenuRouter:             NewUmsMenuRouter(service.UmsMenuService),
+		UmsResourceCategoryRouter: NewUmsResourceCategoryRouter(service.UmsResourceCategoryService),
+		UmsResourceRouter:         NewUmsResourceRouter(service.UmsResourceService),
+		UmsRoleRouter:             NewUmsRoleRouter(service.UmsRoleService),
 	}
 }

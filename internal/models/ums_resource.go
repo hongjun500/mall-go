@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/hongjun500/mall-go/internal/gorm_common"
 	"gorm.io/gorm"
 )
 
@@ -20,6 +21,14 @@ func (*UmsResource) TableName() string {
 	return "ums_resource"
 }
 
+func (usmResource *UmsResource) SelectUmsResourceById(db *gorm.DB, id int64) (*UmsResource, error) {
+	tx := db.First(&usmResource, id)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return usmResource, nil
+}
+
 func (usmResource *UmsResource) SelectAll(db *gorm.DB) ([]*UmsResource, error) {
 	var umsResources []*UmsResource
 	tx := db.Find(&umsResources)
@@ -29,23 +38,26 @@ func (usmResource *UmsResource) SelectAll(db *gorm.DB) ([]*UmsResource, error) {
 	return umsResources, nil
 }
 
-func (usmResource *UmsResource) SelectPage(db *gorm.DB, categoryId int64, NameKeyword string, UrlKeyword string, pageNum, pageSize int) ([]*UmsResource, error) {
+func (usmResource *UmsResource) SelectPage(db *gorm.DB, categoryId int64, NameKeyword string, UrlKeyword string, pageNum, pageSize int) (gorm_common.CommonPage, error) {
 	var umsResources []*UmsResource
-	dbQuery := db.Offset(pageNum).Limit(pageSize)
-	if categoryId != 0 {
-		dbQuery = dbQuery.Where("category_id = ?", categoryId)
+	page := gorm_common.NewPage(pageNum, pageSize)
+
+	err := gorm_common.ExecutePagedQuery(db, page, &umsResources, func(dbQuery *gorm.DB) *gorm.DB {
+		if categoryId != 0 {
+			dbQuery = dbQuery.Where("category_id = ?", categoryId)
+		}
+		if NameKeyword != "" {
+			dbQuery = dbQuery.Where("name like ?", "%"+NameKeyword+"%")
+		}
+		if UrlKeyword != "" {
+			dbQuery = dbQuery.Where("url like ?", "%"+UrlKeyword+"%")
+		}
+		return dbQuery
+	})
+	if err != nil {
+		return nil, err
 	}
-	if NameKeyword != "" {
-		dbQuery = dbQuery.Where("name like ?", "%"+NameKeyword+"%")
-	}
-	if UrlKeyword != "" {
-		dbQuery = dbQuery.Where("url like ?", "%"+UrlKeyword+"%")
-	}
-	tx := dbQuery.Find(&umsResources)
-	if tx.Error != nil {
-		return nil, tx.Error
-	}
-	return umsResources, nil
+	return page, nil
 }
 
 func (usmResource *UmsResource) Insert(db *gorm.DB) (int64, error) {
@@ -64,15 +76,6 @@ func (usmResource *UmsResource) Update(db *gorm.DB, id int64) (int64, error) {
 		return 0, tx.Error
 	}
 	return tx.RowsAffected, nil
-}
-
-func (usmResource *UmsResource) GetUmsResourceById(db *gorm.DB, id int64) (*UmsResource, error) {
-	var umsResourceModel UmsResource
-	tx := db.First(&umsResourceModel, id)
-	if tx.Error != nil {
-		return nil, tx.Error
-	}
-	return &umsResourceModel, nil
 }
 
 func (usmResource *UmsResource) Delete(db *gorm.DB, id int64) (int64, error) {

@@ -57,3 +57,15 @@ func GinJWTMiddleware() gin.HandlerFunc {
 		// 暂无
 	}
 }
+
+// GinJWTGetCurrentUsername 通过 gin 的上下文来获取当前登录用户的用户名
+func GinJWTGetCurrentUsername(context *gin.Context) string {
+	username, _ := context.Get("username")
+	return username.(string)
+}
+
+// GinJWTGetCurrentUserId 通过 gin 的上下文来获取当前登录用户的用户ID
+func GinJWTGetCurrentUserId(context *gin.Context) int64 {
+	userId, _ := context.Get("user_id")
+	return userId.(int64)
+}

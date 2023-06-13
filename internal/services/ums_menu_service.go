@@ -39,7 +39,7 @@ func (s UmsMenuService) UmsMenuCreate(context *gin.Context) {
 	var umsMenuCreateDTO ums_admin.UmsMenuCreateDTO
 	err := context.ShouldBind(&umsMenuCreateDTO)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
 		return
 	}
 	umsMenu := new(models.UmsMenu)
@@ -93,7 +93,7 @@ func (s UmsMenuService) UmsMenuUpdate(context *gin.Context) {
 	var umsMenuCreateDTO ums_admin.UmsMenuCreateDTO
 	err := context.ShouldBind(&umsMenuCreateDTO)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
 		return
 	}
 	umsMenu := new(models.UmsMenu)
@@ -132,7 +132,7 @@ func (s UmsMenuService) UmsMenuDelete(context *gin.Context) {
 	var dto ums_admin.UmsMenuCreateDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
 		return
 	}
 	umsMenu := new(models.UmsMenu)
@@ -160,7 +160,7 @@ func (s UmsMenuService) UmsMenuItem(context *gin.Context) {
 	var dto ums_admin.UmsMenuCreateDTO
 	err := context.ShouldBindUri(&dto)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
 		return
 	}
 	umsMenu := new(models.UmsMenu)
@@ -179,8 +179,8 @@ func (s UmsMenuService) UmsMenuItem(context *gin.Context) {
 // @Accept  multipart/form-data
 // @Produce  json
 // @Param   parentId path int64 true "父级菜单ID"
-// @Param   pageNum formData int64 true "页码"
-// @Param   pageSize formData int64 true "每页数量"
+// @Param   pageNum query int64 true "页码"
+// @Param   pageSize query int64 true "每页数量"
 // @Security GinJWTMiddleware
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /menu/list/{parentId} [get]
@@ -195,7 +195,7 @@ func (s UmsMenuService) UmsMenuPageList(context *gin.Context) {
 	err = context.ShouldBindUri(&parentIdDTO)
 	// parentId, _ := strconv.ParseInt(context.Param("parentId"), 10, 64)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
 		return
 	}
 	umsMenu := new(models.UmsMenu)
@@ -225,7 +225,7 @@ func (s UmsMenuService) UmsMenuUpdateHidden(context *gin.Context) {
 	var dto ums_admin.UmsMenuHiddenDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(gin_common.ParameterValidationError, context)
 		return
 	}
 	umsMenu := new(models.UmsMenu)

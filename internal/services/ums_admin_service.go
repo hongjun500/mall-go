@@ -6,6 +6,7 @@ import (
 	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/gin_common"
+	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/models"
 	"github.com/hongjun500/mall-go/internal/request_dto/base"
 	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
@@ -181,7 +182,7 @@ func (s UmsAdminService) UmsAdminAuthTest(context *gin.Context) {
 		},
 		"hongjun500": map[string]any{
 			"username": "hongjun500",
-			"token":    "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJob25nanVuNTAwIiwidXNlcl9pZCI6MTEsImNyZWF0ZWQiOiIyMDIzLTA2LTEwVDE0OjQzOjEzLjkxNzYwNzgrMDg6MDAiLCJleHAiOjE2ODY5ODQxOTN9.rdIYbb_MkkuudnFHl-1HAR-W0x671FHHy4QUjvtV1Y3kMvHnNwkO-_MxUt6ypkvcqYHLt1MGHYtTIPScUwYWig",
+			"token":    "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJob25nanVuNTAwIiwidXNlcklkIjoxMSwiY3JlYXRlZCI6IjIwMjMtMDYtMTNUMTQ6NTg6MzQuNzMxNDA2NyswODowMCIsImV4cCI6MTY4NzI0NDMxNH0.Noxh09smVa6Y81wKdWPZ_II_6uf-mapYgBcie-ZVkM_23VoAoRBvP701Q7XEONDfp-J2HFOoCBbw3JeUuPr5Rw",
 		},
 	}
 	gin_common.CreateSuccess(m, context)
@@ -225,20 +226,14 @@ func (s UmsAdminService) UmsRoleList(adminId int64) []*models.UmsRole {
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/info [get]
 func (s UmsAdminService) UmsAdminInfo(context *gin.Context) {
-	var userDTO base.UserDTO
-	err := context.ShouldBindUri(&userDTO)
-	// 占位符
-	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
-		return
-	}
+	userId := mid.GinJWTGetCurrentUserId(context)
 	resultMap := make(map[string]interface{})
 	resultMap["username"] = ""
 	resultMap["menus"] = nil
 	resultMap["icon"] = ""
 	resultMap["roles"] = nil
 	var umsAdmin models.UmsAdmin
-	result, err := umsAdmin.SelectUmsAdminByUserId(s.DbFactory.GormMySQL, userDTO.UserId)
+	result, err := umsAdmin.SelectUmsAdminByUserId(s.DbFactory.GormMySQL, userId)
 	if err != nil {
 		gin_common.CreateSuccess(resultMap, context)
 		return
@@ -249,7 +244,7 @@ func (s UmsAdminService) UmsAdminInfo(context *gin.Context) {
 	}
 
 	var umsRole models.UmsRole
-	umsMenus, err := umsRole.SelectMenu(s.DbFactory.GormMySQL, userDTO.UserId)
+	umsMenus, err := umsRole.SelectMenu(s.DbFactory.GormMySQL, userId)
 	if err != nil {
 		gin_common.CreateSuccess(resultMap, context)
 		return
@@ -257,7 +252,7 @@ func (s UmsAdminService) UmsAdminInfo(context *gin.Context) {
 	resultMap["menus"] = umsMenus
 	resultMap["username"] = result.Username
 	resultMap["icon"] = result.Icon
-	roles := s.UmsRoleList(userDTO.UserId)
+	roles := s.UmsRoleList(userId)
 	var roleNames []string
 	for _, role := range roles {
 		roleNames = append(roleNames, role.Name)
@@ -499,7 +494,7 @@ func (s UmsAdminService) UmsAdminRoleUpdate(context *gin.Context) {
 	}
 	// 先删除原有的绑定关系
 	var umsAdminRoleRelation models.UmsAdminRoleRelation
-	umsAdminRoleRelation.DelByAdminId(s.DbFactory.GormMySQL, int64(adminId))
+	umsAdminRoleRelation.DelByAdminId(s.DbFactory.GormMySQL, adminId)
 	// 建立新的绑定关系
 	if count > 0 {
 		var umsAdminRoleRelations []*models.UmsAdminRoleRelation

@@ -20,5 +20,5 @@ func TestResourceListPage(t *testing.T) {
 	if err != nil {
 		return
 	}
-	t.Log("list page success, len = ", len(page))
+	t.Log("list page success, len = ", page.GetTotal())
 }

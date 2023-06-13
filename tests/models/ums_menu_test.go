@@ -56,11 +56,11 @@ func TestDeleteMenu(t *testing.T) {
 
 func TestListPageMenu(t *testing.T) {
 	var menu models.UmsMenu
-	menus, err := menu.SelectPage(TestModelGormMySQL, 1, 10)
+	page, err := menu.SelectPage(TestModelGormMySQL, 1, 10, 1)
 	if err != nil {
 		return
 	}
-	t.Log("list all success, len = ", len(menus))
+	t.Log("list all success, len = ", page.GetTotal())
 }
 
 func TestUpdateHidden(t *testing.T) {

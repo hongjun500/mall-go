@@ -68,7 +68,7 @@ func (s UmsAdminService) DelResourceListByRoleIds(roleIds []int64) {
 }
 
 // DelResourceListByResource 当资源信息改变时，删除资源项目后台用户缓存
-func (s UmsAdminService) DelResourceListByResource(resourceId int64) {
+func (s UmsResourceService) DelResourceListByResource(resourceId int64) {
 	rr := new(models.UmsRoleResourceRelation)
 	roleResourceRelations, err := rr.SelectAdminIdsByResourceId(s.DbFactory.GormMySQL, resourceId)
 	if err != nil {

@@ -38,7 +38,9 @@ func TestUpdate(t *testing.T) {
 func TestDelete(t *testing.T) {
 	t.Log("tests delete")
 	var umsRole models.UmsRole
-	i, err := umsRole.Delete(TestModelGormMySQL, 8)
+	var ids []int64
+	ids = append(ids, 7)
+	i, err := umsRole.Delete(TestModelGormMySQL, ids)
 	if err != nil {
 		return // 测试失败
 	}

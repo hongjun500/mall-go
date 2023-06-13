@@ -61,3 +61,13 @@ func (umsResourceCategory *UmsResourceCategory) SelectPage(db *gorm.DB, pageNum,
 	}
 	return umsResourceCategoryList, nil
 }
+
+func (umsResourceCategory *UmsResourceCategory) SelectAll(db *gorm.DB) ([]*UmsResourceCategory, error) {
+	var err error
+	var umsResourceCategoryList []*UmsResourceCategory
+	err = db.Order("sort desc").Find(&umsResourceCategoryList).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	return umsResourceCategoryList, nil
+}

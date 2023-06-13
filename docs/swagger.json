@@ -589,14 +589,14 @@
                         "type": "integer",
                         "description": "页码",
                         "name": "pageNum",
-                        "in": "formData",
+                        "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
                         "description": "每页数量",
                         "name": "pageSize",
-                        "in": "formData",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -752,6 +752,823 @@
                         "description": "菜单ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/resource/create": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "添加后台资源",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台资源管理"
+                ],
+                "summary": "添加后台资源",
+                "parameters": [
+                    {
+                        "description": "添加后台资源",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ums_admin.UmsResourceCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/resource/delete/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "根据ID删除后台资源",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台资源管理"
+                ],
+                "summary": "根据ID删除后台资源",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "资源id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/resource/list/resource": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "分页模糊查询后台资源",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台资源管理"
+                ],
+                "summary": "分页模糊查询后台资源",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "资源分类ID",
+                        "name": "categoryId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "资源名称",
+                        "name": "nameKeyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "资源URL",
+                        "name": "urlKeyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "pageNum",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/resource/listAll": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "查询所有后台资源",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台资源管理"
+                ],
+                "summary": "查询所有后台资源",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/resource/update/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "修改后台资源",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台资源管理"
+                ],
+                "summary": "修改后台资源",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "资源id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改后台资源",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ums_admin.UmsResourceCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/resource/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "根据ID获取资源详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台资源管理"
+                ],
+                "summary": "根据ID获取资源详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "资源id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/resourceCategory/create": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "添加后台资源分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台资源分类管理"
+                ],
+                "summary": "添加后台资源分类",
+                "parameters": [
+                    {
+                        "description": "添加后台资源分类",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ums_admin.UmsResourceCategoryCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/resourceCategory/delete/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "删除后台资源分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台资源分类管理"
+                ],
+                "summary": "删除后台资源分类",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/resourceCategory/listAll": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "查询所有后台资源分类",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台资源分类管理"
+                ],
+                "summary": "查询所有后台资源分类",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/resourceCategory/update/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "修改后台资源分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台资源分类管理"
+                ],
+                "summary": "修改后台资源分类",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改后台资源分类",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ums_admin.UmsResourceCategoryCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/allocMenu/{roleId}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "修改角色菜单",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台角色管理"
+                ],
+                "summary": "修改角色菜单",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "roleId",
+                        "name": "roleId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "menuIds",
+                        "name": "menuIds",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/allocResource/{roleId}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "给角色分配资源",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台角色管理"
+                ],
+                "summary": "给角色分配资源",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "roleId",
+                        "name": "roleId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "resourceIds",
+                        "name": "resourceIds",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/create": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "添加角色",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台角色管理"
+                ],
+                "summary": "添加角色",
+                "parameters": [
+                    {
+                        "description": "添加角色",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ums_admin.UmsRoleCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/delete": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "批量删除角色",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台角色管理"
+                ],
+                "summary": "批量删除角色",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "ids",
+                        "name": "ids",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/list": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "根据角色名称分页获取角色列表",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台角色管理"
+                ],
+                "summary": "根据角色名称分页获取角色列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "keyword",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageNum",
+                        "name": "pageNum",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/listAll": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "获取所有角色",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台角色管理"
+                ],
+                "summary": "获取所有角色",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/listMenu/{roleId}": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "获取角色相关菜单",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台角色管理"
+                ],
+                "summary": "获取角色相关菜单",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "roleId",
+                        "name": "roleId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/listResource/{roleId}": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "获取角色相关资源",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台角色管理"
+                ],
+                "summary": "获取角色相关资源",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "roleId",
+                        "name": "roleId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/update/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "修改角色",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台角色管理"
+                ],
+                "summary": "修改角色",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改角色",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ums_admin.UmsRoleCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/updateStatus/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "修改角色状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台角色管理"
+                ],
+                "summary": "修改角色状态",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "status",
+                        "name": "status",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -940,6 +1757,68 @@
                 "title": {
                     "description": "菜单名称",
                     "type": "string"
+                }
+            }
+        },
+        "ums_admin.UmsResourceCategoryCreateDTO": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "资源分类名称",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "ums_admin.UmsResourceCreateDTO": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "description": "资源分类ID",
+                    "type": "integer"
+                },
+                "description": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "资源名称",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "资源URL",
+                    "type": "string"
+                }
+            }
+        },
+        "ums_admin.UmsRoleCreateDTO": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "adminCount": {
+                    "description": "后台用户数量",
+                    "type": "integer"
+                },
+                "description": {
+                    "description": "角色描述",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "角色名称",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "启用状态：0-\u003e禁用；1-\u003e启用",
+                    "type": "integer"
                 }
             }
         }

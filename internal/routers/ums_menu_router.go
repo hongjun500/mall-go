@@ -2,7 +2,7 @@
 // @date 2023/6/11
 // @tool ThinkPadX1隐士
 // Created with GoLand 2022.2
-// Description: 后台菜单路由
+// Description: 后台菜单管理路由
 
 package routers
 

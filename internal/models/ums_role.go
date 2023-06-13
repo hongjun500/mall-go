@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/hongjun500/mall-go/internal/gorm_common"
 	"gorm.io/gorm"
 )
 
@@ -43,6 +44,14 @@ func (role *UmsRole) Update(db *gorm.DB, id int64) (int64, error) {
 	return tx.RowsAffected, nil
 }
 
+func (role *UmsRole) UpdateStatus(db *gorm.DB, id int64, status int) (int64, error) {
+	tx := db.Model(role).Where("id = ?", id).Update("status", status)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return tx.RowsAffected, nil
+}
+
 func (role *UmsRole) SelectUmsRoleById(db *gorm.DB, id int64) (*UmsRole, error) {
 	var umsRole UmsRole
 	tx := db.First(&umsRole, id)
@@ -52,8 +61,15 @@ func (role *UmsRole) SelectUmsRoleById(db *gorm.DB, id int64) (*UmsRole, error) 
 	return &umsRole, nil
 }
 
-func (role *UmsRole) Delete(db *gorm.DB, id int64) (int64, error) {
-	tx := db.Delete(role, id)
+func (role *UmsRole) Delete(db *gorm.DB, ids []int64) (int64, error) {
+	var umsRoles []*UmsRole
+
+	for _, id := range ids {
+		umsRoles = append(umsRoles, &UmsRole{
+			Model: &Model{Id: id},
+		})
+	}
+	tx := db.Delete(role, umsRoles)
 	if tx.Error != nil {
 		return 0, tx.Error
 	}
@@ -71,17 +87,19 @@ func (role *UmsRole) SelectAll(db *gorm.DB) ([]*UmsRole, error) {
 }
 
 // SelectPage 根据 name 的关键字分页获取角色信息
-func (role *UmsRole) SelectPage(db *gorm.DB, keyword string, pageNum int, pageSize int) ([]*UmsRole, error) {
+func (role *UmsRole) SelectPage(db *gorm.DB, keyword string, pageNum, pageSize int) (gorm_common.CommonPage, error) {
 	var roles []*UmsRole
-	dbQuery := db.Offset((pageNum - 1) * pageSize).Limit(pageSize)
-	if keyword != "" {
-		dbQuery = dbQuery.Where("name like ?", "%"+keyword+"%")
+	page := gorm_common.NewPage(pageNum, pageSize)
+	err := gorm_common.ExecutePagedQuery(db, page, &roles, func(dbQuery *gorm.DB) *gorm.DB {
+		if keyword != "" {
+			dbQuery = dbQuery.Where("name like ?", "%"+keyword+"%")
+		}
+		return dbQuery
+	})
+	if err != nil {
+		return nil, err
 	}
-	tx := dbQuery.Find(&roles)
-	if tx.Error != nil {
-		return nil, tx.Error
-	}
-	return roles, nil
+	return page, nil
 }
 
 // SelectMenu 根据管理员 ID 获取角色的菜单
@@ -117,8 +135,8 @@ func (role *UmsRole) SelectResourceByRoleId(db *gorm.DB, roleId int64) ([]*UmsRe
 	return resources, nil
 }
 
-// AllocMenu 给角色分配菜单
-func (role *UmsRole) AllocMenu(db *gorm.DB, roleId int64, menuIdList []int64) (int64, error) {
+// UpdateRoleFromAllocMenu 给角色分配菜单
+func (role *UmsRole) UpdateRoleFromAllocMenu(db *gorm.DB, roleId int64, menuIdList []int64) (int64, error) {
 	// 先删除原有的关系
 	tx := db.Delete(&UmsRoleMenuRelation{}, "role_id = ?", roleId)
 	if tx.Error != nil {
@@ -140,8 +158,8 @@ func (role *UmsRole) AllocMenu(db *gorm.DB, roleId int64, menuIdList []int64) (i
 	return tx.RowsAffected, nil
 }
 
-// AllocResource 给角色分配资源
-func (role *UmsRole) AllocResource(db *gorm.DB, roleId int64, resourceIdList []int64) (int64, error) {
+// UpdateRoleFromAllocResource 给角色分配资源
+func (role *UmsRole) UpdateRoleFromAllocResource(db *gorm.DB, roleId int64, resourceIdList []int64) (int64, error) {
 	// 先删除原有的关系
 	tx := db.Delete(&UmsRoleResourceRelation{}, "role_id = ?", roleId)
 	if tx.Error != nil {
