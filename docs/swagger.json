@@ -483,6 +483,42 @@
                 }
             }
         },
+        "/memberLevel/list": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "查看所有会员等级",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "会员等级管理"
+                ],
+                "summary": "查看所有会员等级",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "是否为默认等级：0-\u003e不是；1-\u003e是",
+                        "name": "defaultStatus",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/menu/create": {
             "post": {
                 "security": [

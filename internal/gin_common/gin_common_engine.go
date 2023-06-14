@@ -41,6 +41,8 @@ const (
 
 	ParameterValidationError = 200000
 
+	DatabaseError = 200001
+
 	UsernameAlreadyExists   = 300000
 	UsernameOrPasswordError = 300001
 	AccountLocked           = 300402
@@ -56,6 +58,7 @@ var CommonErrorConst = map[int]string{
 	CustomError:  "自定义错误",
 
 	ParameterValidationError: "参数不合法",
+	DatabaseError:            "数据库操作错误",
 
 	UsernameAlreadyExists:   "用户名已存在",
 	UsernameOrPasswordError: "用户名或密码错误",

@@ -10,6 +10,7 @@ type CoreRouter struct {
 	*UmsResourceCategoryRouter
 	*UmsResourceRouter
 	*UmsRoleRouter
+	*UmsMemberLevelRouter
 }
 
 type CoreRouterInterface interface {
@@ -23,5 +24,6 @@ func NewCoreRouter(service *services.CoreService) *CoreRouter {
 		UmsResourceCategoryRouter: NewUmsResourceCategoryRouter(service.UmsResourceCategoryService),
 		UmsResourceRouter:         NewUmsResourceRouter(service.UmsResourceService),
 		UmsRoleRouter:             NewUmsRoleRouter(service.UmsRoleService),
+		UmsMemberLevelRouter:      NewUmsMemberLevelRouter(service.UmsMemberLevelService),
 	}
 }

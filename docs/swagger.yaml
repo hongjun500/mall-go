@@ -474,6 +474,28 @@ paths:
       summary: 修改指定用户状态
       tags:
       - 后台用户管理
+  /memberLevel/list:
+    get:
+      consumes:
+      - multipart/form-data
+      description: 查看所有会员等级
+      parameters:
+      - description: 是否为默认等级：0->不是；1->是
+        in: query
+        name: defaultStatus
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 查看所有会员等级
+      tags:
+      - 会员等级管理
   /menu/{id}:
     get:
       consumes:

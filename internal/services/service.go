@@ -8,6 +8,7 @@ type CoreService struct {
 	UmsResourceCategoryService
 	UmsResourceService
 	UmsRoleService
+	UmsMemberLevelService
 }
 
 func NewCoreService(dbFactory *database.DbFactory) *CoreService {
@@ -17,5 +18,6 @@ func NewCoreService(dbFactory *database.DbFactory) *CoreService {
 		UmsResourceCategoryService: NewUmsResourceCategoryService(dbFactory),
 		UmsResourceService:         NewUmsResourceService(dbFactory),
 		UmsRoleService:             NewUmsRoleService(dbFactory),
+		UmsMemberLevelService:      NewUmsMemberLevelService(dbFactory),
 	}
 }

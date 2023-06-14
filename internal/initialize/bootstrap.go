@@ -69,12 +69,13 @@ func initGroupRouter(coreRouter *routers.CoreRouter, ginEngine *gin.Engine) {
 	// 设置 Swagger 路由
 	ginEngine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// 多个路由
+	// 注册多个路由
 	coreRouter.GroupUmsAdminRouter(ginEngine)
 	coreRouter.GroupUmsMenuRouter(ginEngine)
 	coreRouter.GroupUmsResourceCategoryRouter(ginEngine)
 	coreRouter.GroupUmsResourceRouter(ginEngine)
 	coreRouter.GroupUmsRoleRouter(ginEngine)
+	coreRouter.GroupUmsMemberLevelRouter(ginEngine)
 }
 
 // StartUpPortal portal 模块启动初始化
