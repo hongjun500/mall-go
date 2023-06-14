@@ -1,6 +1,7 @@
 package initialize
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/hongjun500/mall-go/docs"
 	"github.com/hongjun500/mall-go/internal/conf"
@@ -50,7 +51,9 @@ func NewGinEngine() *gin_common.GinEngine {
 	/*routers.go.Use(limits.RequestSizeLimiter(10))
 	routers.go.Use(cors.Default())*/
 	// r.Use(gin.Recovery())
-	// gin.SetMode(gin)
+
+	// 跨域中间件
+	r.Use(cors.Default())
 	return engine
 }
 
