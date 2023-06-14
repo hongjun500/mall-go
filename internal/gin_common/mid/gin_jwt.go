@@ -61,11 +61,31 @@ func GinJWTMiddleware() gin.HandlerFunc {
 // GinJWTGetCurrentUsername 通过 gin 的上下文来获取当前登录用户的用户名
 func GinJWTGetCurrentUsername(context *gin.Context) string {
 	username, _ := context.Get("username")
+	if username == nil {
+		// 尝试解析 请求头中的 Authorization 信息
+		header := context.GetHeader(conf.GlobalJwtConfigProperties.TokenHeader)
+		authToken := header[len(conf.GlobalJwtConfigProperties.TokenHead):]
+		username, _, err := jwt.GetUsernameAndUserIdFromToken(authToken)
+		if err != nil {
+			return ""
+		}
+		return username
+	}
 	return username.(string)
 }
 
 // GinJWTGetCurrentUserId 通过 gin 的上下文来获取当前登录用户的用户ID
 func GinJWTGetCurrentUserId(context *gin.Context) int64 {
 	userId, _ := context.Get("user_id")
+	if userId == nil {
+		// 尝试解析 请求头中的 Authorization 信息
+		header := context.GetHeader(conf.GlobalJwtConfigProperties.TokenHeader)
+		authToken := header[len(conf.GlobalJwtConfigProperties.TokenHead):]
+		_, userId, err := jwt.GetUsernameAndUserIdFromToken(authToken)
+		if err != nil {
+			return 0
+		}
+		return userId
+	}
 	return userId.(int64)
 }

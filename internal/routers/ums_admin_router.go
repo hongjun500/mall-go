@@ -30,6 +30,7 @@ func (router *UmsAdminRouter) GroupUmsAdminRouter(routerEngine *gin.Engine) {
 
 		// 用户登录
 		umsAdminGroup.POST("/login", router.UmsAdminService.UmsAdminLogin)
+
 		// 用户登出
 		umsAdminGroup.POST("/logout", router.UmsAdminService.UmsAdminLogout)
 		umsAdminGroup.GET("/authTest", router.UmsAdminService.UmsAdminAuthTest)
@@ -40,10 +41,10 @@ func (router *UmsAdminRouter) GroupUmsAdminRouter(routerEngine *gin.Engine) {
 		// 刷新 token
 		authGroup.POST("/refreshToken", router.UmsAdminService.UmsAdminRefreshToken)
 		// 根据用户 ID 获取用户信息
-		authGroup.GET("/info", router.UmsAdminService.UmsAdminInfo)
+		umsAdminGroup.GET("/info", router.UmsAdminService.UmsAdminInfo)
 		// authGroup.GET("/info/:user_id", router.UmsAdminService.UmsAdminInfo)
 		// 用户列表分页
-		authGroup.POST("/list", router.UmsAdminService.UmsAdminListPage)
+		authGroup.GET("/list", router.UmsAdminService.UmsAdminListPage)
 		// 获取指定用户信息
 		authGroup.GET("/:id", router.UmsAdminService.UmsAdminItem)
 		// 修改指定用户信息

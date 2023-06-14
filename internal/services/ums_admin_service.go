@@ -253,7 +253,7 @@ func (s UmsAdminService) UmsAdminInfo(context *gin.Context) {
 	resultMap["username"] = result.Username
 	resultMap["icon"] = result.Icon
 	roles := s.UmsRoleList(userId)
-	var roleNames []string
+	roleNames := make([]string, 0)
 	for _, role := range roles {
 		roleNames = append(roleNames, role.Name)
 	}
@@ -267,10 +267,12 @@ func (s UmsAdminService) UmsAdminInfo(context *gin.Context) {
 // @Tags 后台用户管理
 // @Accept  json
 // @Produce  json
-// @Param request body ums_admin.UmsAdminPageDTO true "分页查询用户"
+// @Param keyword query string false "keyword"
+// @Param pageSize query int true "pageSize"
+// @Param pageNum query int true "pageNum"
 // @Security GinJWTMiddleware
 // @Success 200 {object}  gin_common.GinCommonResponse
-// @Router /admin/list [post]
+// @Router /admin/list [get]
 func (s UmsAdminService) UmsAdminListPage(context *gin.Context) {
 	var request ums_admin.UmsAdminPageDTO
 	err := context.ShouldBind(&request)
@@ -397,22 +399,22 @@ func (s UmsAdminService) UmsAdminDelete(context *gin.Context) {
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/updateStatus/{user_id} [post]
 func (s UmsAdminService) UmsAdminUpdateStatus(context *gin.Context) {
-	var userDTO base.UserDTO
-	err := context.ShouldBindUri(&userDTO)
+	var pathVariableDTO base.PathVariableDTO
+	err := context.ShouldBindUri(&pathVariableDTO)
 	if err != nil {
 		gin_common.CreateFail(gin_common.ParameterValidationError, context)
 		return
 	}
 	umsAdmin := new(models.UmsAdmin)
-	status, _ := strconv.Atoi(context.PostForm("status"))
+	status, _ := strconv.Atoi(context.Query("status"))
 	umsAdmin.Status = int64(status)
-	umsAdmin.Id = userDTO.UserId
+	umsAdmin.Id = pathVariableDTO.Id
 	id, err := umsAdmin.UpdateUmsAdminStatusByUserId(s.DbFactory.GormMySQL)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(gin_common.DatabaseError, context)
 		return
 	}
-	s.DelAdmin(userDTO.UserId)
+	s.DelAdmin(pathVariableDTO.Id)
 	gin_common.CreateSuccess(id, context)
 }
 

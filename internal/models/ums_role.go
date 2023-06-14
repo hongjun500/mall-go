@@ -104,7 +104,8 @@ func (role *UmsRole) SelectPage(db *gorm.DB, keyword string, pageNum, pageSize i
 
 // SelectMenu 根据管理员 ID 获取角色的菜单
 func (role *UmsRole) SelectMenu(db *gorm.DB, adminId int64) ([]*UmsMenu, error) {
-	var menus []*UmsMenu
+	// var menus []*UmsMenu
+	menus := make([]*UmsMenu, 0)
 	sql := "SELECT m.id id, m.parent_id parentId, m.create_time createTime, m.title title, m.level level, m.sort sort, m.name name, m.icon icon, m.hidden hidden FROM ums_admin_role_relation arr LEFT JOIN ums_role r ON arr.role_id = r.id LEFT JOIN ums_role_menu_relation rmr ON r.id = rmr.role_id LEFT JOIN ums_menu m ON rmr.menu_id = m.id WHERE arr.admin_id = ? AND m.id IS NOT NULL GROUP BY m.id"
 	tx := db.Raw(sql, adminId).Scan(&menus)
 	if tx.Error != nil {

@@ -1,12 +1,12 @@
 package initialize
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/hongjun500/mall-go/docs"
 	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/gin_common"
+	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/routers"
 	"github.com/hongjun500/mall-go/internal/services"
 	swaggerFiles "github.com/swaggo/files"
@@ -53,7 +53,7 @@ func NewGinEngine() *gin_common.GinEngine {
 	// r.Use(gin.Recovery())
 
 	// 跨域中间件
-	r.Use(cors.Default())
+	r.Use(mid.GinCORSMiddleware())
 	return engine
 }
 

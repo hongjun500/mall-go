@@ -40,7 +40,7 @@ type UmsAdminLoginDTO struct {
 type UmsAdminPageDTO struct {
 	base.PageDTO
 	// 用户名
-	Username string `json:"username" form:"username"`
+	Username string `json:"username" form:"keyword"`
 }
 
 // UmsAdminUpdateDTO 用户更新请求参数
