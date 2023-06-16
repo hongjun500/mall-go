@@ -5,8 +5,9 @@
 package gin_common
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type GinEngine struct {
@@ -105,6 +106,22 @@ func Create(context *gin.Context) {
 	CreateSuccess(nil, context)
 }
 
+// CreateFiledParam 创建一个失败的返回信息,接收 http 状态码，并且将具体的错误信息封装到 Data 中
+func CreateFiledParam(context *gin.Context, errs ...any) {
+	errorCode := errs[0].(*ResultCode)
+	message := errs[1].(string)
+	customError := errs[2].(GinCommonError)
+	if errorCode != nil && message == "" {
+		CreateAny(customError, errorCode.GetCode(), errorCode.GetMessage(), "fail", context)
+	} else if message != "" && errorCode == nil {
+		CreateAny(customError, FAILED, message, "fail", context)
+	} else if errorCode == nil && message == "" {
+		CreateAny(customError, FAILED, IErrorCodeConst[FAILED].GetMessage(), "fail", context)
+	} else {
+		CreateAny(customError, errorCode.GetCode(), message, "fail", context)
+	}
+}
+
 // CreateFail 创建一个失败的返回信息,并且将具体的错误信息封装到 Data 中
 func CreateFail(result any, context *gin.Context) {
 	switch errCodeMsg := result.(type) {
@@ -125,33 +142,17 @@ func CreateFailed(context *gin.Context) {
 	CreateFiledParam(context, IErrorCodeConst[FAILED], IErrorCodeConst[FAILED].GetMessage())
 }
 
-// CreateFiledParam 创建一个失败的返回信息,接收 http 状态码，并且将具体的错误信息封装到 Data 中
-func CreateFiledParam(context *gin.Context, errs ...any) {
-	errorCode := errs[0].(IErrorCode)
-	message := errs[1].(string)
-	customError := errs[2].(GinCommonError)
-	if errorCode != nil && message == "" {
-		CreateAny(customError, errorCode.GetCode(), errorCode.GetMessage(), "fail", context)
-	} else if message != "" && errorCode == nil {
-		CreateAny(customError, FAILED, message, "fail", context)
-	} else if errorCode == nil && message == "" {
-		CreateAny(customError, FAILED, IErrorCodeConst[FAILED].GetMessage(), "fail", context)
-	} else {
-		CreateAny(customError, errorCode.GetCode(), message, "fail", context)
-	}
-}
-
 // CreateValidateFailed 创建一个参数验证失败的返回信息
 func CreateValidateFailed(context *gin.Context, message string) {
-	CreateFiledParam(context, VALIDATE_FAILED, message, GinCommonError{ErrCode: ParameterValidationError, ErrMsg: CommonErrorConst[ParameterValidationError]})
+	CreateFiledParam(context, IErrorCodeConst[VALIDATE_FAILED], message, GinCommonError{ErrCode: ParameterValidationError, ErrMsg: CommonErrorConst[ParameterValidationError]})
 }
 
 // CreateUnauthorized 创建一个未授权的返回信息
 func CreateUnauthorized(context *gin.Context) {
-	CreateFiledParam(context, UNAUTHORIZED, IErrorCodeConst[UNAUTHORIZED].GetMessage(), GinCommonError{ErrCode: Unauthorized, ErrMsg: CommonErrorConst[Unauthorized]})
+	CreateFiledParam(context, IErrorCodeConst[UNAUTHORIZED], IErrorCodeConst[UNAUTHORIZED].GetMessage(), GinCommonError{ErrCode: Unauthorized, ErrMsg: CommonErrorConst[Unauthorized]})
 }
 
 // CreateForbidden 创建一个禁止访问的返回信息
 func CreateForbidden(context *gin.Context) {
-	CreateFiledParam(context, FORBIDDEN, IErrorCodeConst[FORBIDDEN].GetMessage(), GinCommonError{ErrCode: AccountForbidden, ErrMsg: CommonErrorConst[AccountForbidden]})
+	CreateFiledParam(context, IErrorCodeConst[FORBIDDEN], IErrorCodeConst[FORBIDDEN].GetMessage(), GinCommonError{ErrCode: AccountForbidden, ErrMsg: CommonErrorConst[AccountForbidden]})
 }

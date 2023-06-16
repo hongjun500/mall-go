@@ -22,7 +22,7 @@ func NewUmsResourceRouter(service services.UmsResourceService) *UmsResourceRoute
 
 // GroupUmsResourceRouter 后台资源管理路由
 func (router *UmsResourceRouter) GroupUmsResourceRouter(routerEngine *gin.Engine) {
-	umsResourceGroup := routerEngine.Group("/resource").Use(mid.GinJWTMiddleware())
+	umsResourceGroup := routerEngine.Group("/resource").Use(mid.GinJWTMiddleware()).Use(mid.GinCasbinMiddleware())
 	{
 		// 添加后台资源
 		umsResourceGroup.POST("/create", router.UmsResourceService.UmsResourceCreate)

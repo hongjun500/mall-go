@@ -3,29 +3,34 @@
  * @date 2023/6/4
  * @tool ThinkPadX1隐士
  * Created with GoLand 2022.2
- * Description: 使用 golang-jwt 实现 封装一些函数
+ * Description: 使用 golang-security 实现 封装一些函数
  */
 
-package jwt
+package security
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/hongjun500/mall-go/internal/conf"
-	"time"
 )
 
 const (
-	sub     = "sub"
-	id      = "id"
-	created = "created"
-	expired = "expired"
+	sub      = "sub"
+	userId   = "userId"
+	resource = "resources"
+	created  = "created"
+	expired  = "expired"
 )
 
+// CustomClaims 自定义声明
 type CustomClaims struct {
-	Sub     string    `json:"sub"`
-	UserId  int64     `json:"userId"`
-	Created time.Time `json:"created"`
+	Sub    string `json:"sub"`
+	UserId int64  `json:"userId"`
+	// 当前用户所拥有的资源
+	Resources any       `json:"resources"`
+	Created   time.Time `json:"created"`
 	jwt.RegisteredClaims
 }
 
@@ -48,7 +53,8 @@ func GenerateTokenFromClaims(claimsMap map[string]any) string {
 	}
 	claims := CustomClaims{
 		claimsMap[sub].(string),
-		claimsMap[id].(int64),
+		claimsMap[userId].(int64),
+		claimsMap[resource].(any),
 		claimsMap[created].(time.Time),
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expiredTime),
@@ -61,10 +67,11 @@ func GenerateTokenFromClaims(claimsMap map[string]any) string {
 }
 
 // GenerateToken 根据用户名生成 token
-func GenerateToken(username string, userId int64) string {
+func GenerateToken(username string, uId int64, resources any) string {
 	claimsMap := make(map[string]any)
 	claimsMap[sub] = username
-	claimsMap[id] = userId
+	claimsMap[userId] = uId
+	claimsMap[resource] = resources
 	claimsMap[created] = time.Now()
 	return GenerateTokenFromClaims(claimsMap)
 }
@@ -85,13 +92,22 @@ func GetClaimsFromToken(tokenString string) (CustomClaims, error) {
 	return claims, err
 }
 
-// GetUsernameAndUserIdFromToken 从 token 中获取 username
+// GetUsernameAndUserIdFromToken 从 token 中获取 username 和 userId
 func GetUsernameAndUserIdFromToken(tokenString string) (string, int64, error) {
 	claims, err := GetClaimsFromToken(tokenString)
 	if err != nil {
 		return "", 0, err
 	}
 	return claims.Sub, claims.UserId, nil
+}
+
+// GetUserResourcesFromToken 从 token 中获取用户所拥有的资源
+func GetUserResourcesFromToken(tokenString string) (any, error) {
+	claims, err := GetClaimsFromToken(tokenString)
+	if err != nil {
+		return nil, err
+	}
+	return claims.Resources, nil
 }
 
 // TokenIsExpired 判断 token 是否过期
@@ -155,7 +171,8 @@ func RefreshToken(oldTokenString string) (string, error) {
 	} else {
 		// 重新生成token
 		// todo 这里会有一个问题：原先的 token 只要在有效期内仍然可以使用
-		newToken := GenerateToken(claims.Sub, claims.UserId)
+		// todo 可以考虑搞一个黑名单，把原先的 token 加入黑名单，这样就可以保证原先的 token 不能使用了
+		newToken := GenerateToken(claims.Sub, claims.UserId, claims.Resources)
 		return newToken, nil
 	}
 }

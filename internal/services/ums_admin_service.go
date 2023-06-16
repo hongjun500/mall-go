@@ -2,6 +2,9 @@ package services
 
 import (
 	"crypto/rand"
+	"strconv"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/database"
@@ -10,10 +13,8 @@ import (
 	"github.com/hongjun500/mall-go/internal/models"
 	"github.com/hongjun500/mall-go/internal/request_dto/base"
 	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
-	"github.com/hongjun500/mall-go/pkg/jwt"
+	"github.com/hongjun500/mall-go/pkg/security"
 	"golang.org/x/crypto/bcrypt"
-	"strconv"
-	"time"
 )
 
 type UmsAdminService struct {
@@ -120,7 +121,7 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 	var umsAdmin *models.UmsAdmin
 	umsAdmins, err := umsAdmin.SelectUmsAdminByUsername(s.DbFactory.GormMySQL, umsAdminLogin.Username)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(gin_common.DatabaseError, context)
 		return
 	}
 	if umsAdmins == nil || len(umsAdmins) == 0 {
@@ -136,7 +137,12 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 		gin_common.CreateFail(gin_common.AccountLocked, context)
 		return
 	}
-	token := jwt.GenerateToken(umsAdmin.Username, umsAdmin.Id)
+	// 获取当前用户所拥有的资源
+	resources := GetResource(s, umsAdmin.Id)
+	// 添加策略
+	security.AddPolicyFromResource(security.Enforcer, resources)
+
+	token := security.GenerateToken(umsAdmin.Username, umsAdmin.Id, resources)
 	if token == "" {
 		gin_common.CreateFail(gin_common.TokenGenFail, context)
 		return
@@ -159,6 +165,22 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 	tokenMap["tokenHead"] = conf.GlobalJwtConfigProperties.TokenHead
 	gin_common.CreateSuccess(tokenMap, context)
 
+}
+
+func GetResource(s UmsAdminService, adminId int64) []models.UmsResource {
+	// 先从缓存中获取
+	list, _ := s.GetResourceList(adminId)
+	if list != nil && len(list) > 0 {
+		return list
+	}
+	// 从数据库找
+	var umsRR models.UmsAdminRoleRelation
+	umsResources := umsRR.SelectRoleResourceRelationsByAdminId(s.DbFactory.GormMySQL, adminId)
+	if umsResources != nil && len(umsResources) > 0 {
+		// 存入缓存
+		s.SetResourceList(adminId, umsResources, 0)
+	}
+	return umsResources
 }
 
 // UmsAdminLogout 用户登出
@@ -199,7 +221,7 @@ func (s UmsAdminService) UmsAdminAuthTest(context *gin.Context) {
 // @Router /admin/refreshToken [post]
 func (s UmsAdminService) UmsAdminRefreshToken(context *gin.Context) {
 	header := context.GetHeader(conf.GlobalJwtConfigProperties.TokenHeader)
-	refreshToken, _ := jwt.RefreshToken(header)
+	refreshToken, _ := security.RefreshToken(header)
 	if refreshToken == "" {
 		gin_common.CreateFail(gin_common.TokenExpired, context)
 		return

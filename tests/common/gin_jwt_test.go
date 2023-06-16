@@ -10,32 +10,33 @@ package common
 
 import (
 	"fmt"
-	"github.com/hongjun500/mall-go/internal/conf"
-	"github.com/hongjun500/mall-go/pkg/jwt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/hongjun500/mall-go/internal/conf"
+	"github.com/hongjun500/mall-go/pkg/security"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestToken(t *testing.T) {
 
 	conf.InitAdminConfigProperties()
 
-	token := jwt.GenerateToken("hongjun500", 11)
+	token := security.GenerateToken("hongjun500", 11)
 	assert.NotEmpty(t, token)
 	fmt.Println("GenerateToken token: ", token)
-	time := jwt.GetTokenExpireTime(token)
+	time := security.GetTokenExpireTime(token)
 	assert.NotEmpty(t, time)
 	fmt.Println("GetTokenExpireTime time: ", time)
-	expired := jwt.TokenIsExpired(token)
+	expired := security.TokenIsExpired(token)
 	assert.False(t, expired)
 	fmt.Println("IsTokenExpired expired: ", expired)
-	username, _, _ := jwt.GetUsernameAndUserIdFromToken(token)
+	username, _, _ := security.GetUsernameAndUserIdFromToken(token)
 	assert.Equal(t, "hongjun500", username)
 	fmt.Println("GetUsernameFromToken username: ", username)
-	valid := jwt.TokenValid(token, username)
+	valid := security.TokenValid(token, username)
 	assert.True(t, valid)
 	fmt.Println("TokenValid valid: ", valid)
-	refreshToken, err := jwt.RefreshToken(token)
+	refreshToken, err := security.RefreshToken(token)
 	if err != nil {
 		return
 	}

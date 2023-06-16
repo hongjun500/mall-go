@@ -7,6 +7,7 @@ import (
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/gin_common/mid"
+	"github.com/hongjun500/mall-go/internal/gin_common/security"
 	"github.com/hongjun500/mall-go/internal/routers"
 	"github.com/hongjun500/mall-go/internal/services"
 	swaggerFiles "github.com/swaggo/files"
@@ -19,11 +20,13 @@ func StartUpAdmin() *gin.Engine {
 	// 通过 gorm 拿到 MySQL 数据库连接
 	gormMySQL, _ := database.NewGormMySQL(conf.GlobalDatabaseConfigProperties)
 
-	// 拿到
+	// 拿到 Redis 数据库连接
 	redisClient, _ := database.NewRedisClient(conf.GlobalDatabaseConfigProperties)
 
 	// 将与数据库相关的封装到一个结构体中
 	sqlSessionFactory := database.NewDbFactory(gormMySQL, redisClient, nil)
+
+	security.SetDbFactory(sqlSessionFactory)
 
 	// 将与业务逻辑相关的封装到一个结构体中
 	coreService := services.NewCoreService(sqlSessionFactory)
@@ -59,15 +62,9 @@ func NewGinEngine() *gin_common.GinEngine {
 
 // initGroupRouter 初始化路由分组
 func initGroupRouter(coreRouter *routers.CoreRouter, ginEngine *gin.Engine) {
+	// docs.SwaggerInfo.Version = "1.0"
 	// 必须要写上这一行很奇怪
 	// 解释：必须要导入 swagger 的包，即 docs, 不然 swagger 无法生成文档
-	// docs.SwaggerInfo.Version = "1.0"
-	/*
-		docs.SwaggerInfo.Title = "mall-go"
-		docs.SwaggerInfo.Description = "mall-go 项目接口文档"
-		docs.SwaggerInfo.Schemes = []string{"http", "https"}
-		docs.SwaggerInfo.Host = "localhost:8080"
-		docs.SwaggerInfo.BasePath = "/api/v1"*/
 
 	// 设置 Swagger 路由
 	ginEngine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

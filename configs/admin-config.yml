@@ -8,7 +8,7 @@ server:
 jwt:
   tokenHeader: "Authorization"
   tokenHead: "Bearer "
-  secret: "mall-go-jwt-secret"
+  secret: "mall-go-security-secret"
   expiration: 604800
 
 database:

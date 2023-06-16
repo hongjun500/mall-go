@@ -1,14 +1,15 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/hongjun500/mall-go/cmd/admin"
 	"github.com/hongjun500/mall-go/cmd/portal"
 	"github.com/hongjun500/mall-go/cmd/search"
 	"github.com/hongjun500/mall-go/internal/conf"
 	"golang.org/x/sync/errgroup"
-	"log"
-	"net/http"
-	"time"
 )
 
 var (
@@ -27,7 +28,8 @@ var (
 func main() {
 
 	// 初始化全部配置
-	conf.InitAllConfigProperties()
+	// conf.InitAllConfigProperties()
+	// 修改于 2021.6.15 13:30 将上面的函数名修改为 init , 以便于在 main 函数之前执行并无需手动调用
 
 	adminServer := &http.Server{
 		Addr:        conf.GlobalAdminServerConfigProperties.Host + ":" + conf.GlobalAdminServerConfigProperties.Port,

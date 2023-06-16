@@ -22,7 +22,7 @@ func NewUmsResourceCategoryRouter(service services.UmsResourceCategoryService) *
 
 // GroupUmsResourceCategoryRouter 后台资源分类路由
 func (router *UmsResourceCategoryRouter) GroupUmsResourceCategoryRouter(routerEngine *gin.Engine) {
-	umsResourceCategoryGroup := routerEngine.Group("/resourceCategory").Use(mid.GinJWTMiddleware())
+	umsResourceCategoryGroup := routerEngine.Group("/resourceCategory").Use(mid.GinJWTMiddleware()).Use(mid.GinCasbinMiddleware())
 	{
 		// 添加后台资源分类
 		umsResourceCategoryGroup.POST("/create", router.UmsResourceCategoryService.UmsResourceCategoryCreate)

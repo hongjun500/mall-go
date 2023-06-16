@@ -63,3 +63,20 @@ func (re *UmsAdminRoleRelation) SelectRoleList(db *gorm.DB, adminId int64) ([]*U
 	}
 	return list, nil
 }
+
+func (re *UmsAdminRoleRelation) SelectRoleResourceRelationsByAdminId(db *gorm.DB, adminId int64) []UmsResource {
+	// sql := "SELECT ur.id id, ur.create_time createTime, ur.`name` `name`, ur.url url, ur.description description, ur.category_id categoryId FROM ums_admin_role_relation ar LEFT JOIN ums_role r ON ar.role_id = r.id LEFT JOIN ums_role_resource_relation rrr ON r.id = rrr.role_id LEFT JOIN ums_resource ur ON ur.id = rrr.resource_id WHERE ar.admin_id = ? AND ur.id IS NOT NULL GROUP BY ur.id"
+	var umsResources []UmsResource
+	err := db.Table("ums_admin_role_relation").
+		Select("ur.id, ur.name, ur.url").
+		Joins("LEFT JOIN ums_role r ON ums_admin_role_relation.role_id = r.id").
+		Joins("LEFT JOIN ums_role_resource_relation rrr ON r.id = rrr.role_id").
+		Joins("LEFT JOIN ums_resource ur ON ur.id = rrr.resource_id").
+		Where("ums_admin_role_relation.admin_id = ? AND ur.id IS NOT NULL", adminId).
+		Group("ur.id").
+		Find(&umsResources).Error
+	if err != nil {
+		return nil
+	}
+	return umsResources
+}

@@ -1,13 +1,14 @@
 package conf
 
 import (
-	"github.com/spf13/viper"
 	"log"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
-// InitAllConfigProperties 初始化所有配置属性
-func InitAllConfigProperties() {
+// init 初始化所有配置属性
+func init() {
 	InitAdminConfigProperties()
 	InitPortalConfigProperties()
 	InitSearchConfigProperties()
@@ -111,7 +112,7 @@ func InitSearchConfigProperties() {
 		// var gorMysqlConfigProperties GormMysqlConfigProperties
 		// var redisConfigProperties RedisConfigProperties
 		_ = viper.UnmarshalKey("server", &GlobalSearchServerConfigProperties)
-		// _ = viper.UnmarshalKey("jwt", &GlobalJwtConfigProperties)
+		// _ = viper.UnmarshalKey("security", &GlobalJwtConfigProperties)
 		// _ = viper.UnmarshalKey("database.gorm_mysql", &gorMysqlConfigProperties)
 		// _ = viper.UnmarshalKey("database.redis", &redisConfigProperties)
 		// GlobalDatabaseConfigProperties = DatabaseConfigProperties{
@@ -135,7 +136,7 @@ func initDefaultConfigProperties() {
 		TokenHeader: "Authorization",
 		TokenHead:   "Bearer ",
 		Expiration:  60 * 60 * 24 * 7,
-		Secret:      "mall-go-jwt-secret",
+		Secret:      "mall-go-security-secret",
 	}
 	GlobalDatabaseConfigProperties = DatabaseConfigProperties{
 		GormMysqlConfigProperties: GormMysqlConfigProperties{

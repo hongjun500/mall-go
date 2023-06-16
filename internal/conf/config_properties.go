@@ -21,7 +21,7 @@ type ServerConfigProperties struct {
 	ReadTimeout int
 }
 
-// JwtConfigProperties jwt 配置属性
+// JwtConfigProperties security 配置属性
 type JwtConfigProperties struct {
 	TokenHeader string
 	TokenHead   string
