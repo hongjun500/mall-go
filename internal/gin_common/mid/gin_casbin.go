@@ -23,19 +23,15 @@ func GinCasbinMiddleware() gin.HandlerFunc {
 			context.Next()
 			return
 		}
-		// 白名单请求直接放行
-		/*if isWhiteRequest(context.Request.URL.Path) {
-			context.Next()
-			return
-		}*/
-
 		url := context.Request.URL
 		path := url.Path
-		fmt.Println("url = ", url)
-		fmt.Println("path = ", path)
-
+		// fmt.Println("url = ", url)
+		// fmt.Println("path = ", path)
+		sub, _ := context.Get("username")
 		// 检查资源权限
-		if !security.Enforcer.Enforce(1, path) {
+		policy := security.Enforcer.GetPolicy()
+		fmt.Println("policy = ", policy)
+		if !security.Enforcer.Enforce(sub, path, "*") {
 			gin_common.CreateForbidden(context)
 			context.Abort()
 			return

@@ -72,6 +72,7 @@ func initGroupRouter(coreRouter *routers.CoreRouter, ginEngine *gin.Engine) {
 	// 注册多个路由
 	coreRouter.GroupUmsAdminRouter(ginEngine)
 	coreRouter.GroupUmsMenuRouter(ginEngine)
+	// coreRouter.GroupUmsMenuRouter(ginEngine.Group("/menu"))
 	coreRouter.GroupUmsResourceCategoryRouter(ginEngine)
 	coreRouter.GroupUmsResourceRouter(ginEngine)
 	coreRouter.GroupUmsRoleRouter(ginEngine)
