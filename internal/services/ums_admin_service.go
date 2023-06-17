@@ -140,9 +140,9 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 	// 获取当前用户所拥有的资源
 	resources := GetResource(s, umsAdmin.Id)
 	// 添加策略
-	security.AddPolicyFromResource(security.Enforcer, resources)
+	security.AddPolicyFromResource(security.Enforcer, umsAdmin.Username, resources)
 
-	token := security.GenerateToken(umsAdmin.Username, umsAdmin.Id, resources)
+	token := security.GenerateToken(umsAdmin.Username, umsAdmin.Id)
 	if token == "" {
 		gin_common.CreateFail(gin_common.TokenGenFail, context)
 		return
@@ -185,6 +185,7 @@ func GetResource(s UmsAdminService, adminId int64) []models.UmsResource {
 
 // UmsAdminLogout 用户登出
 func (s UmsAdminService) UmsAdminLogout(context *gin.Context) {
+	security.Enforcer.ClearPolicy()
 	gin_common.Create(context)
 }
 
@@ -519,7 +520,7 @@ func (s UmsAdminService) UmsAdminRoleUpdate(context *gin.Context) {
 	// 先删除原有的绑定关系
 	var umsAdminRoleRelation models.UmsAdminRoleRelation
 	umsAdminRoleRelation.DelByAdminId(s.DbFactory.GormMySQL, adminId)
-	// 建立新的绑定关系
+	// 建立新地绑定关系
 	if count > 0 {
 		var umsAdminRoleRelations []*models.UmsAdminRoleRelation
 		for _, roleId := range roleIds {
@@ -530,11 +531,12 @@ func (s UmsAdminService) UmsAdminRoleUpdate(context *gin.Context) {
 		}
 		count, err = umsAdminRoleRelation.InsertList(s.DbFactory.GormMySQL, umsAdminRoleRelations)
 		if err != nil {
-			gin_common.CreateFail(gin_common.UnknownError, context)
+			gin_common.CreateFail(gin_common.DatabaseError, context)
 			return
 		}
 	}
 	s.DelResourceList(adminId)
+	// todo casbin里面的策略更新
 	gin_common.CreateSuccess(count, context)
 }
 

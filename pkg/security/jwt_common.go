@@ -17,20 +17,17 @@ import (
 )
 
 const (
-	sub      = "sub"
-	userId   = "userId"
-	resource = "resources"
-	created  = "created"
-	expired  = "expired"
+	sub     = "sub"
+	userId  = "userId"
+	created = "created"
+	expired = "expired"
 )
 
 // CustomClaims 自定义声明
 type CustomClaims struct {
-	Sub    string `json:"sub"`
-	UserId int64  `json:"userId"`
-	// 当前用户所拥有的资源
-	Resources any       `json:"resources"`
-	Created   time.Time `json:"created"`
+	Sub     string    `json:"sub"`
+	UserId  int64     `json:"userId"`
+	Created time.Time `json:"created"`
 	jwt.RegisteredClaims
 }
 
@@ -54,7 +51,6 @@ func GenerateTokenFromClaims(claimsMap map[string]any) string {
 	claims := CustomClaims{
 		claimsMap[sub].(string),
 		claimsMap[userId].(int64),
-		claimsMap[resource].(any),
 		claimsMap[created].(time.Time),
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expiredTime),
@@ -67,11 +63,10 @@ func GenerateTokenFromClaims(claimsMap map[string]any) string {
 }
 
 // GenerateToken 根据用户名生成 token
-func GenerateToken(username string, uId int64, resources any) string {
+func GenerateToken(username string, uId int64) string {
 	claimsMap := make(map[string]any)
 	claimsMap[sub] = username
 	claimsMap[userId] = uId
-	claimsMap[resource] = resources
 	claimsMap[created] = time.Now()
 	return GenerateTokenFromClaims(claimsMap)
 }
@@ -99,15 +94,6 @@ func GetUsernameAndUserIdFromToken(tokenString string) (string, int64, error) {
 		return "", 0, err
 	}
 	return claims.Sub, claims.UserId, nil
-}
-
-// GetUserResourcesFromToken 从 token 中获取用户所拥有的资源
-func GetUserResourcesFromToken(tokenString string) (any, error) {
-	claims, err := GetClaimsFromToken(tokenString)
-	if err != nil {
-		return nil, err
-	}
-	return claims.Resources, nil
 }
 
 // TokenIsExpired 判断 token 是否过期
@@ -172,7 +158,7 @@ func RefreshToken(oldTokenString string) (string, error) {
 		// 重新生成token
 		// todo 这里会有一个问题：原先的 token 只要在有效期内仍然可以使用
 		// todo 可以考虑搞一个黑名单，把原先的 token 加入黑名单，这样就可以保证原先的 token 不能使用了
-		newToken := GenerateToken(claims.Sub, claims.UserId, claims.Resources)
+		newToken := GenerateToken(claims.Sub, claims.UserId)
 		return newToken, nil
 	}
 }
