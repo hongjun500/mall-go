@@ -25,6 +25,68 @@ func NewUmsAdminService(dbFactory *database.DbFactory) UmsAdminService {
 	return UmsAdminService{DbFactory: dbFactory}
 }
 
+func (s UmsAdminService) getAdminByUsername(username string) (models.UmsAdmin, error) {
+	// 先从缓存中获取
+	cacheAdmin, _ := s.GetAdmin(username)
+	if cacheAdmin.Id > 0 {
+		return cacheAdmin, nil
+	}
+	// 没有再从数据库中获取
+	var umsAdmin models.UmsAdmin
+	umsAdmins, err := umsAdmin.SelectUmsAdminByUsername(s.DbFactory.GormMySQL, username)
+	if err != nil {
+		return umsAdmin, err
+	}
+	if umsAdmins != nil && len(umsAdmins) > 0 {
+		umsAdmin = *umsAdmins[0]
+		// 存入缓存
+		s.SetAdmin(umsAdmin, 0)
+		return umsAdmin, nil
+	}
+	return umsAdmin, nil
+}
+
+func (s UmsAdminService) GetResource(adminId int64) []models.UmsResource {
+	// 先从缓存中获取
+	list, _ := s.GetResourceList(adminId)
+	if list != nil && len(list) > 0 {
+		return list
+	}
+	// 从数据库找
+	var umsRR models.UmsAdminRoleRelation
+	umsResources := umsRR.SelectRoleResourceRelationsByAdminId(s.DbFactory.GormMySQL, adminId)
+	if umsResources != nil && len(umsResources) > 0 {
+		// 存入缓存
+		s.SetResourceList(adminId, umsResources, 0)
+	}
+	return umsResources
+}
+
+// HashPassword 加密密码
+func HashPassword(password string) (string, error) {
+	// 生成随机盐值
+	salt := make([]byte, 16)
+	if _, err := rand.Read(salt); err != nil {
+		return "", err
+	}
+
+	// 将密码与盐值进行哈希
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+
+	// 返回加密后的密码字符串
+	return string(hash), nil
+}
+
+// VerifyPassword 验证密码
+func VerifyPassword(password, hashedPassword string) bool {
+	// 进行哈希校验
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return err == nil
+}
+
 // UmsAdminRegister 用户注册
 // @Summary 用户注册
 // @Description 用户注册
@@ -76,31 +138,6 @@ func (s UmsAdminService) UmsAdminRegister(context *gin.Context) {
 	}
 }
 
-// HashPassword 加密密码
-func HashPassword(password string) (string, error) {
-	// 生成随机盐值
-	salt := make([]byte, 16)
-	if _, err := rand.Read(salt); err != nil {
-		return "", err
-	}
-
-	// 将密码与盐值进行哈希
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return "", err
-	}
-
-	// 返回加密后的密码字符串
-	return string(hash), nil
-}
-
-// VerifyPassword 验证密码
-func VerifyPassword(password, hashedPassword string) bool {
-	// 进行哈希校验
-	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-	return err == nil
-}
-
 // UmsAdminLogin 用户登录
 // @Summary 用户登录
 // @Description 用户登录
@@ -118,17 +155,17 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 		// 这些地方需要手动 return
 		return
 	}
-	var umsAdmin *models.UmsAdmin
-	umsAdmins, err := umsAdmin.SelectUmsAdminByUsername(s.DbFactory.GormMySQL, umsAdminLogin.Username)
+	// var umsAdmin *models.UmsAdmin
+	// umsAdmins, err := umsAdmin.SelectUmsAdminByUsername(s.DbFactory.GormMySQL, umsAdminLogin.Username)
+	umsAdmin, err := s.getAdminByUsername(umsAdminLogin.Username)
 	if err != nil {
 		gin_common.CreateFail(gin_common.DatabaseError, context)
 		return
 	}
-	if umsAdmins == nil || len(umsAdmins) == 0 {
+	if umsAdmin.Id == 0 {
 		gin_common.CreateFail(gin_common.UsernameOrPasswordError, context)
 		return
 	}
-	umsAdmin = umsAdmins[0]
 	if !VerifyPassword(umsAdminLogin.Password, umsAdmin.Password) {
 		gin_common.CreateFail(gin_common.UsernameOrPasswordError, context)
 		return
@@ -138,7 +175,7 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 		return
 	}
 	// 获取当前用户所拥有的资源
-	resources := GetResource(s, umsAdmin.Id)
+	resources := s.GetResource(umsAdmin.Id)
 	// 添加策略
 	security.AddPolicyFromResource(security.Enforcer, umsAdmin.Username, resources)
 
@@ -167,24 +204,9 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 
 }
 
-func GetResource(s UmsAdminService, adminId int64) []models.UmsResource {
-	// 先从缓存中获取
-	list, _ := s.GetResourceList(adminId)
-	if list != nil && len(list) > 0 {
-		return list
-	}
-	// 从数据库找
-	var umsRR models.UmsAdminRoleRelation
-	umsResources := umsRR.SelectRoleResourceRelationsByAdminId(s.DbFactory.GormMySQL, adminId)
-	if umsResources != nil && len(umsResources) > 0 {
-		// 存入缓存
-		s.SetResourceList(adminId, umsResources, 0)
-	}
-	return umsResources
-}
-
 // UmsAdminLogout 用户登出
 func (s UmsAdminService) UmsAdminLogout(context *gin.Context) {
+	// 清除策略
 	security.Enforcer.ClearPolicy()
 	gin_common.Create(context)
 }
@@ -249,25 +271,26 @@ func (s UmsAdminService) UmsRoleList(adminId int64) []*models.UmsRole {
 // @Success 200 {object}  gin_common.GinCommonResponse
 // @Router /admin/info [get]
 func (s UmsAdminService) UmsAdminInfo(context *gin.Context) {
-	userId := mid.GinJWTGetCurrentUserId(context)
+	username := mid.GinJWTGetCurrentUsername(context)
 	resultMap := make(map[string]interface{})
 	resultMap["username"] = ""
 	resultMap["menus"] = nil
 	resultMap["icon"] = ""
 	resultMap["roles"] = nil
-	var umsAdmin models.UmsAdmin
-	result, err := umsAdmin.SelectUmsAdminByUserId(s.DbFactory.GormMySQL, userId)
+	// var umsAdmin models.UmsAdmin
+	// result, err := umsAdmin.SelectUmsAdminByUserId(s.DbFactory.GormMySQL, userId)
+	result, err := s.getAdminByUsername(username)
 	if err != nil {
 		gin_common.CreateSuccess(resultMap, context)
 		return
 	}
-	if result == nil {
+	if result.Id == 0 {
 		gin_common.CreateSuccess(resultMap, context)
 		return
 	}
 
 	var umsRole models.UmsRole
-	umsMenus, err := umsRole.SelectMenu(s.DbFactory.GormMySQL, userId)
+	umsMenus, err := umsRole.SelectMenu(s.DbFactory.GormMySQL, result.Id)
 	if err != nil {
 		gin_common.CreateSuccess(resultMap, context)
 		return
@@ -275,7 +298,7 @@ func (s UmsAdminService) UmsAdminInfo(context *gin.Context) {
 	resultMap["menus"] = umsMenus
 	resultMap["username"] = result.Username
 	resultMap["icon"] = result.Icon
-	roles := s.UmsRoleList(userId)
+	roles := s.UmsRoleList(result.Id)
 	roleNames := make([]string, 0)
 	for _, role := range roles {
 		roleNames = append(roleNames, role.Name)

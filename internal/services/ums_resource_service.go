@@ -86,7 +86,6 @@ func (s UmsResourceService) UmsResourceUpdate(context *gin.Context) {
 		gin_common.CreateFail(gin_common.UnknownError, context)
 		return
 	}
-	// todo 清除动态资源
 	s.DelResourceListByResource(pathVariableDTO.Id)
 	gin_common.CreateSuccess(rows, context)
 }
@@ -142,7 +141,6 @@ func (s UmsResourceService) UmsResourceDelete(context *gin.Context) {
 		gin_common.CreateFail(gin_common.UnknownError, context)
 		return
 	}
-	// todo 清除动态资源
 	s.DelResourceListByResource(pathVariableDTO.Id)
 	gin_common.CreateSuccess(rows, context)
 }
