@@ -8,7 +8,6 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/services"
 )
 
@@ -21,8 +20,7 @@ func NewUmsMemberLevelRouter(service services.UmsMemberLevelService) *UmsMemberL
 }
 
 // GroupUmsMemberLevelRouter 会员等级管理路由
-func (router *UmsMemberLevelRouter) GroupUmsMemberLevelRouter(routerEngine *gin.Engine) {
-	umsMemberLevelGroup := routerEngine.Group("/memberLevel").Use(mid.GinJWTMiddleware())
+func (router *UmsMemberLevelRouter) GroupUmsMemberLevelRouter(umsMemberLevelGroup *gin.RouterGroup) {
 	{
 		// 查看所有会员等级
 		umsMemberLevelGroup.GET("/list", router.UmsMemberLevelService.UmsMemberLevelList)

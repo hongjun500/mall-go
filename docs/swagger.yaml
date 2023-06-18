@@ -2,9 +2,15 @@ basePath: /
 definitions:
   gin_common.GinCommonResponse:
     properties:
+      code:
+        description: http 状态码
+        type: integer
       data:
         description: "返回的数据是任意类型\t如果有错误，则把错误信息也封装在此\n\n\t\t{\n\t\t\t\"err_code\":
           300000,\n\t\t\t\"err_msg\": \"用户名已存在\"\n\t\t}"
+      message:
+        description: '返回的信息 例如: 操作成功或者操作失败'
+        type: string
       status:
         description: success or fail
         type: string
@@ -20,23 +26,6 @@ definitions:
     required:
     - password
     - username
-    type: object
-  ums_admin.UmsAdminPageDTO:
-    properties:
-      pageNum:
-        default: 1
-        description: 页码
-        type: integer
-      pageSize:
-        default: 10
-        description: 每页数量
-        type: integer
-      username:
-        description: 用户名
-        type: string
-    required:
-    - pageNum
-    - pageSize
     type: object
   ums_admin.UmsAdminRegisterDTO:
     properties:
@@ -257,17 +246,25 @@ paths:
       tags:
       - 后台用户管理
   /admin/list:
-    post:
+    get:
       consumes:
       - application/json
       description: 分页查询用户
       parameters:
-      - description: 分页查询用户
-        in: body
-        name: request
+      - description: keyword
+        in: query
+        name: keyword
+        type: string
+      - description: pageSize
+        in: query
+        name: pageSize
         required: true
-        schema:
-          $ref: '#/definitions/ums_admin.UmsAdminPageDTO'
+        type: integer
+      - description: pageNum
+        in: query
+        name: pageNum
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -373,8 +370,7 @@ paths:
         name: adminId
         required: true
         type: integer
-      - collectionFormat: csv
-        description: 角色 ID
+      - description: 角色 ID
         in: formData
         items:
           type: integer
@@ -609,9 +605,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: |-
-        树形结构返回所有菜单列表
-        树形结构返回所有菜单列表
+      description: 树形结构返回所有菜单列表
       produces:
       - application/json
       responses:
@@ -945,8 +939,7 @@ paths:
         name: roleId
         required: true
         type: integer
-      - collectionFormat: csv
-        description: menuIds
+      - description: menuIds
         in: query
         items:
           type: integer
@@ -976,8 +969,7 @@ paths:
         name: roleId
         required: true
         type: integer
-      - collectionFormat: csv
-        description: resourceIds
+      - description: resourceIds
         in: query
         items:
           type: integer
@@ -1026,8 +1018,7 @@ paths:
       - application/json
       description: 批量删除角色
       parameters:
-      - collectionFormat: csv
-        description: ids
+      - description: ids
         in: query
         items:
           type: integer

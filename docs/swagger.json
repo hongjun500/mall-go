@@ -101,7 +101,7 @@
             }
         },
         "/admin/list": {
-            "post": {
+            "get": {
                 "security": [
                     {
                         "GinJWTMiddleware": []
@@ -120,13 +120,24 @@
                 "summary": "分页查询用户",
                 "parameters": [
                     {
-                        "description": "分页查询用户",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsAdminPageDTO"
-                        }
+                        "type": "string",
+                        "description": "keyword",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageNum",
+                        "name": "pageNum",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -266,7 +277,6 @@
                         "items": {
                             "type": "integer"
                         },
-                        "collectionFormat": "csv",
                         "description": "角色 ID",
                         "name": "roleIds",
                         "in": "formData",
@@ -653,7 +663,7 @@
                         "GinJWTMiddleware": []
                     }
                 ],
-                "description": "树形结构返回所有菜单列表\n树形结构返回所有菜单列表",
+                "description": "树形结构返回所有菜单列表",
                 "consumes": [
                     "application/json"
                 ],
@@ -1231,7 +1241,6 @@
                         "items": {
                             "type": "integer"
                         },
-                        "collectionFormat": "csv",
                         "description": "menuIds",
                         "name": "menuIds",
                         "in": "query",
@@ -1279,7 +1288,6 @@
                         "items": {
                             "type": "integer"
                         },
-                        "collectionFormat": "csv",
                         "description": "resourceIds",
                         "name": "resourceIds",
                         "in": "query",
@@ -1359,7 +1367,6 @@
                         "items": {
                             "type": "integer"
                         },
-                        "collectionFormat": "csv",
                         "description": "ids",
                         "name": "ids",
                         "in": "query",
@@ -1623,8 +1630,16 @@
         "gin_common.GinCommonResponse": {
             "type": "object",
             "properties": {
+                "code": {
+                    "description": "http 状态码",
+                    "type": "integer"
+                },
                 "data": {
                     "description": "返回的数据是任意类型\t如果有错误，则把错误信息也封装在此\n\n\t\t{\n\t\t\t\"err_code\": 300000,\n\t\t\t\"err_msg\": \"用户名已存在\"\n\t\t}"
+                },
+                "message": {
+                    "description": "返回的信息 例如: 操作成功或者操作失败",
+                    "type": "string"
                 },
                 "status": {
                     "description": "success or fail",
@@ -1642,29 +1657,6 @@
                 "password": {
                     "description": "密文密码",
                     "type": "string"
-                },
-                "username": {
-                    "description": "用户名",
-                    "type": "string"
-                }
-            }
-        },
-        "ums_admin.UmsAdminPageDTO": {
-            "type": "object",
-            "required": [
-                "pageNum",
-                "pageSize"
-            ],
-            "properties": {
-                "pageNum": {
-                    "description": "页码",
-                    "type": "integer",
-                    "default": 1
-                },
-                "pageSize": {
-                    "description": "每页数量",
-                    "type": "integer",
-                    "default": 10
                 },
                 "username": {
                     "description": "用户名",
