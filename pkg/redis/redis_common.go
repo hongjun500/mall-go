@@ -2,9 +2,10 @@ package redis
 
 import (
 	"context"
-	"github.com/redis/go-redis/v9"
 	"log"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 // 字符串部分
@@ -13,7 +14,7 @@ import (
 func SetExpiration(client *redis.Client, ctx context.Context, key string, val any, exp time.Duration) {
 	err := client.Set(ctx, key, val, exp).Err()
 	if err != nil {
-		log.Fatalln("SetExpiration -> redis set error: ", err)
+		log.Println("SetExpiration -> redis set error: ", err)
 	}
 }
 
@@ -26,7 +27,7 @@ func Set(client *redis.Client, ctx context.Context, key string, val any) {
 func Get(client *redis.Client, ctx context.Context, key string) string {
 	result, err := client.Get(ctx, key).Result()
 	if err != nil {
-		log.Fatalln("Get -> redis get error: ", err)
+		log.Println("Get -> redis get error: ", err)
 	}
 	return result
 }
@@ -35,7 +36,7 @@ func Get(client *redis.Client, ctx context.Context, key string) string {
 func Del(client *redis.Client, ctx context.Context, keys ...string) (bool, int64) {
 	result, err := client.Del(ctx, keys...).Result()
 	if err != nil {
-		log.Fatalln("Del -> redis del error: ", err)
+		log.Println("Del -> redis del error: ", err)
 		return false, 0
 	}
 	return true, result
@@ -45,7 +46,7 @@ func Del(client *redis.Client, ctx context.Context, keys ...string) (bool, int64
 func Expire(client *redis.Client, ctx context.Context, key string, exp time.Duration) bool {
 	err := client.Expire(ctx, key, exp).Err()
 	if err != nil {
-		log.Fatalln("Expire -> redis expire error: ", err)
+		log.Println("Expire -> redis expire error: ", err)
 		return false
 	}
 	return err == nil
@@ -55,7 +56,7 @@ func Expire(client *redis.Client, ctx context.Context, key string, exp time.Dura
 func GetExpire(client *redis.Client, ctx context.Context, key string) time.Duration {
 	result, err := client.TTL(ctx, key).Result()
 	if err != nil {
-		log.Fatalln("GetExpire -> redis get expire error: ", err)
+		log.Println("GetExpire -> redis get expire error: ", err)
 		return 0
 	}
 	return result
@@ -65,7 +66,7 @@ func GetExpire(client *redis.Client, ctx context.Context, key string) time.Durat
 func HasKey(client *redis.Client, ctx context.Context, key string) bool {
 	result, err := client.Exists(ctx, key).Result()
 	if err != nil {
-		log.Fatalln("HasKey -> redis has key error: ", err)
+		log.Println("HasKey -> redis has key error: ", err)
 		return false
 	}
 	return result == 1
@@ -75,7 +76,7 @@ func HasKey(client *redis.Client, ctx context.Context, key string) bool {
 func Incr(client *redis.Client, ctx context.Context, key string) int64 {
 	result, err := client.Incr(ctx, key).Result()
 	if err != nil {
-		log.Fatalln("Incr -> redis incr error: ", err)
+		log.Println("Incr -> redis incr error: ", err)
 		return 0
 	}
 	return result
@@ -85,7 +86,7 @@ func Incr(client *redis.Client, ctx context.Context, key string) int64 {
 func IncrBy(client *redis.Client, ctx context.Context, key string, val int64) int64 {
 	result, err := client.IncrBy(ctx, key, val).Result()
 	if err != nil {
-		log.Fatalln("IncrBy -> redis incr by error: ", err)
+		log.Println("IncrBy -> redis incr by error: ", err)
 		return 0
 	}
 	return result
@@ -95,7 +96,7 @@ func IncrBy(client *redis.Client, ctx context.Context, key string, val int64) in
 func Decr(client *redis.Client, ctx context.Context, key string) int64 {
 	result, err := client.Decr(ctx, key).Result()
 	if err != nil {
-		log.Fatalln("Decr -> redis decr error: ", err)
+		log.Println("Decr -> redis decr error: ", err)
 		return 0
 	}
 	return result
@@ -105,7 +106,7 @@ func Decr(client *redis.Client, ctx context.Context, key string) int64 {
 func DecrBy(client *redis.Client, ctx context.Context, key string, val int64) int64 {
 	result, err := client.DecrBy(ctx, key, val).Result()
 	if err != nil {
-		log.Fatalln("DecrBy -> redis decr by error: ", err)
+		log.Println("DecrBy -> redis decr by error: ", err)
 		return 0
 	}
 	return result
@@ -119,7 +120,7 @@ func DecrBy(client *redis.Client, ctx context.Context, key string, val int64) in
 func HmSet(client *redis.Client, ctx context.Context, key string, field string, val any) {
 	err := client.HMSet(ctx, key, field, val).Err()
 	if err != nil {
-		log.Fatalln("HmSet -> redis hmset error: ", err)
+		log.Println("HmSet -> redis hmset error: ", err)
 	}
 }
 
@@ -130,7 +131,7 @@ func HmSetAll(client *redis.Client, ctx context.Context, key string, val map[str
 	}*/
 	err := client.HMSet(ctx, key, val).Err()
 	if err != nil {
-		log.Fatalln("HmSetAll -> redis hmset error: ", err)
+		log.Println("HmSetAll -> redis hmset error: ", err)
 	}
 }
 
@@ -138,7 +139,7 @@ func HmSetAll(client *redis.Client, ctx context.Context, key string, val map[str
 func HmGet(client *redis.Client, ctx context.Context, key string, field string) []any {
 	result, err := client.HMGet(ctx, key, field).Result()
 	if err != nil {
-		log.Fatalln("HmGet -> redis hmget error: ", err)
+		log.Println("HmGet -> redis hmget error: ", err)
 		return nil
 	}
 	return result
@@ -148,7 +149,7 @@ func HmGet(client *redis.Client, ctx context.Context, key string, field string) 
 func HmGetAll(client *redis.Client, ctx context.Context, key string) map[string]string {
 	result, err := client.HGetAll(ctx, key).Result()
 	if err != nil {
-		log.Fatalln("HmGetAll -> redis hmgetall error: ", err)
+		log.Println("HmGetAll -> redis hmgetall error: ", err)
 		return nil
 	}
 	return result
@@ -158,7 +159,7 @@ func HmGetAll(client *redis.Client, ctx context.Context, key string) map[string]
 func HmKeys(client *redis.Client, ctx context.Context, key string) []string {
 	result, err := client.HKeys(ctx, key).Result()
 	if err != nil {
-		log.Fatalln("HmKeys -> redis hmkeys error: ", err)
+		log.Println("HmKeys -> redis hmkeys error: ", err)
 		return nil
 	}
 	return result
@@ -168,7 +169,7 @@ func HmKeys(client *redis.Client, ctx context.Context, key string) []string {
 func HmVals(client *redis.Client, ctx context.Context, key string) []string {
 	result, err := client.HVals(ctx, key).Result()
 	if err != nil {
-		log.Fatalln("HmVals -> redis hmvals error: ", err)
+		log.Println("HmVals -> redis hmvals error: ", err)
 		return nil
 	}
 	return result
@@ -178,7 +179,7 @@ func HmVals(client *redis.Client, ctx context.Context, key string) []string {
 func HmLen(client *redis.Client, ctx context.Context, key string) int64 {
 	result, err := client.HLen(ctx, key).Result()
 	if err != nil {
-		log.Fatalln("HmLen -> redis hmlen error: ", err)
+		log.Println("HmLen -> redis hmlen error: ", err)
 		return 0
 	}
 	return result
@@ -188,7 +189,7 @@ func HmLen(client *redis.Client, ctx context.Context, key string) int64 {
 func HmHasKey(client *redis.Client, ctx context.Context, key string, field string) bool {
 	result, err := client.HExists(ctx, key, field).Result()
 	if err != nil {
-		log.Fatalln("HmHasKey -> redis hmhaskey error: ", err)
+		log.Println("HmHasKey -> redis hmhaskey error: ", err)
 		return false
 	}
 	return result
@@ -198,7 +199,7 @@ func HmHasKey(client *redis.Client, ctx context.Context, key string, field strin
 func HmDel(client *redis.Client, ctx context.Context, key string, fields ...string) (bool, int64) {
 	result, err := client.HDel(ctx, key, fields...).Result()
 	if err != nil {
-		log.Fatalln("HmDel -> redis hmdel error: ", err)
+		log.Println("HmDel -> redis hmdel error: ", err)
 		return false, 0
 	}
 	return true, result
@@ -208,7 +209,7 @@ func HmDel(client *redis.Client, ctx context.Context, key string, fields ...stri
 func HmIncr(client *redis.Client, ctx context.Context, key string, field string, val int64) int64 {
 	result, err := client.HIncrBy(ctx, key, field, val).Result()
 	if err != nil {
-		log.Fatalln("HmIncr -> redis hmincr error: ", err)
+		log.Println("HmIncr -> redis hmincr error: ", err)
 		return 0
 	}
 	return result
@@ -219,7 +220,7 @@ func HmIncrFloat(client *redis.Client, ctx context.Context, key string, field st
 	result, err := client.HIncrByFloat(ctx, key, field, val).Result()
 
 	if err != nil {
-		log.Fatalln("HmIncrFloat -> redis hmincrfloat error: ", err)
+		log.Println("HmIncrFloat -> redis hmincrfloat error: ", err)
 		return 0
 	}
 	return result
@@ -231,7 +232,7 @@ func HmIncrFloat(client *redis.Client, ctx context.Context, key string, field st
 func SAdd(client *redis.Client, ctx context.Context, key string, members ...any) int64 {
 	result, err := client.SAdd(ctx, key, members...).Result()
 	if err != nil {
-		log.Fatalln("SAdd -> redis sadd error: ", err)
+		log.Println("SAdd -> redis sadd error: ", err)
 		return 0
 	}
 	return result
@@ -241,7 +242,7 @@ func SAdd(client *redis.Client, ctx context.Context, key string, members ...any)
 func SMembers(client *redis.Client, ctx context.Context, key string) []string {
 	result, err := client.SMembers(ctx, key).Result()
 	if err != nil {
-		log.Fatalln("SGets -> redis smembers error: ", err)
+		log.Println("SGets -> redis smembers error: ", err)
 		return nil
 	}
 	return result
@@ -251,7 +252,7 @@ func SMembers(client *redis.Client, ctx context.Context, key string) []string {
 func SMembersMap(client *redis.Client, ctx context.Context, key string) map[string]struct{} {
 	result, err := client.SMembersMap(ctx, key).Result()
 	if err != nil {
-		log.Fatalln("SGets -> redis smembers error: ", err)
+		log.Println("SGets -> redis smembers error: ", err)
 		return nil
 	}
 	return result
@@ -261,7 +262,7 @@ func SMembersMap(client *redis.Client, ctx context.Context, key string) map[stri
 func SCard(client *redis.Client, ctx context.Context, key string) int64 {
 	result, err := client.SCard(ctx, key).Result()
 	if err != nil {
-		log.Fatalln("SCard -> redis scard error: ", err)
+		log.Println("SCard -> redis scard error: ", err)
 		return 0
 	}
 	return result
@@ -271,7 +272,7 @@ func SCard(client *redis.Client, ctx context.Context, key string) int64 {
 func SIsMember(client *redis.Client, ctx context.Context, key string, member string) bool {
 	result, err := client.SIsMember(ctx, key, member).Result()
 	if err != nil {
-		log.Fatalln("SIsMember -> redis sismember error: ", err)
+		log.Println("SIsMember -> redis sismember error: ", err)
 		return false
 	}
 	return result
@@ -281,7 +282,7 @@ func SIsMember(client *redis.Client, ctx context.Context, key string, member str
 func SRem(client *redis.Client, ctx context.Context, key string, members ...any) int64 {
 	result, err := client.SRem(ctx, key, members...).Result()
 	if err != nil {
-		log.Fatalln("SRem -> redis srem error: ", err)
+		log.Println("SRem -> redis srem error: ", err)
 		return 0
 	}
 	return result
@@ -293,7 +294,7 @@ func SRem(client *redis.Client, ctx context.Context, key string, members ...any)
 func LRange(client *redis.Client, ctx context.Context, key string, start int64, stop int64) []string {
 	result, err := client.LRange(ctx, key, start, stop).Result()
 	if err != nil {
-		log.Fatalln("LRange -> redis lrange error: ", err)
+		log.Println("LRange -> redis lrange error: ", err)
 		return nil
 	}
 	return result
@@ -303,7 +304,7 @@ func LRange(client *redis.Client, ctx context.Context, key string, start int64, 
 func LLen(client *redis.Client, ctx context.Context, key string) int64 {
 	result, err := client.LLen(ctx, key).Result()
 	if err != nil {
-		log.Fatalln("LLen -> redis llen error: ", err)
+		log.Println("LLen -> redis llen error: ", err)
 		return 0
 	}
 	return result
@@ -313,7 +314,7 @@ func LLen(client *redis.Client, ctx context.Context, key string) int64 {
 func LIndex(client *redis.Client, ctx context.Context, key string, index int64) string {
 	result, err := client.LIndex(ctx, key, index).Result()
 	if err != nil {
-		log.Fatalln("LIndex -> redis lindex error: ", err)
+		log.Println("LIndex -> redis lindex error: ", err)
 		return ""
 	}
 	return result
@@ -323,7 +324,7 @@ func LIndex(client *redis.Client, ctx context.Context, key string, index int64) 
 func LPush(client *redis.Client, ctx context.Context, key string, values ...any) {
 	err := client.LPush(ctx, key, values...).Err()
 	if err != nil {
-		log.Fatalln("Lpush -> redis lpush error: ", err)
+		log.Println("Lpush -> redis lpush error: ", err)
 	}
 }
 
@@ -331,7 +332,7 @@ func LPush(client *redis.Client, ctx context.Context, key string, values ...any)
 func LRPush(client *redis.Client, ctx context.Context, key string, values ...any) {
 	err := client.RPush(ctx, key, values...).Err()
 	if err != nil {
-		log.Fatalln("LRPush -> redis rpush error: ", err)
+		log.Println("LRPush -> redis rpush error: ", err)
 	}
 }
 
@@ -339,7 +340,7 @@ func LRPush(client *redis.Client, ctx context.Context, key string, values ...any
 func LRem(client *redis.Client, ctx context.Context, key string, count int64, value any) {
 	err := client.LRem(ctx, key, count, value).Err()
 	if err != nil {
-		log.Fatalln("LRem -> redis lrem error: ", err)
+		log.Println("LRem -> redis lrem error: ", err)
 	}
 }
 
@@ -347,7 +348,7 @@ func LRem(client *redis.Client, ctx context.Context, key string, count int64, va
 func LPushX(client *redis.Client, ctx context.Context, key string, value any) {
 	err := client.LPushX(ctx, key, value).Err()
 	if err != nil {
-		log.Fatalln("LPushX -> redis lpushx error: ", err)
+		log.Println("LPushX -> redis lpushx error: ", err)
 	}
 }
 
@@ -355,6 +356,6 @@ func LPushX(client *redis.Client, ctx context.Context, key string, value any) {
 func LSet(client *redis.Client, ctx context.Context, key string, index int64, value any) {
 	err := client.LSet(ctx, key, index, value).Err()
 	if err != nil {
-		log.Fatalln("LSet -> redis lset error: ", err)
+		log.Println("LSet -> redis lset error: ", err)
 	}
 }

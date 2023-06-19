@@ -38,7 +38,7 @@ func init() {
 	})
 }
 
-// AddPolicyFromResource 将资源添加到 casbin 中
+// AddPolicyFromResource 将基于每个不同的用户资源添加到 casbin 中
 func AddPolicyFromResource(enforcer *casbin.Enforcer, sub string, resources []models.UmsResource) {
 	for _, umsResource := range resources {
 		enforcer.AddPolicy(sub, umsResource.Url, "*")

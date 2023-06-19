@@ -1,0 +1,1205 @@
+basePath: /
+definitions:
+  gin_common.GinCommonResponse:
+    properties:
+      code:
+        description: http 状态码
+        type: integer
+      data:
+        description: "返回的数据是任意类型\t如果有错误，则把错误信息也封装在此\n\n\t\t{\n\t\t\t\"err_code\":
+          300000,\n\t\t\t\"err_msg\": \"用户名已存在\"\n\t\t}"
+      message:
+        description: '返回的信息 例如: 操作成功或者操作失败'
+        type: string
+      status:
+        description: success or fail
+        type: string
+    type: object
+  ums_admin.UmsAdminLoginDTO:
+    properties:
+      password:
+        description: 密文密码
+        type: string
+      username:
+        description: 用户名
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  ums_admin.UmsAdminRegisterDTO:
+    properties:
+      email:
+        description: 邮箱
+        type: string
+      icon:
+        description: 用户头像
+        type: string
+      nickname:
+        description: 用户昵称
+        type: string
+      note:
+        description: 备注
+        type: string
+      password:
+        description: 密文密码
+        type: string
+      username:
+        description: 用户名
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  ums_admin.UmsAdminUpdateDTO:
+    properties:
+      email:
+        description: 邮箱
+        type: string
+      icon:
+        description: 用户头像
+        type: string
+      nickname:
+        description: 用户昵称
+        type: string
+      note:
+        description: 备注
+        type: string
+      password:
+        description: 密文密码
+        type: string
+      username:
+        description: 用户名
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  ums_admin.UmsAdminUpdatePasswordDTO:
+    properties:
+      newPassword:
+        description: 新密码
+        type: string
+      oldPassword:
+        description: 旧密码
+        type: string
+      username:
+        description: 用户名
+        type: string
+    required:
+    - newPassword
+    - oldPassword
+    - username
+    type: object
+  ums_admin.UmsMenuCreateDTO:
+    properties:
+      hidden:
+        description: 前端隐藏
+        type: integer
+      icon:
+        description: 前端图标
+        type: string
+      id:
+        type: integer
+      level:
+        description: 菜单级数
+        type: integer
+      name:
+        description: 前端名称
+        type: string
+      parentId:
+        description: 父级ID
+        type: integer
+      sort:
+        description: 菜单排序
+        type: integer
+      title:
+        description: 菜单名称
+        type: string
+    type: object
+  ums_admin.UmsResourceCategoryCreateDTO:
+    properties:
+      name:
+        description: 资源分类名称
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    type: object
+  ums_admin.UmsResourceCreateDTO:
+    properties:
+      categoryId:
+        description: 资源分类ID
+        type: integer
+      description:
+        description: 描述
+        type: string
+      name:
+        description: 资源名称
+        type: string
+      url:
+        description: 资源URL
+        type: string
+    type: object
+  ums_admin.UmsRoleCreateDTO:
+    properties:
+      adminCount:
+        description: 后台用户数量
+        type: integer
+      description:
+        description: 角色描述
+        type: string
+      name:
+        description: 角色名称
+        type: string
+      sort:
+        description: 排序
+        type: integer
+      status:
+        description: 启用状态：0->禁用；1->启用
+        type: integer
+    required:
+    - name
+    type: object
+info:
+  contact: {}
+  description: mall-go API
+  title: mall-go API
+  version: v1
+paths:
+  /admin/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取指定用户信息
+      parameters:
+      - description: 用户 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 获取指定用户信息
+      tags:
+      - 后台用户管理
+  /admin/authTest:
+    get:
+      consumes:
+      - application/json
+      description: 用户鉴权测试
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      summary: 用户鉴权测试
+      tags:
+      - 后台用户管理
+  /admin/delete/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 删除指定用户信息
+      parameters:
+      - description: 用户 ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 删除指定用户信息
+      tags:
+      - 后台用户管理
+  /admin/info:
+    get:
+      consumes:
+      - application/json
+      description: 根据用户 ID 获取用户信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 根据用户 ID 获取用户信息
+      tags:
+      - 后台用户管理
+  /admin/list:
+    get:
+      consumes:
+      - application/json
+      description: 分页查询用户
+      parameters:
+      - description: keyword
+        in: query
+        name: keyword
+        type: string
+      - description: pageSize
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: pageNum
+        in: query
+        name: pageNum
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 分页查询用户
+      tags:
+      - 后台用户管理
+  /admin/login:
+    post:
+      consumes:
+      - application/json
+      description: 用户登录
+      parameters:
+      - description: 用户登录
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsAdminLoginDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      summary: 用户登录
+      tags:
+      - 后台用户管理
+  /admin/refreshToken:
+    post:
+      consumes:
+      - application/json
+      description: 刷新 token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 刷新 token
+      tags:
+      - 后台用户管理
+  /admin/register:
+    post:
+      consumes:
+      - application/json
+      description: 用户注册
+      parameters:
+      - description: 用户注册
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsAdminRegisterDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      summary: 用户注册
+      tags:
+      - 后台用户管理
+  /admin/role/{adminId}:
+    get:
+      description: 获取指定用户的角色
+      parameters:
+      - description: 用户 ID
+        in: path
+        name: adminId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 获取指定用户的角色
+      tags:
+      - 后台用户管理
+  /admin/role/update:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 修改指定用户角色
+      parameters:
+      - description: 用户 ID
+        in: formData
+        name: adminId
+        required: true
+        type: integer
+      - collectionFormat: csv
+        description: 角色 ID
+        in: formData
+        items:
+          type: integer
+        name: roleIds
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改指定用户角色
+      tags:
+      - 后台用户管理
+  /admin/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 修改指定用户信息
+      parameters:
+      - description: 用户 ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: 修改指定用户信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsAdminUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改指定用户信息
+      tags:
+      - 后台用户管理
+  /admin/updatePassword:
+    post:
+      consumes:
+      - application/json
+      description: 修改指定用户密码
+      parameters:
+      - description: 修改指定用户密码
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsAdminUpdatePasswordDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改指定用户密码
+      tags:
+      - 后台用户管理
+  /admin/updateStatus/{user_id}:
+    post:
+      consumes:
+      - application/json
+      description: 修改指定用户状态
+      parameters:
+      - description: 用户 ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: 用户状态
+        in: formData
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改指定用户状态
+      tags:
+      - 后台用户管理
+  /memberLevel/list:
+    get:
+      consumes:
+      - multipart/form-data
+      description: 查看所有会员等级
+      parameters:
+      - description: 是否为默认等级：0->不是；1->是
+        in: query
+        name: defaultStatus
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 查看所有会员等级
+      tags:
+      - 会员等级管理
+  /menu/{id}:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        根据ID获取菜单详情
+        根据ID获取菜单详情
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 根据ID获取菜单详情
+      tags:
+      - 后台菜单管理
+  /menu/create:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        添加后台菜单
+        添加后台菜单
+      parameters:
+      - description: 添加后台菜单
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsMenuCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 添加后台菜单
+      tags:
+      - 后台菜单管理
+  /menu/delete/{id}:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        删除后台菜单
+        删除后台菜单
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 删除后台菜单
+      tags:
+      - 后台菜单管理
+  /menu/list/{parentId}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: 分页查询后台菜单
+      parameters:
+      - description: 父级菜单ID
+        in: path
+        name: parentId
+        required: true
+        type: integer
+      - description: 页码
+        in: query
+        name: pageNum
+        required: true
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 分页查询后台菜单
+      tags:
+      - 后台菜单管理
+  /menu/treeList:
+    get:
+      consumes:
+      - application/json
+      description: 树形结构返回所有菜单列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 树形结构返回所有菜单列表
+      tags:
+      - 后台菜单管理
+  /menu/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        修改后台菜单
+        修改后台菜单
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改后台菜单
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsMenuCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改后台菜单
+      tags:
+      - 后台菜单管理
+  /menu/updateHidden/{id}:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        修改菜单显示状态
+        修改菜单显示状态
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 是否隐藏
+        in: formData
+        name: hidden
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改菜单显示状态
+      tags:
+      - 后台菜单管理
+  /resource/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 根据ID获取资源详情
+      parameters:
+      - description: 资源id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 根据ID获取资源详情
+      tags:
+      - 后台资源管理
+  /resource/create:
+    post:
+      consumes:
+      - application/json
+      description: 添加后台资源
+      parameters:
+      - description: 添加后台资源
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsResourceCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 添加后台资源
+      tags:
+      - 后台资源管理
+  /resource/delete/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 根据ID删除后台资源
+      parameters:
+      - description: 资源id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 根据ID删除后台资源
+      tags:
+      - 后台资源管理
+  /resource/list/resource:
+    get:
+      consumes:
+      - multipart/form-data
+      description: 分页模糊查询后台资源
+      parameters:
+      - description: 资源分类ID
+        in: query
+        name: categoryId
+        type: integer
+      - description: 资源名称
+        in: query
+        name: nameKeyword
+        type: string
+      - description: 资源URL
+        in: query
+        name: urlKeyword
+        type: string
+      - description: 页码
+        in: query
+        name: pageNum
+        required: true
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 分页模糊查询后台资源
+      tags:
+      - 后台资源管理
+  /resource/listAll:
+    get:
+      consumes:
+      - application/json
+      description: 查询所有后台资源
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 查询所有后台资源
+      tags:
+      - 后台资源管理
+  /resource/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 修改后台资源
+      parameters:
+      - description: 资源id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改后台资源
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsResourceCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改后台资源
+      tags:
+      - 后台资源管理
+  /resourceCategory/create:
+    post:
+      consumes:
+      - application/json
+      description: 添加后台资源分类
+      parameters:
+      - description: 添加后台资源分类
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsResourceCategoryCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 添加后台资源分类
+      tags:
+      - 后台资源分类管理
+  /resourceCategory/delete/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 删除后台资源分类
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 删除后台资源分类
+      tags:
+      - 后台资源分类管理
+  /resourceCategory/listAll:
+    get:
+      consumes:
+      - multipart/form-data
+      description: 查询所有后台资源分类
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 查询所有后台资源分类
+      tags:
+      - 后台资源分类管理
+  /resourceCategory/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 修改后台资源分类
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改后台资源分类
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsResourceCategoryCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改后台资源分类
+      tags:
+      - 后台资源分类管理
+  /role/allocMenu/{roleId}:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 修改角色菜单
+      parameters:
+      - description: roleId
+        in: query
+        name: roleId
+        required: true
+        type: integer
+      - collectionFormat: csv
+        description: menuIds
+        in: query
+        items:
+          type: integer
+        name: menuIds
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改角色菜单
+      tags:
+      - 后台角色管理
+  /role/allocResource/{roleId}:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 给角色分配资源
+      parameters:
+      - description: roleId
+        in: query
+        name: roleId
+        required: true
+        type: integer
+      - collectionFormat: csv
+        description: resourceIds
+        in: query
+        items:
+          type: integer
+        name: resourceIds
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 给角色分配资源
+      tags:
+      - 后台角色管理
+  /role/create:
+    post:
+      consumes:
+      - application/json
+      description: 添加角色
+      parameters:
+      - description: 添加角色
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsRoleCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 添加角色
+      tags:
+      - 后台角色管理
+  /role/delete:
+    post:
+      consumes:
+      - application/json
+      description: 批量删除角色
+      parameters:
+      - collectionFormat: csv
+        description: ids
+        in: query
+        items:
+          type: integer
+        name: ids
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 批量删除角色
+      tags:
+      - 后台角色管理
+  /role/list:
+    get:
+      consumes:
+      - multipart/form-data
+      description: 根据角色名称分页获取角色列表
+      parameters:
+      - description: keyword
+        in: query
+        name: keyword
+        type: string
+      - description: pageSize
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: pageNum
+        in: query
+        name: pageNum
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 根据角色名称分页获取角色列表
+      tags:
+      - 后台角色管理
+  /role/listAll:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有角色
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 获取所有角色
+      tags:
+      - 后台角色管理
+  /role/listMenu/{roleId}:
+    get:
+      consumes:
+      - application/json
+      description: 获取角色相关菜单
+      parameters:
+      - description: roleId
+        in: path
+        name: roleId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 获取角色相关菜单
+      tags:
+      - 后台角色管理
+  /role/listResource/{roleId}:
+    get:
+      consumes:
+      - application/json
+      description: 获取角色相关资源
+      parameters:
+      - description: roleId
+        in: path
+        name: roleId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 获取角色相关资源
+      tags:
+      - 后台角色管理
+  /role/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 修改角色
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改角色
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ums_admin.UmsRoleCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改角色
+      tags:
+      - 后台角色管理
+  /role/updateStatus/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 修改角色状态
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: status
+        in: query
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改角色状态
+      tags:
+      - 后台角色管理
+schemes:
+- http
+- https
+securityDefinitions:
+  GinJWTMiddleware:
+    description: Description for what is this security definition being used
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

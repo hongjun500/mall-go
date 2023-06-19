@@ -15,6 +15,8 @@ type UmsResource struct {
 	Description string `gorm:"column:description;" json:"description"`
 	// 资源分类ID
 	CategoryId int64 `gorm:"column:category_id;not null" json:"categoryId"`
+	// 对应的拥有该资源的角色，在数据库忽略该字段
+	RoleId int64 `gorm:"-" json:"roleId"`
 }
 
 func (*UmsResource) TableName() string {
@@ -70,7 +72,6 @@ func (usmResource *UmsResource) Insert(db *gorm.DB) (int64, error) {
 
 func (usmResource *UmsResource) Update(db *gorm.DB, id int64) (int64, error) {
 	usmResource.Id = id
-	// todo: 更新缓存
 	tx := db.Updates(usmResource)
 	if tx.Error != nil {
 		return 0, tx.Error
@@ -80,7 +81,6 @@ func (usmResource *UmsResource) Update(db *gorm.DB, id int64) (int64, error) {
 
 func (usmResource *UmsResource) Delete(db *gorm.DB, id int64) (int64, error) {
 	tx := db.Delete(usmResource, id)
-	// todo: 清除缓存
 	if tx.Error != nil {
 		return 0, tx.Error
 	}

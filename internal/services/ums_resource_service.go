@@ -41,7 +41,7 @@ func (s UmsResourceService) UmsResourceCreate(context *gin.Context) {
 		return
 	}
 	// var umsResource *models.UmsResource
-	// 上面这种直接赋值有问题，空指针
+	// 上面这种直接赋值有问题，空指针, 如果是以 umsResource := &models.UmsResource{} 的方式就不会有问题, 或者使用 new() 函数
 	umsResource := new(models.UmsResource)
 	umsResource.Name = dto.Name
 	umsResource.Url = dto.Url
@@ -52,7 +52,6 @@ func (s UmsResourceService) UmsResourceCreate(context *gin.Context) {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	// todo 清除动态资源缓存
 	gin_common.CreateSuccess(context, rows)
 }
 

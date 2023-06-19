@@ -1,9 +1,10 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 	"gorm.io/plugin/soft_delete"
-	"time"
 )
 
 type UmsAdminRoleRelation struct {
@@ -62,7 +63,7 @@ func (re *UmsAdminRoleRelation) InsertList(db *gorm.DB, list []*UmsAdminRoleRela
 	return tx.RowsAffected, nil
 }
 
-// SelectRoleList 获取用于所有角色
+// SelectRoleList 获取用户所有角色
 func (re *UmsAdminRoleRelation) SelectRoleList(db *gorm.DB, adminId int64) ([]*UmsRole, error) {
 	var list []*UmsRole
 	tx := db.Select("r.*").Table("ums_admin_role_relation ar").Joins("left join ums_role r on ar.role_id = r.id").Where("ar.admin_id = ?", adminId).Scan(&list)

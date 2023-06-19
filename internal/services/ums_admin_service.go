@@ -174,10 +174,12 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 		gin_common.CreateFail(context, gin_common.AccountLocked)
 		return
 	}
-	// 获取当前用户所拥有的资源
-	resources := s.GetResource(umsAdmin.Id)
-	// 添加策略
-	security.AddPolicyFromResource(security.Enforcer, umsAdmin.Username, resources)
+	if "admin" != umsAdmin.Username {
+		// 获取用户资源
+		umsResources := s.GetResource(umsAdmin.Id)
+		// 添加用户可访问资源策略
+		security.AddPolicyFromResource(security.Enforcer, umsAdmin.Username, umsResources)
+	}
 
 	token := security.GenerateToken(umsAdmin.Username, umsAdmin.Id)
 	if token == "" {
@@ -207,7 +209,7 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 // UmsAdminLogout 用户登出
 func (s UmsAdminService) UmsAdminLogout(context *gin.Context) {
 	// 清除策略
-	security.Enforcer.ClearPolicy()
+	// security.Enforcer.RemovePolicy("admin")
 	gin_common.Create(context)
 }
 
@@ -227,7 +229,7 @@ func (s UmsAdminService) UmsAdminAuthTest(context *gin.Context) {
 		},
 		"hongjun500": map[string]any{
 			"username": "hongjun500",
-			"token":    "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJob25nanVuNTAwIiwidXNlcklkIjoxMSwiY3JlYXRlZCI6IjIwMjMtMDYtMTNUMTQ6NTg6MzQuNzMxNDA2NyswODowMCIsImV4cCI6MTY4NzI0NDMxNH0.Noxh09smVa6Y81wKdWPZ_II_6uf-mapYgBcie-ZVkM_23VoAoRBvP701Q7XEONDfp-J2HFOoCBbw3JeUuPr5Rw",
+			"token":    "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJob25nanVuNTAwIiwidXNlcklkIjoxMSwiY3JlYXRlZCI6IjIwMjMtMDYtMTlUMTQ6Mjg6MjYuODM1MTgxNyswODowMCIsImV4cCI6MTY4Nzc2MDkwNn0.Hgt5qXSE25_zCHiCbtlEVdU2v-qsRG5-PR-Pckf7cThwGqbbOiHe2NAS-Yia8W8ALqIzI9mzSpSLc50dJLLsIw",
 		},
 	}
 	gin_common.CreateSuccess(context, m)
