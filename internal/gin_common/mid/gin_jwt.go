@@ -48,7 +48,7 @@ func GinJWTMiddleware() gin.HandlerFunc {
 			status = gin_common.Unauthorized
 		}
 		if status != http.StatusOK {
-			gin_common.CreateFail(status, context)
+			gin_common.CreateFail(context, status)
 			// 这里必须要加上 Abort()，否则会继续往下执行
 			context.Abort()
 			return

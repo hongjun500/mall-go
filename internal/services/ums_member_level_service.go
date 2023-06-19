@@ -35,14 +35,14 @@ func NewUmsMemberLevelService(dbFactory *database.DbFactory) UmsMemberLevelServi
 func (s UmsMemberLevelService) UmsMemberLevelList(context *gin.Context) {
 	var dto ums_member.UmsMemberLevelListDTO
 	if err := context.ShouldBind(&dto); err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	var umsMemberLevel models.UmsMemberLevel
 	list, err := umsMemberLevel.SelectByDefaultStatus(s.DbFactory.GormMySQL, dto.DefaultStatus)
 	if err != nil {
-		gin_common.CreateFail(gin_common.DatabaseError, context)
+		gin_common.CreateFail(context, gin_common.DatabaseError)
 		return
 	}
-	gin_common.CreateSuccess(list, context)
+	gin_common.CreateSuccess(context, list)
 }

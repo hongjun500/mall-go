@@ -37,7 +37,7 @@ func (s UmsResourceService) UmsResourceCreate(context *gin.Context) {
 	var dto ums_admin.UmsResourceCreateDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	// var umsResource *models.UmsResource
@@ -49,11 +49,11 @@ func (s UmsResourceService) UmsResourceCreate(context *gin.Context) {
 	umsResource.CategoryId = dto.CategoryId
 	rows, err := umsResource.Insert(s.DbFactory.GormMySQL)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
 	// todo 清除动态资源缓存
-	gin_common.CreateSuccess(rows, context)
+	gin_common.CreateSuccess(context, rows)
 }
 
 // UmsResourceUpdate 修改后台资源
@@ -73,7 +73,7 @@ func (s UmsResourceService) UmsResourceUpdate(context *gin.Context) {
 	err := context.ShouldBind(&dto)
 	err = context.ShouldBindUri(&pathVariableDTO)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	m := new(models.UmsResource)
@@ -83,12 +83,12 @@ func (s UmsResourceService) UmsResourceUpdate(context *gin.Context) {
 	m.CategoryId = dto.CategoryId
 	rows, err := m.Update(s.DbFactory.GormMySQL, pathVariableDTO.Id)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
 	// todo 清除动态资源
 	s.DelResourceListByResource(pathVariableDTO.Id)
-	gin_common.CreateSuccess(rows, context)
+	gin_common.CreateSuccess(context, rows)
 }
 
 // UmsResourceItem 根据ID获取资源详情
@@ -105,17 +105,17 @@ func (s UmsResourceService) UmsResourceItem(context *gin.Context) {
 	var pathVariableDTO base.PathVariableDTO
 	err := context.ShouldBindUri(&pathVariableDTO)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	m := new(models.UmsResource)
 	m.Id = pathVariableDTO.Id
 	umsResource, err := m.SelectUmsResourceById(s.DbFactory.GormMySQL, m.Id)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(umsResource, context)
+	gin_common.CreateSuccess(context, umsResource)
 }
 
 // UmsResourceDelete 根据ID删除后台资源
@@ -132,19 +132,19 @@ func (s UmsResourceService) UmsResourceDelete(context *gin.Context) {
 	var pathVariableDTO base.PathVariableDTO
 	err := context.ShouldBindUri(&pathVariableDTO)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	m := new(models.UmsResource)
 	m.Id = pathVariableDTO.Id
 	rows, err := m.Delete(s.DbFactory.GormMySQL, m.Id)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
 	// todo 清除动态资源
 	s.DelResourceListByResource(pathVariableDTO.Id)
-	gin_common.CreateSuccess(rows, context)
+	gin_common.CreateSuccess(context, rows)
 }
 
 // UmsResourcePageList 分页模糊查询后台资源
@@ -165,16 +165,16 @@ func (s UmsResourceService) UmsResourcePageList(context *gin.Context) {
 	var dto ums_admin.UmsResourcePageListDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	m := new(models.UmsResource)
 	page, err := m.SelectPage(s.DbFactory.GormMySQL, dto.CategoryId, dto.NameKeyword, dto.UrlKeyword, dto.PageNum, dto.PageSize)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(page, context)
+	gin_common.CreateSuccess(context, page)
 }
 
 // UmsResourceList 查询所有后台资源
@@ -190,8 +190,8 @@ func (s UmsResourceService) UmsResourceList(context *gin.Context) {
 	m := new(models.UmsResource)
 	list, err := m.SelectAll(s.DbFactory.GormMySQL)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(list, context)
+	gin_common.CreateSuccess(context, list)
 }

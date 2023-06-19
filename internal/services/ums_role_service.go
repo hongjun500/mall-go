@@ -37,7 +37,7 @@ func (service UmsRoleService) UmsRoleCreate(context *gin.Context) {
 	var dto ums_admin.UmsRoleCreateDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	m := new(models.UmsRole)
@@ -48,10 +48,10 @@ func (service UmsRoleService) UmsRoleCreate(context *gin.Context) {
 	m.Sort = 0
 	rows, err := m.Insert(service.DbFactory.GormMySQL)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(rows, context)
+	gin_common.CreateSuccess(context, rows)
 }
 
 // UmsRoleUpdate 修改角色
@@ -71,7 +71,7 @@ func (service UmsRoleService) UmsRoleUpdate(context *gin.Context) {
 	err := context.ShouldBind(&dto)
 	err = context.ShouldBindUri(&pathVariable)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	m := new(models.UmsRole)
@@ -82,10 +82,10 @@ func (service UmsRoleService) UmsRoleUpdate(context *gin.Context) {
 	m.Sort = 0
 	rows, err := m.Update(service.DbFactory.GormMySQL, pathVariable.Id)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(rows, context)
+	gin_common.CreateSuccess(context, rows)
 }
 
 // UmsRoleDelete 批量删除角色
@@ -102,16 +102,16 @@ func (service UmsRoleService) UmsRoleDelete(context *gin.Context) {
 	var dto ums_admin.IdsDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	m := new(models.UmsRole)
 	rows, err := m.Delete(service.DbFactory.GormMySQL, dto.Ids)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(rows, context)
+	gin_common.CreateSuccess(context, rows)
 }
 
 // UmsRoleListAll 获取所有角色
@@ -127,10 +127,10 @@ func (service UmsRoleService) UmsRoleListAll(context *gin.Context) {
 	var m models.UmsRole
 	list, err := m.SelectAll(service.DbFactory.GormMySQL)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(list, context)
+	gin_common.CreateSuccess(context, list)
 }
 
 // UmsRoleList 根据角色名称分页获取角色列表
@@ -149,16 +149,16 @@ func (service UmsRoleService) UmsRoleList(context *gin.Context) {
 	var dto ums_admin.UmsRoleListPageDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	m := new(models.UmsRole)
 	page, err := m.SelectPage(service.DbFactory.GormMySQL, dto.Keyword, dto.PageNum, dto.PageSize)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(page, context)
+	gin_common.CreateSuccess(context, page)
 }
 
 // UmsRoleUpdateStatus 修改角色状态
@@ -178,16 +178,16 @@ func (service UmsRoleService) UmsRoleUpdateStatus(context *gin.Context) {
 	err := context.ShouldBindUri(&pathVariableDTO)
 	err = context.ShouldBind(&dto)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	var m models.UmsRole
 	rows, err := m.UpdateStatus(service.DbFactory.GormMySQL, pathVariableDTO.Id, dto.Status)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(rows, context)
+	gin_common.CreateSuccess(context, rows)
 }
 
 // UmsRoleListMenu 获取角色相关菜单
@@ -204,16 +204,16 @@ func (service UmsRoleService) UmsRoleListMenu(context *gin.Context) {
 	var dto ums_admin.UmsRolePathVariableDTO
 	err := context.ShouldBindUri(&dto)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	var m models.UmsRole
 	list, err := m.SelectMenu(service.DbFactory.GormMySQL, dto.RoleId)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(list, context)
+	gin_common.CreateSuccess(context, list)
 }
 
 // UmsRoleListResource 获取角色相关资源
@@ -230,16 +230,16 @@ func (service UmsRoleService) UmsRoleListResource(context *gin.Context) {
 	var dto ums_admin.UmsRolePathVariableDTO
 	err := context.ShouldBindUri(&dto)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	var m models.UmsRole
 	list, err := m.SelectResourceByRoleId(service.DbFactory.GormMySQL, dto.RoleId)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(list, context)
+	gin_common.CreateSuccess(context, list)
 }
 
 // UmsRoleAllocMenu 修改角色菜单
@@ -257,16 +257,16 @@ func (service UmsRoleService) UmsRoleAllocMenu(context *gin.Context) {
 	var dto ums_admin.UmsRoleAllocMenuDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	var m models.UmsRole
 	rows, err := m.UpdateRoleFromAllocMenu(service.DbFactory.GormMySQL, dto.RoleId, dto.MenuIds)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(rows, context)
+	gin_common.CreateSuccess(context, rows)
 }
 
 // UmsRoleAllocResource 给角色分配资源
@@ -284,14 +284,14 @@ func (service UmsRoleService) UmsRoleAllocResource(context *gin.Context) {
 	var dto ums_admin.UmsRoleAllocResourceDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	var m models.UmsRole
 	rows, err := m.UpdateRoleFromAllocResource(service.DbFactory.GormMySQL, dto.RoleId, dto.ResourceIds)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(rows, context)
+	gin_common.CreateSuccess(context, rows)
 }

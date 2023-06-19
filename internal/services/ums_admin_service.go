@@ -38,7 +38,7 @@ func (s UmsAdminService) UmsAdminRegister(context *gin.Context) {
 	var request ums_admin.UmsAdminRegisterDTO
 	err := context.ShouldBind(&request)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		// 这些地方需要手动 return
 		return
 	}
@@ -46,11 +46,11 @@ func (s UmsAdminService) UmsAdminRegister(context *gin.Context) {
 	var umsAdmin *models.UmsAdmin
 	umsAdmins, err := umsAdmin.SelectUmsAdminByUsername(s.DbFactory.GormMySQL, request.Username)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, err.Error())
 		return
 	}
 	if umsAdmins != nil && len(umsAdmins) > 0 {
-		gin_common.CreateFail(gin_common.UsernameAlreadyExists, context)
+		gin_common.CreateFail(context, gin_common.UsernameAlreadyExists)
 		return
 	}
 	// 密码加密
@@ -67,7 +67,7 @@ func (s UmsAdminService) UmsAdminRegister(context *gin.Context) {
 	}
 	register, err := umsAdmin.InsertUmsAdmin(s.DbFactory.GormMySQL)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, err.Error())
 		return
 	}
 	if register > 0 {
@@ -114,27 +114,27 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 	var umsAdminLogin ums_admin.UmsAdminLoginDTO
 	err := context.ShouldBind(&umsAdminLogin)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		// 这些地方需要手动 return
 		return
 	}
 	var umsAdmin *models.UmsAdmin
 	umsAdmins, err := umsAdmin.SelectUmsAdminByUsername(s.DbFactory.GormMySQL, umsAdminLogin.Username)
 	if err != nil {
-		gin_common.CreateFail(gin_common.DatabaseError, context)
+		gin_common.CreateFail(context, gin_common.DatabaseError)
 		return
 	}
 	if umsAdmins == nil || len(umsAdmins) == 0 {
-		gin_common.CreateFail(gin_common.UsernameOrPasswordError, context)
+		gin_common.CreateFail(context, gin_common.UsernameOrPasswordError)
 		return
 	}
 	umsAdmin = umsAdmins[0]
 	if !VerifyPassword(umsAdminLogin.Password, umsAdmin.Password) {
-		gin_common.CreateFail(gin_common.UsernameOrPasswordError, context)
+		gin_common.CreateFail(context, gin_common.UsernameOrPasswordError)
 		return
 	}
 	if umsAdmin.Status == 0 {
-		gin_common.CreateFail(gin_common.AccountLocked, context)
+		gin_common.CreateFail(context, gin_common.AccountLocked)
 		return
 	}
 	// 获取当前用户所拥有的资源
@@ -144,7 +144,7 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 
 	token := security.GenerateToken(umsAdmin.Username, umsAdmin.Id, resources)
 	if token == "" {
-		gin_common.CreateFail(gin_common.TokenGenFail, context)
+		gin_common.CreateFail(context, gin_common.TokenGenFail)
 		return
 	}
 	now := time.Now()
@@ -163,7 +163,7 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 	tokenMap := make(map[string]string)
 	tokenMap["token"] = token
 	tokenMap["tokenHead"] = conf.GlobalJwtConfigProperties.TokenHead
-	gin_common.CreateSuccess(tokenMap, context)
+	gin_common.CreateSuccess(context, tokenMap)
 
 }
 
@@ -207,7 +207,7 @@ func (s UmsAdminService) UmsAdminAuthTest(context *gin.Context) {
 			"token":    "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJob25nanVuNTAwIiwidXNlcklkIjoxMSwiY3JlYXRlZCI6IjIwMjMtMDYtMTNUMTQ6NTg6MzQuNzMxNDA2NyswODowMCIsImV4cCI6MTY4NzI0NDMxNH0.Noxh09smVa6Y81wKdWPZ_II_6uf-mapYgBcie-ZVkM_23VoAoRBvP701Q7XEONDfp-J2HFOoCBbw3JeUuPr5Rw",
 		},
 	}
-	gin_common.CreateSuccess(m, context)
+	gin_common.CreateSuccess(context, m)
 }
 
 // UmsAdminRefreshToken 刷新 token
@@ -223,13 +223,13 @@ func (s UmsAdminService) UmsAdminRefreshToken(context *gin.Context) {
 	header := context.GetHeader(conf.GlobalJwtConfigProperties.TokenHeader)
 	refreshToken, _ := security.RefreshToken(header)
 	if refreshToken == "" {
-		gin_common.CreateFail(gin_common.TokenExpired, context)
+		gin_common.CreateFail(context, gin_common.TokenExpired)
 		return
 	}
 	tokenMap := make(map[string]string)
 	tokenMap["token"] = refreshToken
 	tokenMap["tokenHead"] = conf.GlobalJwtConfigProperties.TokenHead
-	gin_common.CreateSuccess(tokenMap, context)
+	gin_common.CreateSuccess(context, tokenMap)
 }
 
 func (s UmsAdminService) UmsRoleList(adminId int64) []*models.UmsRole {
@@ -257,18 +257,18 @@ func (s UmsAdminService) UmsAdminInfo(context *gin.Context) {
 	var umsAdmin models.UmsAdmin
 	result, err := umsAdmin.SelectUmsAdminByUserId(s.DbFactory.GormMySQL, userId)
 	if err != nil {
-		gin_common.CreateSuccess(resultMap, context)
+		gin_common.CreateSuccess(context, resultMap)
 		return
 	}
 	if result == nil {
-		gin_common.CreateSuccess(resultMap, context)
+		gin_common.CreateSuccess(context, resultMap)
 		return
 	}
 
 	var umsRole models.UmsRole
 	umsMenus, err := umsRole.SelectMenu(s.DbFactory.GormMySQL, userId)
 	if err != nil {
-		gin_common.CreateSuccess(resultMap, context)
+		gin_common.CreateSuccess(context, resultMap)
 		return
 	}
 	resultMap["menus"] = umsMenus
@@ -280,7 +280,7 @@ func (s UmsAdminService) UmsAdminInfo(context *gin.Context) {
 		roleNames = append(roleNames, role.Name)
 	}
 	resultMap["roles"] = roleNames
-	gin_common.CreateSuccess(resultMap, context)
+	gin_common.CreateSuccess(context, resultMap)
 }
 
 // UmsAdminListPage 分页查询用户
@@ -299,16 +299,16 @@ func (s UmsAdminService) UmsAdminListPage(context *gin.Context) {
 	var request ums_admin.UmsAdminPageDTO
 	err := context.ShouldBind(&request)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	var umsAdmin *models.UmsAdmin
 	page, err := umsAdmin.SelectUmsAdminPage(s.DbFactory.GormMySQL, request.Username, request.PageNum, request.PageSize)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(page, context)
+	gin_common.CreateSuccess(context, page)
 }
 
 // UmsAdminItem 获取指定用户信息
@@ -326,16 +326,16 @@ func (s UmsAdminService) UmsAdminItem(context *gin.Context) {
 	err := context.ShouldBindUri(&userDTO)
 	// 占位符
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	var umsAdmin models.UmsAdmin
 	result, err := umsAdmin.SelectUmsAdminByUserId(s.DbFactory.GormMySQL, userDTO.Id)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(result, context)
+	gin_common.CreateSuccess(context, result)
 }
 
 // UmsAdminUpdate 修改指定用户信息
@@ -354,12 +354,12 @@ func (s UmsAdminService) UmsAdminUpdate(context *gin.Context) {
 	var userDTO base.UserDTO
 	err := context.ShouldBindUri(&userDTO)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	err = context.ShouldBind(&umsAdminUpdate)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	var umsAdmin models.UmsAdmin
@@ -370,15 +370,15 @@ func (s UmsAdminService) UmsAdminUpdate(context *gin.Context) {
 	umsAdmin.Note = umsAdminUpdate.Note
 	id, err := umsAdmin.UpdateUmsAdminByUserId(s.DbFactory.GormMySQL, userDTO.Id)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
 	s.DelAdmin(userDTO.UserId)
-	gin_common.CreateSuccess(id, context)
+	gin_common.CreateSuccess(context, id)
 }
 
 // UmsAdminDelete 删除指定用户信息
@@ -395,18 +395,18 @@ func (s UmsAdminService) UmsAdminDelete(context *gin.Context) {
 	var userDTO base.UserDTO
 	err := context.ShouldBindUri(&userDTO)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	var umsAdmin models.UmsAdmin
 	id, err := umsAdmin.DeleteUmsAdminByUserId(s.DbFactory.GormMySQL, userDTO.UserId)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
 	s.DelAdmin(userDTO.UserId)
 	s.DelResourceList(userDTO.UserId)
-	gin_common.CreateSuccess(id, context)
+	gin_common.CreateSuccess(context, id)
 }
 
 // UmsAdminUpdateStatus 修改指定用户状态
@@ -424,7 +424,7 @@ func (s UmsAdminService) UmsAdminUpdateStatus(context *gin.Context) {
 	var pathVariableDTO base.PathVariableDTO
 	err := context.ShouldBindUri(&pathVariableDTO)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	umsAdmin := new(models.UmsAdmin)
@@ -433,11 +433,11 @@ func (s UmsAdminService) UmsAdminUpdateStatus(context *gin.Context) {
 	umsAdmin.Id = pathVariableDTO.Id
 	id, err := umsAdmin.UpdateUmsAdminStatusByUserId(s.DbFactory.GormMySQL)
 	if err != nil {
-		gin_common.CreateFail(gin_common.DatabaseError, context)
+		gin_common.CreateFail(context, gin_common.DatabaseError)
 		return
 	}
 	s.DelAdmin(pathVariableDTO.Id)
-	gin_common.CreateSuccess(id, context)
+	gin_common.CreateSuccess(context, id)
 }
 
 // UmsAdminUpdatePassword 修改指定用户密码
@@ -454,7 +454,7 @@ func (s UmsAdminService) UmsAdminUpdatePassword(context *gin.Context) {
 	var umsAdminUpdatePassword ums_admin.UmsAdminUpdatePasswordDTO
 	err := context.ShouldBind(&umsAdminUpdatePassword)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 
@@ -464,30 +464,30 @@ func (s UmsAdminService) UmsAdminUpdatePassword(context *gin.Context) {
 		return
 	}
 	if umsAdmins == nil || len(umsAdmins) == 0 {
-		gin_common.CreateFail("找不到该用户", context)
+		gin_common.CreateFail(context, "找不到该用户")
 		return
 	}
 
 	getAdmin := umsAdmins[0]
 
 	if !VerifyPassword(umsAdminUpdatePassword.OldPassword, getAdmin.Password) {
-		gin_common.CreateFail("旧密码错误", context)
+		gin_common.CreateFail(context, "旧密码错误")
 		return
 	}
 	hashPassword, err := HashPassword(umsAdminUpdatePassword.NewPassword)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
 	getAdmin.Password = hashPassword
 	status, err := getAdmin.UpdateUmsAdminPasswordByUserId(s.DbFactory.GormMySQL)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
 	// 删除缓存的用户数据
 	s.DelAdmin(getAdmin.Id)
-	gin_common.CreateSuccess(status, context)
+	gin_common.CreateSuccess(context, status)
 }
 
 // UmsAdminRoleUpdate 修改指定用户角色
@@ -507,7 +507,7 @@ func (s UmsAdminService) UmsAdminRoleUpdate(context *gin.Context) {
 	count := int64(0)
 	err = context.ShouldBind(&umsAdminRoleDTO)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	adminId := umsAdminRoleDTO.AdminId
@@ -530,12 +530,12 @@ func (s UmsAdminService) UmsAdminRoleUpdate(context *gin.Context) {
 		}
 		count, err = umsAdminRoleRelation.InsertList(s.DbFactory.GormMySQL, umsAdminRoleRelations)
 		if err != nil {
-			gin_common.CreateFail(gin_common.UnknownError, context)
+			gin_common.CreateFail(context, gin_common.UnknownError)
 			return
 		}
 	}
 	s.DelResourceList(adminId)
-	gin_common.CreateSuccess(count, context)
+	gin_common.CreateSuccess(context, count)
 }
 
 // UmsAdminRoleItem 获取指定用户的角色
@@ -551,14 +551,14 @@ func (s UmsAdminService) UmsAdminRoleItem(context *gin.Context) {
 	var umsAdminRoleDTO ums_admin.UmsAdminRoleDTO
 	err := context.ShouldBindUri(&umsAdminRoleDTO)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	var umsAdminRoleRelation models.UmsAdminRoleRelation
 	umsAdminRoleRelations, err := umsAdminRoleRelation.SelectRoleList(s.DbFactory.GormMySQL, umsAdminRoleDTO.AdminId)
 	if err != nil {
-		gin_common.CreateFail(gin_common.UnknownError, context)
+		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	gin_common.CreateSuccess(umsAdminRoleRelations, context)
+	gin_common.CreateSuccess(context, umsAdminRoleRelations)
 }

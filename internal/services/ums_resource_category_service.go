@@ -36,10 +36,10 @@ func (s UmsResourceCategoryService) UmsResourceCategoryList(context *gin.Context
 	var umsResourceCategory models.UmsResourceCategory
 	list, err := umsResourceCategory.SelectAll(s.DbFactory.GormMySQL)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
-	gin_common.CreateSuccess(list, context)
+	gin_common.CreateSuccess(context, list)
 }
 
 // UmsResourceCategoryCreate 添加后台资源分类
@@ -56,7 +56,7 @@ func (s UmsResourceCategoryService) UmsResourceCategoryCreate(context *gin.Conte
 	var dto ums_admin.UmsResourceCategoryCreateDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	umsResourceCategory := new(models.UmsResourceCategory)
@@ -66,7 +66,7 @@ func (s UmsResourceCategoryService) UmsResourceCategoryCreate(context *gin.Conte
 	if err != nil {
 		return
 	}
-	gin_common.CreateSuccess(rows, context)
+	gin_common.CreateSuccess(context, rows)
 }
 
 // UmsResourceCategoryUpdate 修改后台资源分类
@@ -86,7 +86,7 @@ func (s UmsResourceCategoryService) UmsResourceCategoryUpdate(context *gin.Conte
 	err := context.ShouldBind(&dto)
 	err = context.ShouldBindUri(&pathVariableDTO)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	umsResourceCategory := new(models.UmsResourceCategory)
@@ -96,7 +96,7 @@ func (s UmsResourceCategoryService) UmsResourceCategoryUpdate(context *gin.Conte
 	if err != nil {
 		return
 	}
-	gin_common.CreateSuccess(rows, context)
+	gin_common.CreateSuccess(context, rows)
 }
 
 // UmsResourceCategoryDelete 删除后台资源分类
@@ -113,7 +113,7 @@ func (s UmsResourceCategoryService) UmsResourceCategoryDelete(context *gin.Conte
 	var pathVariableDTO base.PathVariableDTO
 	err := context.ShouldBindUri(&pathVariableDTO)
 	if err != nil {
-		gin_common.CreateFail(gin_common.ParameterValidationError, context)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	umsResourceCategory := new(models.UmsResourceCategory)
@@ -121,5 +121,5 @@ func (s UmsResourceCategoryService) UmsResourceCategoryDelete(context *gin.Conte
 	if err != nil {
 		return
 	}
-	gin_common.CreateSuccess(rows, context)
+	gin_common.CreateSuccess(context, rows)
 }

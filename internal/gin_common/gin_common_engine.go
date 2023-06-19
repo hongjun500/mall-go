@@ -81,7 +81,7 @@ var CommonErrorConst = map[int]string{
 
 // CreateAny 创建一个通用的返回信息,不取用 Http 状态码,而是自己定义 status 为 success 或 fail
 // 2023/6/14 15:09 改动: 增加了 Code 和 Message 字段 适用于 mall 项目
-func CreateAny(result any, Code int, Message, status string, context *gin.Context) {
+func CreateAny(context *gin.Context, Code int, Message, status string, result any) {
 	context.JSON(http.StatusOK, GinCommonResponse{
 		Code:    Code,
 		Message: Message,
@@ -92,38 +92,38 @@ func CreateAny(result any, Code int, Message, status string, context *gin.Contex
 
 // CreateSuccess 创建一个成功的返回信息
 // 2023/6/14 15:09 改动: 增加了 Code 和 Message 字段 适用于 mall 项目
-func CreateSuccess(result any, context *gin.Context) {
-	CreateAny(result, SUCCESS, IErrorCodeConst[SUCCESS].GetMessage(), "success", context)
+func CreateSuccess(context *gin.Context, result any) {
+	CreateAny(context, SUCCESS, IErrorCodeConst[SUCCESS].GetMessage(), "success", result)
 }
 
 // CreateSuccessWithMessage 创建一个成功的返回信息,并且自定义返回信息
-func CreateSuccessWithMessage(result any, message string, context *gin.Context) {
-	CreateAny(result, SUCCESS, message, "success", context)
+func CreateSuccessWithMessage(context *gin.Context, message string, result any) {
+	CreateAny(context, SUCCESS, message, "success", result)
 }
 
 // Create 创建一个成功但没有返回值的返回信息
 func Create(context *gin.Context) {
-	CreateSuccess(nil, context)
+	CreateSuccess(context, nil)
 }
 
 // CreateFiledParam 创建一个失败的返回信息,接收 http 状态码，并且将具体的错误信息封装到 Data 中
 func CreateFiledParam(context *gin.Context, errs ...any) {
-	errorCode := errs[0].(*ResultCode)
+	resultCode := errs[0].(*ResultCode)
 	message := errs[1].(string)
 	customError := errs[2].(GinCommonError)
-	if errorCode != nil && message == "" {
-		CreateAny(customError, errorCode.GetCode(), errorCode.GetMessage(), "fail", context)
-	} else if message != "" && errorCode == nil {
-		CreateAny(customError, FAILED, message, "fail", context)
-	} else if errorCode == nil && message == "" {
-		CreateAny(customError, FAILED, IErrorCodeConst[FAILED].GetMessage(), "fail", context)
+	if resultCode != nil && message == "" {
+		CreateAny(context, resultCode.GetCode(), resultCode.GetMessage(), "fail", customError)
+	} else if message != "" && resultCode == nil {
+		CreateAny(context, FAILED, message, "fail", customError)
+	} else if resultCode == nil && message == "" {
+		CreateAny(context, FAILED, IErrorCodeConst[FAILED].GetMessage(), "fail", customError)
 	} else {
-		CreateAny(customError, errorCode.GetCode(), message, "fail", context)
+		CreateAny(context, resultCode.GetCode(), message, "fail", customError)
 	}
 }
 
 // CreateFail 创建一个失败的返回信息,并且将具体的错误信息封装到 Data 中
-func CreateFail(result any, context *gin.Context) {
+func CreateFail(context *gin.Context, result any) {
 	switch errCodeMsg := result.(type) {
 	case int:
 		// 失败时将错误信息封装到 Data 中

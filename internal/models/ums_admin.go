@@ -1,9 +1,10 @@
 package models
 
 import (
+	"time"
+
 	"github.com/hongjun500/mall-go/internal/gorm_common"
 	"gorm.io/gorm"
-	"time"
 )
 
 type UmsAdmin struct {
