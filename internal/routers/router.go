@@ -8,7 +8,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-type CoreRouter struct {
+type CoreAdminRouter struct {
 	*UmsAdminRouter
 	*UmsMenuRouter
 	*UmsResourceCategoryRouter
@@ -17,12 +17,16 @@ type CoreRouter struct {
 	*UmsMemberLevelRouter
 }
 
-type CoreRouterInterface interface {
-	InitCoreRouter(service *services.CoreService, coreRouter *CoreRouter)
+type CoreSearchRouter struct {
+	*SearchRouter
 }
 
-func NewCoreRouter(service *services.CoreService) *CoreRouter {
-	return &CoreRouter{
+type CoreRouterInterface interface {
+	InitCoreRouter(service *services.CoreAdminService, coreRouter *CoreAdminRouter)
+}
+
+func NewCoreAdminRouter(service *services.CoreAdminService) *CoreAdminRouter {
+	return &CoreAdminRouter{
 		UmsAdminRouter:            NewUmsAdminRouter(service.UmsAdminService),
 		UmsMenuRouter:             NewUmsMenuRouter(service.UmsMenuService),
 		UmsResourceCategoryRouter: NewUmsResourceCategoryRouter(service.UmsResourceCategoryService),
@@ -32,8 +36,14 @@ func NewCoreRouter(service *services.CoreService) *CoreRouter {
 	}
 }
 
+func NewCoreSearchRouter(service *services.CoreSearchService) *CoreSearchRouter {
+	return &CoreSearchRouter{
+		SearchRouter: NewSearchRouter(service.ProductSearchService),
+	}
+}
+
 // InitAdminGroupRouter 初始化 Admin 路由组
-func InitAdminGroupRouter(coreRouter *CoreRouter, ginEngine *gin.Engine) {
+func InitAdminGroupRouter(coreRouter *CoreAdminRouter, ginEngine *gin.Engine) {
 	// docs.SwaggerInfo.Version = "1.0"
 	// 必须要写上这一行很奇怪
 	// 解释：必须要导入 swagger 的包，即 docs, 不然 swagger 无法生成文档
@@ -53,8 +63,15 @@ func InitAdminGroupRouter(coreRouter *CoreRouter, ginEngine *gin.Engine) {
 	coreRouter.GroupUmsMemberLevelRouter(ginEngine.Group("/memberLevel"))
 }
 
+func InitSearchGroupRouter(coreSearchRouter *CoreSearchRouter, ginEngine *gin.Engine) {
+
+	// 设置 Swagger 路由
+	ginEngine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	coreSearchRouter.GroupProductRouter(ginEngine.Group("/product"))
+}
+
 // UnauthorizedGroupRouter  未授权路由
-func (router *CoreRouter) UnauthorizedGroupRouter(routerEngine *gin.Engine) {
+func (router *CoreAdminRouter) UnauthorizedGroupRouter(routerEngine *gin.Engine) {
 	unAuthGroup := routerEngine.Group("/admin")
 	{
 		// 用户注册

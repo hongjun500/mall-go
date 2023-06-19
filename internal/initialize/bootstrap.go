@@ -29,10 +29,10 @@ func StartUpAdmin() *gin.Engine {
 	ginEngine := NewAdminGinEngine()
 
 	// 将与业务逻辑相关的封装到一个结构体中
-	coreService := services.NewCoreService(sqlSessionFactory)
+	coreService := services.NewCoreAdminService(sqlSessionFactory)
 
 	// 将与路由相关的封装到一个结构体中
-	coreRouter := routers.NewCoreRouter(coreService)
+	coreRouter := routers.NewCoreAdminRouter(coreService)
 
 	// 初始化路由分组
 	routers.InitAdminGroupRouter(coreRouter, ginEngine)
@@ -60,11 +60,25 @@ func NewAdminGinEngine() *gin.Engine {
 // StartUpPortal portal 模块启动初始化
 func StartUpPortal() *gin.Engine {
 	// todo portal 的初始化
-	return gin.New()
+	engine := gin.New()
+	return engine
 }
 
 // StartUpSearch search 模块启动初始化
 func StartUpSearch() *gin.Engine {
 	// todo search 的初始化
-	return gin.New()
+	engine := gin.New()
+
+	// 拿到 es 的连接
+
+	sqlSessionFactory := database.NewDbFactory(nil, nil, "es")
+
+	coreSearchService := services.NewCoreSearchService(sqlSessionFactory)
+
+	// 将与路由相关的封装到一个结构体中
+	coreRouter := routers.NewCoreSearchRouter(coreSearchService)
+
+	// 初始化路由分组
+	routers.InitSearchGroupRouter(coreRouter, engine)
+	return engine
 }

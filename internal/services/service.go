@@ -2,7 +2,7 @@ package services
 
 import "github.com/hongjun500/mall-go/internal/database"
 
-type CoreService struct {
+type CoreAdminService struct {
 	UmsAdminService
 	UmsMenuService
 	UmsResourceCategoryService
@@ -11,13 +11,23 @@ type CoreService struct {
 	UmsMemberLevelService
 }
 
-func NewCoreService(dbFactory *database.DbFactory) *CoreService {
-	return &CoreService{
+type CoreSearchService struct {
+	ProductSearchService
+}
+
+func NewCoreAdminService(dbFactory *database.DbFactory) *CoreAdminService {
+	return &CoreAdminService{
 		UmsAdminService:            NewUmsAdminService(dbFactory),
 		UmsMenuService:             NewUmsMenuService(dbFactory),
 		UmsResourceCategoryService: NewUmsResourceCategoryService(dbFactory),
 		UmsResourceService:         NewUmsResourceService(dbFactory),
 		UmsRoleService:             NewUmsRoleService(dbFactory),
 		UmsMemberLevelService:      NewUmsMemberLevelService(dbFactory),
+	}
+}
+
+func NewCoreSearchService(dbFactory *database.DbFactory) *CoreSearchService {
+	return &CoreSearchService{
+		ProductSearchService: NewProductSearchService(dbFactory),
 	}
 }

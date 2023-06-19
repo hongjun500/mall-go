@@ -1,5 +1,5 @@
 server:
-  Enable: false
+  Enable: true
   GinRunMode: debug
   Host: localhost
   Port: 8082
