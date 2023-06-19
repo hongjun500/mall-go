@@ -10,10 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type GinEngine struct {
-	GinEngine *gin.Engine
-}
-
 // GinCommonResponse 通用返回信息
 type GinCommonResponse struct {
 
@@ -52,9 +48,9 @@ const (
 
 	UsernameAlreadyExists   = 300000
 	UsernameOrPasswordError = 300001
-	AccountForbidden        = 300401
+	Unauthorized            = 300401
 	AccountLocked           = 300402
-	Unauthorized            = 300403
+	AccountForbidden        = 300403
 
 	TokenGenFail = 300404
 	TokenExpired = 300405
@@ -70,9 +66,9 @@ var CommonErrorConst = map[int]string{
 
 	UsernameAlreadyExists:   "用户名已存在",
 	UsernameOrPasswordError: "用户名或密码错误",
-	AccountForbidden:        "当前账号没有相关权限",
-	AccountLocked:           "账号被锁定",
 	Unauthorized:            "暂未登录或token已经过期",
+	AccountLocked:           "账号被锁定",
+	AccountForbidden:        "当前账号没有相关权限",
 
 	TokenGenFail: "token生成失败",
 	TokenExpired: "token已过期",

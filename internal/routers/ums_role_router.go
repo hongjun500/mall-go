@@ -8,7 +8,6 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/services"
 )
 
@@ -21,8 +20,8 @@ func NewUmsRoleRouter(service services.UmsRoleService) *UmsRoleRouter {
 }
 
 // GroupUmsRoleRouter 后台角色管理路由
-func (router *UmsRoleRouter) GroupUmsRoleRouter(routerEngine *gin.Engine) {
-	umsRoleGroup := routerEngine.Group("/role").Use(mid.GinJWTMiddleware())
+func (router *UmsRoleRouter) GroupUmsRoleRouter(umsRoleGroup *gin.RouterGroup) {
+
 	{
 		// 添加角色
 		umsRoleGroup.POST("/create", router.UmsRoleService.UmsRoleCreate)

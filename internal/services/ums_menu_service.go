@@ -241,7 +241,6 @@ func (s UmsMenuService) UmsMenuUpdateHidden(context *gin.Context) {
 // UmsMenuTreeList 树形结构返回所有菜单列表
 // @Description 树形结构返回所有菜单列表
 // @Summary 树形结构返回所有菜单列表
-// @Description 树形结构返回所有菜单列表
 // @Tags 后台菜单管理
 // @Accept  json
 // @Produce  json

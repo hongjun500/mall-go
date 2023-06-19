@@ -8,7 +8,6 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/services"
 )
 
@@ -21,8 +20,8 @@ func NewUmsResourceCategoryRouter(service services.UmsResourceCategoryService) *
 }
 
 // GroupUmsResourceCategoryRouter 后台资源分类路由
-func (router *UmsResourceCategoryRouter) GroupUmsResourceCategoryRouter(routerEngine *gin.Engine) {
-	umsResourceCategoryGroup := routerEngine.Group("/resourceCategory").Use(mid.GinJWTMiddleware()).Use(mid.GinCasbinMiddleware())
+func (router *UmsResourceCategoryRouter) GroupUmsResourceCategoryRouter(umsResourceCategoryGroup *gin.RouterGroup) {
+
 	{
 		// 添加后台资源分类
 		umsResourceCategoryGroup.POST("/create", router.UmsResourceCategoryService.UmsResourceCategoryCreate)

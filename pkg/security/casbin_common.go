@@ -34,14 +34,14 @@ var (
 func init() {
 	once.Do(func() {
 		modelFromString := casbin.NewModel(rbacModel)
-		Enforcer = casbin.NewEnforcer(modelFromString, false)
+		Enforcer = casbin.NewEnforcer(modelFromString)
 	})
 }
 
 // AddPolicyFromResource 将资源添加到 casbin 中
-func AddPolicyFromResource(enforcer *casbin.Enforcer, resources []models.UmsResource) {
-	for _, resource := range resources {
-		enforcer.AddPolicy(resource.Id, resource.Url)
+func AddPolicyFromResource(enforcer *casbin.Enforcer, sub string, resources []models.UmsResource) {
+	for _, umsResource := range resources {
+		enforcer.AddPolicy(sub, umsResource.Url, "*")
 	}
 }
 

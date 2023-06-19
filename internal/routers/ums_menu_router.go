@@ -8,7 +8,6 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/services"
 )
 
@@ -21,8 +20,7 @@ func NewUmsMenuRouter(service services.UmsMenuService) *UmsMenuRouter {
 }
 
 // GroupUmsMenuRouter 后台菜单路由
-func (router *UmsMenuRouter) GroupUmsMenuRouter(routerEngine *gin.Engine) {
-	umsMenuGroup := routerEngine.Group("/menu").Use(mid.GinJWTMiddleware())
+func (router *UmsMenuRouter) GroupUmsMenuRouter(umsMenuGroup *gin.RouterGroup) {
 	{
 		// 新增菜单
 		umsMenuGroup.POST("/create", router.UmsMenuService.UmsMenuCreate)

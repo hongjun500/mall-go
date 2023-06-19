@@ -16,6 +16,25 @@ import (
 	"time"
 )
 
+// GetAdmin 获取缓存后台用户信息
+func (s UmsAdminService) GetAdmin(username string) (models.UmsAdmin, error) {
+	key := constants.RedisDatabase + constants.RedisKeyAdmin + username
+	umsAdminJsonStr := redis.Get(s.DbFactory.RedisCli, context.Background(), key)
+	var umsAdmin models.UmsAdmin
+	err := convert.JsonToStruct(umsAdminJsonStr, &umsAdmin)
+	if err != nil {
+		return umsAdmin, err
+	}
+	return umsAdmin, nil
+}
+
+// SetAdmin 设置用户缓存
+func (s UmsAdminService) SetAdmin(umsAdmin models.UmsAdmin, exp time.Duration) {
+	key := constants.RedisDatabase + constants.RedisKeyAdmin + umsAdmin.Username
+	jsonStr := convert.StructToJson(umsAdmin)
+	redis.SetExpiration(s.DbFactory.RedisCli, context.Background(), key, jsonStr, exp)
+}
+
 // DelAdmin 删除用户缓存
 func (s UmsAdminService) DelAdmin(adminId int64) {
 	m := new(models.UmsAdmin)
@@ -34,7 +53,7 @@ func (s UmsAdminService) DelResourceList(adminId int64) {
 }
 
 // DelResourceListByRole 当角色相关资源信息改变时删除相关后台用户缓存
-func (s UmsAdminService) DelResourceListByRole(roleId int64) {
+func (s UmsRoleService) DelResourceListByRole(roleId int64) {
 	re := new(models.UmsAdminRoleRelation)
 	roleRelations, err := re.SelectUmsAdminRoleRelationByRoleId(s.DbFactory.GormMySQL, roleId)
 	if err != nil {
@@ -51,7 +70,7 @@ func (s UmsAdminService) DelResourceListByRole(roleId int64) {
 }
 
 // DelResourceListByRoleIds 当角色相关资源信息改变时删除相关后台用户缓存
-func (s UmsAdminService) DelResourceListByRoleIds(roleIds []int64) {
+func (s UmsRoleService) DelResourceListByRoleIds(roleIds []int64) {
 	re := new(models.UmsAdminRoleRelation)
 	roleRelations, err := re.SelectUmsAdminRoleRelationInRoleId(s.DbFactory.GormMySQL, roleIds)
 	if err != nil {
@@ -82,25 +101,6 @@ func (s UmsResourceService) DelResourceListByResource(resourceId int64) {
 		}
 		redis.Del(s.DbFactory.RedisCli, context.Background(), keys...)
 	}
-}
-
-// GetAdminByUsername 获取用户缓存
-func (s UmsAdminService) GetAdminByUsername(username string) (models.UmsAdmin, error) {
-	key := constants.RedisDatabase + constants.RedisKeyAdmin + username
-	umsAdminJsonStr := redis.Get(s.DbFactory.RedisCli, context.Background(), key)
-	var umsAdmin models.UmsAdmin
-	err := convert.JsonToStruct(umsAdminJsonStr, &umsAdmin)
-	if err != nil {
-		return umsAdmin, err
-	}
-	return umsAdmin, nil
-}
-
-// SetAdmin 设置用户缓存
-func (s UmsAdminService) SetAdmin(umsAdmin models.UmsAdmin, exp time.Duration) {
-	key := constants.RedisDatabase + constants.RedisKeyAdmin + umsAdmin.Username
-	jsonStr := convert.StructToJson(umsAdmin)
-	redis.SetExpiration(s.DbFactory.RedisCli, context.Background(), key, jsonStr, exp)
 }
 
 // GetResourceList 获取后台用户资源列表

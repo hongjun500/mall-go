@@ -8,7 +8,6 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/services"
 )
 
@@ -21,44 +20,29 @@ func NewUmsAdminRouter(service services.UmsAdminService) *UmsAdminRouter {
 }
 
 // GroupUmsAdminRouter 用户管理路由
-func (router *UmsAdminRouter) GroupUmsAdminRouter(routerEngine *gin.Engine) {
-	umsAdminGroup := routerEngine.Group("/admin")
-	{
-		// 用户注册
-		umsAdminGroup.POST("/register", router.UmsAdminService.UmsAdminRegister)
-		/*adminGroup.POST("/register", router.UmsAdminRegister) 这样写也可以*/
+func (router *UmsAdminRouter) GroupUmsAdminRouter(umsAdminGroup *gin.RouterGroup) {
+	// umsAdminGroup := routerEngine.Group("/admin")
 
-		// 用户登录
-		umsAdminGroup.POST("/login", router.UmsAdminService.UmsAdminLogin)
-
-		// 用户登出
-		umsAdminGroup.POST("/logout", router.UmsAdminService.UmsAdminLogout)
-		umsAdminGroup.GET("/authTest", router.UmsAdminService.UmsAdminAuthTest)
-	}
-
-	authGroup := routerEngine.Group("/admin").Use(mid.GinJWTMiddleware()).Use(mid.GinCasbinMiddleware())
-	{
-		// 刷新 token
-		authGroup.POST("/refreshToken", router.UmsAdminService.UmsAdminRefreshToken)
-		// 根据用户 ID 获取用户信息
-		authGroup.GET("/info", router.UmsAdminService.UmsAdminInfo)
-		// authGroup.GET("/info/:user_id", router.UmsAdminService.UmsAdminInfo)
-		// 用户列表分页
-		authGroup.GET("/list", router.UmsAdminService.UmsAdminListPage)
-		// 获取指定用户信息
-		authGroup.GET("/:id", router.UmsAdminService.UmsAdminItem)
-		// 修改指定用户信息
-		authGroup.POST("/update/:id", router.UmsAdminService.UmsAdminUpdate)
-		// 删除指定用户
-		authGroup.POST("/delete/:id", router.UmsAdminService.UmsAdminDelete)
-		// 修改指定用户状态
-		authGroup.POST("/updateStatus/:id", router.UmsAdminService.UmsAdminUpdateStatus)
-		// 给用户分配角色
-		authGroup.POST("/role/update", router.UmsAdminService.UmsAdminRoleUpdate)
-		// 获取指定用户的角色
-		authGroup.GET("/role/:adminId", router.UmsAdminService.UmsAdminRoleItem)
-		// 修改指定用户密码
-		authGroup.POST("/updatePassword", router.UmsAdminService.UmsAdminUpdatePassword)
-	}
+	// 刷新 token
+	umsAdminGroup.POST("/refreshToken", router.UmsAdminService.UmsAdminRefreshToken)
+	// 根据用户 ID 获取用户信息
+	umsAdminGroup.GET("/info", router.UmsAdminService.UmsAdminInfo)
+	// umsAdminGroup.GET("/info/:user_id", router.UmsAdminService.UmsAdminInfo)
+	// 用户列表分页
+	umsAdminGroup.GET("/list", router.UmsAdminService.UmsAdminListPage)
+	// 获取指定用户信息
+	umsAdminGroup.GET("/:id", router.UmsAdminService.UmsAdminItem)
+	// 修改指定用户信息
+	umsAdminGroup.POST("/update/:id", router.UmsAdminService.UmsAdminUpdate)
+	// 删除指定用户
+	umsAdminGroup.POST("/delete/:id", router.UmsAdminService.UmsAdminDelete)
+	// 修改指定用户状态
+	umsAdminGroup.POST("/updateStatus/:id", router.UmsAdminService.UmsAdminUpdateStatus)
+	// 给用户分配角色
+	umsAdminGroup.POST("/role/update", router.UmsAdminService.UmsAdminRoleUpdate)
+	// 获取指定用户的角色
+	umsAdminGroup.GET("/role/:adminId", router.UmsAdminService.UmsAdminRoleItem)
+	// 修改指定用户密码
+	umsAdminGroup.POST("/updatePassword", router.UmsAdminService.UmsAdminUpdatePassword)
 
 }

@@ -33,7 +33,7 @@ func NewUmsRoleService(dbFactory *database.DbFactory) UmsRoleService {
 // @Security GinJWTMiddleware
 // @Success 200 {object} gin_common.GinCommonResponse
 // @Router /role/create [post]
-func (service UmsRoleService) UmsRoleCreate(context *gin.Context) {
+func (s UmsRoleService) UmsRoleCreate(context *gin.Context) {
 	var dto ums_admin.UmsRoleCreateDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
@@ -46,7 +46,7 @@ func (service UmsRoleService) UmsRoleCreate(context *gin.Context) {
 	m.AdminCount = 0
 	m.Status = dto.Status
 	m.Sort = 0
-	rows, err := m.Insert(service.DbFactory.GormMySQL)
+	rows, err := m.Insert(s.DbFactory.GormMySQL)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
@@ -65,7 +65,7 @@ func (service UmsRoleService) UmsRoleCreate(context *gin.Context) {
 // @Security GinJWTMiddleware
 // @Success 200 {object} gin_common.GinCommonResponse
 // @Router /role/update/{id} [post]
-func (service UmsRoleService) UmsRoleUpdate(context *gin.Context) {
+func (s UmsRoleService) UmsRoleUpdate(context *gin.Context) {
 	var dto ums_admin.UmsRoleCreateDTO
 	var pathVariable base.PathVariableDTO
 	err := context.ShouldBind(&dto)
@@ -80,7 +80,7 @@ func (service UmsRoleService) UmsRoleUpdate(context *gin.Context) {
 	m.AdminCount = 0
 	m.Status = dto.Status
 	m.Sort = 0
-	rows, err := m.Update(service.DbFactory.GormMySQL, pathVariable.Id)
+	rows, err := m.Update(s.DbFactory.GormMySQL, pathVariable.Id)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
@@ -98,7 +98,7 @@ func (service UmsRoleService) UmsRoleUpdate(context *gin.Context) {
 // @Security GinJWTMiddleware
 // @Success 200 {object} gin_common.GinCommonResponse
 // @Router /role/delete [post]
-func (service UmsRoleService) UmsRoleDelete(context *gin.Context) {
+func (s UmsRoleService) UmsRoleDelete(context *gin.Context) {
 	var dto ums_admin.IdsDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
@@ -106,11 +106,12 @@ func (service UmsRoleService) UmsRoleDelete(context *gin.Context) {
 		return
 	}
 	m := new(models.UmsRole)
-	rows, err := m.Delete(service.DbFactory.GormMySQL, dto.Ids)
+	rows, err := m.Delete(s.DbFactory.GormMySQL, dto.Ids)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
+	s.DelResourceListByRoleIds(dto.Ids)
 	gin_common.CreateSuccess(context, rows)
 }
 
@@ -123,9 +124,9 @@ func (service UmsRoleService) UmsRoleDelete(context *gin.Context) {
 // @Security GinJWTMiddleware
 // @Success 200 {object} gin_common.GinCommonResponse
 // @Router /role/listAll [get]
-func (service UmsRoleService) UmsRoleListAll(context *gin.Context) {
+func (s UmsRoleService) UmsRoleListAll(context *gin.Context) {
 	var m models.UmsRole
-	list, err := m.SelectAll(service.DbFactory.GormMySQL)
+	list, err := m.SelectAll(s.DbFactory.GormMySQL)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
@@ -145,7 +146,7 @@ func (service UmsRoleService) UmsRoleListAll(context *gin.Context) {
 // @Security GinJWTMiddleware
 // @Success 200 {object} gin_common.GinCommonResponse
 // @Router /role/list [get]
-func (service UmsRoleService) UmsRoleList(context *gin.Context) {
+func (s UmsRoleService) UmsRoleList(context *gin.Context) {
 	var dto ums_admin.UmsRoleListPageDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
@@ -153,7 +154,7 @@ func (service UmsRoleService) UmsRoleList(context *gin.Context) {
 		return
 	}
 	m := new(models.UmsRole)
-	page, err := m.SelectPage(service.DbFactory.GormMySQL, dto.Keyword, dto.PageNum, dto.PageSize)
+	page, err := m.SelectPage(s.DbFactory.GormMySQL, dto.Keyword, dto.PageNum, dto.PageSize)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
@@ -172,7 +173,7 @@ func (service UmsRoleService) UmsRoleList(context *gin.Context) {
 // @Security GinJWTMiddleware
 // @Success 200 {object} gin_common.GinCommonResponse
 // @Router /role/updateStatus/{id} [post]
-func (service UmsRoleService) UmsRoleUpdateStatus(context *gin.Context) {
+func (s UmsRoleService) UmsRoleUpdateStatus(context *gin.Context) {
 	var pathVariableDTO base.PathVariableDTO
 	var dto ums_admin.UmsRoleStatusDTO
 	err := context.ShouldBindUri(&pathVariableDTO)
@@ -182,7 +183,7 @@ func (service UmsRoleService) UmsRoleUpdateStatus(context *gin.Context) {
 		return
 	}
 	var m models.UmsRole
-	rows, err := m.UpdateStatus(service.DbFactory.GormMySQL, pathVariableDTO.Id, dto.Status)
+	rows, err := m.UpdateStatus(s.DbFactory.GormMySQL, pathVariableDTO.Id, dto.Status)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
@@ -200,7 +201,7 @@ func (service UmsRoleService) UmsRoleUpdateStatus(context *gin.Context) {
 // @Security GinJWTMiddleware
 // @Success 200 {object} gin_common.GinCommonResponse
 // @Router /role/listMenu/{roleId} [get]
-func (service UmsRoleService) UmsRoleListMenu(context *gin.Context) {
+func (s UmsRoleService) UmsRoleListMenu(context *gin.Context) {
 	var dto ums_admin.UmsRolePathVariableDTO
 	err := context.ShouldBindUri(&dto)
 	if err != nil {
@@ -208,7 +209,7 @@ func (service UmsRoleService) UmsRoleListMenu(context *gin.Context) {
 		return
 	}
 	var m models.UmsRole
-	list, err := m.SelectMenu(service.DbFactory.GormMySQL, dto.RoleId)
+	list, err := m.SelectMenu(s.DbFactory.GormMySQL, dto.RoleId)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
@@ -226,7 +227,7 @@ func (service UmsRoleService) UmsRoleListMenu(context *gin.Context) {
 // @Security GinJWTMiddleware
 // @Success 200 {object} gin_common.GinCommonResponse
 // @Router /role/listResource/{roleId} [get]
-func (service UmsRoleService) UmsRoleListResource(context *gin.Context) {
+func (s UmsRoleService) UmsRoleListResource(context *gin.Context) {
 	var dto ums_admin.UmsRolePathVariableDTO
 	err := context.ShouldBindUri(&dto)
 	if err != nil {
@@ -234,7 +235,7 @@ func (service UmsRoleService) UmsRoleListResource(context *gin.Context) {
 		return
 	}
 	var m models.UmsRole
-	list, err := m.SelectResourceByRoleId(service.DbFactory.GormMySQL, dto.RoleId)
+	list, err := m.SelectResourceByRoleId(s.DbFactory.GormMySQL, dto.RoleId)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
@@ -253,7 +254,7 @@ func (service UmsRoleService) UmsRoleListResource(context *gin.Context) {
 // @Security GinJWTMiddleware
 // @Success 200 {object} gin_common.GinCommonResponse
 // @Router /role/allocMenu/{roleId} [post]
-func (service UmsRoleService) UmsRoleAllocMenu(context *gin.Context) {
+func (s UmsRoleService) UmsRoleAllocMenu(context *gin.Context) {
 	var dto ums_admin.UmsRoleAllocMenuDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
@@ -261,7 +262,7 @@ func (service UmsRoleService) UmsRoleAllocMenu(context *gin.Context) {
 		return
 	}
 	var m models.UmsRole
-	rows, err := m.UpdateRoleFromAllocMenu(service.DbFactory.GormMySQL, dto.RoleId, dto.MenuIds)
+	rows, err := m.UpdateRoleFromAllocMenu(s.DbFactory.GormMySQL, dto.RoleId, dto.MenuIds)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
@@ -280,7 +281,7 @@ func (service UmsRoleService) UmsRoleAllocMenu(context *gin.Context) {
 // @Security GinJWTMiddleware
 // @Success 200 {object} gin_common.GinCommonResponse
 // @Router /role/allocResource/{roleId} [post]
-func (service UmsRoleService) UmsRoleAllocResource(context *gin.Context) {
+func (s UmsRoleService) UmsRoleAllocResource(context *gin.Context) {
 	var dto ums_admin.UmsRoleAllocResourceDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
@@ -288,10 +289,11 @@ func (service UmsRoleService) UmsRoleAllocResource(context *gin.Context) {
 		return
 	}
 	var m models.UmsRole
-	rows, err := m.UpdateRoleFromAllocResource(service.DbFactory.GormMySQL, dto.RoleId, dto.ResourceIds)
+	rows, err := m.UpdateRoleFromAllocResource(s.DbFactory.GormMySQL, dto.RoleId, dto.ResourceIds)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
+	s.DelResourceListByRole(dto.RoleId)
 	gin_common.CreateSuccess(context, rows)
 }

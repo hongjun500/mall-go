@@ -39,7 +39,6 @@ func GinJWTMiddleware() gin.HandlerFunc {
 			if !valid {
 				status = gin_common.TokenInvalid
 			}
-			// todo 需要获取用户所拥有的资源并存储
 			log.Printf("authenticated user: %v", username)
 			context.Set("username", username)
 			context.Set("userId", userId)
