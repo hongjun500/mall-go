@@ -3,15 +3,16 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"os"
+	"sync"
+	"time"
+
 	"github.com/go-sql-driver/mysql"
 	"github.com/hongjun500/mall-go/internal/conf"
 	gormMysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"log"
-	"os"
-	"sync"
-	"time"
 )
 
 func newMySQL(properties conf.DatabaseConfigProperties) (db *sql.DB, err error) {
@@ -77,12 +78,9 @@ func NewGormMySQL(properties conf.DatabaseConfigProperties) (*gorm.DB, error) {
 			Logger: gormLogger,
 		})
 		if err != nil {
-			err = fmt.Errorf("GormMySQL Connected Fail, ERR = %v", err)
+			log.Fatalln("GormMySQL Connected Fail, ERR = ", err)
 		}
 	})
-	if err != nil || db == nil {
-		return nil, err
-	}
 	fmt.Println("GormMySQL Connected!")
 	return db, err
 }
