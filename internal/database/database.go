@@ -5,17 +5,13 @@ import (
 	"gorm.io/gorm"
 )
 
-type Es struct {
-	// todo
-}
-
 type DbFactory struct {
 	// 基于 gorm 的 MySQL 连接
 	GormMySQL *gorm.DB
 
 	// 基于 go-redis 的 Redis 连接
 	RedisCli *redis.Client
-	// todo 改写 es
+	// 基于 go 的 elasticsearch 连接
 	Es *Es
 }
 
@@ -31,9 +27,8 @@ func NewDbFactory(args ...any) *DbFactory {
 			factory.GormMySQL = val
 		case *redis.Client:
 			factory.RedisCli = val
-		case Es:
-			// todo 改写 es
-			factory.Es = &val
+		case *Es:
+			factory.Es = val
 		}
 	}
 	return factory

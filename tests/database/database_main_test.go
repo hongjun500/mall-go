@@ -18,7 +18,8 @@ var esTypedClient *elasticsearch.TypedClient
 var ctx = context.Background()
 
 func TestMain(m *testing.M) {
-	// 获取 es 连接
-	esTypedClient, _ = database.NewEsTypedClient()
+	// 获取 elasticsearch 连接
+	es, _ := database.NewEsTypedClient()
+	esTypedClient = es.TypedCli
 	m.Run()
 }

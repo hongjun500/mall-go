@@ -69,9 +69,10 @@ func StartUpSearch() *gin.Engine {
 	// todo search 的初始化
 	engine := gin.New()
 
-	// 拿到 es 的连接
+	// 拿到 elasticsearch 的连接
+	es, _ := database.NewEsTypedClient()
 
-	sqlSessionFactory := database.NewDbFactory(nil, nil, "es")
+	sqlSessionFactory := database.NewDbFactory(nil, nil, es)
 
 	coreSearchService := services.NewCoreSearchService(sqlSessionFactory)
 

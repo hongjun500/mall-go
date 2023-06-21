@@ -8,6 +8,7 @@ package database
 
 import (
 	"log"
+	"strings"
 	"testing"
 
 	"github.com/elastic/go-elasticsearch/v8/typedapi/indices/create"
@@ -30,7 +31,7 @@ func TestExistIndex(t *testing.T) {
 }
 
 // 创建mapping
-func TestCreateMapping(t *testing.T) {
+func TestPutMapping(t *testing.T) {
 	/*mapping := types.NewTypeMapping()
 	settings := types.NewIndexSettings()
 	settings.NumberOfShards = "1"
@@ -40,54 +41,86 @@ func TestCreateMapping(t *testing.T) {
 		"name":  types.NewTextProperty(),
 		"count": types.NewIntegerNumberProperty(),
 	}*/
+	ik_max_word := "ik_max_word"
 	request := putmapping.NewRequest()
 	request.Properties = map[string]types.Property{
-		"price": types.NewIntegerNumberProperty(),
-		"name":  types.NewTextProperty(),
-		"count": types.NewIntegerNumberProperty(),
+		"price": types.NewFloatNumberProperty(),
+		"name": &types.TextProperty{
+			Analyzer: &ik_max_word,
+			Type:     "text",
+		},
+		"count": types.NewKeywordProperty(),
 	}
-	_, err := esTypedClient.Indices.PutMapping("test-index1").Request(request).Do(ctx)
+
+	_, err := esTypedClient.Indices.PutMapping("pms").Request(request).Do(ctx)
 	if err != nil {
-		return
+		log.Fatalln(err.Error())
+	}
+}
+
+func TestGetMapping(t *testing.T) {
+
+	mapping, err := esTypedClient.Indices.GetMapping().Index("pms").Do(ctx)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	for _, record := range mapping {
+		for _, property := range record.Mappings.Properties {
+			log.Println(property)
+		}
 	}
 }
 
 func TestDeleteIndex(t *testing.T) {
-	_, err := esTypedClient.Indices.Delete("test-index").Do(ctx)
+	_, err := esTypedClient.Indices.Delete("pms").Do(ctx)
 	assert.Nil(t, err)
 }
 
 func TestSelectAllIndex(t *testing.T) {
 
+	indices, err := esTypedClient.Cat.Indices().Do(ctx)
+	if err != nil {
+		return
+	}
+	for _, index := range indices {
+
+		indexName := strings.Trim(*index.Index, `"`)
+		log.Println("start del", indexName)
+		esTypedClient.Indices.Delete(indexName).Do(ctx)
+	}
 }
 
 func TestCreateIndex(t *testing.T) {
-	// body := `{"name":"hongjun500"}`
-	res, err := esTypedClient.Indices.Create("test-index").
-		Request(&create.Request{
-			Mappings: &types.TypeMapping{
-				Properties: map[string]types.Property{
-					"price": types.NewIntegerNumberProperty(),
-					"name":  types.NewTextProperty(),
-				},
-			},
-		}).
-		Do(nil)
-	assert.Nil(t, err)
-	assert.Equal(t, "test-index", res.Index)
-	assert.True(t, res.Acknowledged)
+	indexReq := create.NewRequest()
+	settings := types.NewIndexSettings()
+	settings.NumberOfShards = "1"
+	settings.NumberOfReplicas = "0"
 
-	type doc struct {
-		Name  string `json:"name"`
-		Age   int    `json:"age"`
-		Price int    `json:"price"`
+	mapping := types.NewTypeMapping()
+
+	mapping.Properties = map[string]types.Property{
+		"id": map[string]interface{}{
+			"type": "long",
+		},
+		"name": map[string]interface{}{
+			"type":            "text",
+			"analyzer":        "ik_max_word",
+			"search_analyzer": "ik_max_word",
+		},
 	}
-	document := doc{
-		Name:  "hongjun500",
-		Age:   18,
-		Price: 100,
+
+	indexReq.Settings = settings
+	// indexReq.Mappings = mapping
+
+	res, err := esTypedClient.Indices.Create("pms").Request(indexReq).Do(ctx)
+	if err != nil {
+		log.Fatalln(err.Error())
 	}
-	log.Print(document)
+
+	assert.Nil(t, err)
+	assert.Equal(t, "pms", res.Index)
+	assert.True(t, res.Acknowledged)
 }
 
 func TestSearchIndex(t *testing.T) {

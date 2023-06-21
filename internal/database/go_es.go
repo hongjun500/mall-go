@@ -15,14 +15,22 @@ import (
 	"github.com/elastic/go-elasticsearch/v8"
 )
 
-// NewEsTypedClient 初始化 适用于 go api 的 es 连接
-func NewEsTypedClient() (*elasticsearch.TypedClient, error) {
+type Es struct {
+	Cli *elasticsearch.Client
+	// 适用于 go api 的 elasticsearch 连接
+	TypedCli *elasticsearch.TypedClient
+}
+
+// NewEsTypedClient 初始化 适用于 go api 的 elasticsearch 连接
+func NewEsTypedClient() (*Es, error) {
+	es := new(Es)
 	var typedClient *elasticsearch.TypedClient
+	var client *elasticsearch.Client
 	var err error
 	once := sync.Once{}
 
 	// ca证书
-	cert, _ := os.ReadFile("D:\\elasticsearch-8.8.0\\config\\certs\\http_ca.crt")
+	cert, _ := os.ReadFile("D:\\elasticsearch-8.7.0\\config\\certs\\http_ca.crt")
 
 	config := elasticsearch.Config{
 		Addresses: []string{"https://localhost:9200"},
@@ -37,17 +45,19 @@ func NewEsTypedClient() (*elasticsearch.TypedClient, error) {
 	}
 
 	once.Do(func() {
-		// client, err = elasticsearch.NewClient(config)
 		typedClient, err = elasticsearch.NewTypedClient(config)
+		client, err = elasticsearch.NewClient(config)
 		if err != nil {
 			log.Fatal("NewEsClient Fail, ERR = ", err)
 		}
 		ping := typedClient.Ping()
-		success, _ := ping.IsSuccess(context.Background())
+		success, err := ping.IsSuccess(context.Background())
 		if !success {
-			log.Fatalln("Elasticsearch Connected Fail, ERR = ", ping)
+			log.Fatalln("Elasticsearch Connected Fail, ERR = ", err.Error())
 		}
 	})
+	es.TypedCli = typedClient
+	es.Cli = client
 	log.Println("Elasticsearch Connected!")
-	return typedClient, nil
+	return es, nil
 }
