@@ -1,7 +1,7 @@
 // @author hongjun500
 // @date 2023/6/13 15:54
 // @tool ThinkPadX1隐士
-// Created with 2022.2.2.IntelliJ IDEA
+// Created with GoLand 2022.2
 // Description: 角色请求传输数据对象
 
 package ums_admin

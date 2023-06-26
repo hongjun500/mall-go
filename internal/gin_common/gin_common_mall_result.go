@@ -1,7 +1,7 @@
 // @author hongjun500
 // @date 2023/6/14 15:09
 // @tool ThinkPadX1隐士
-// Created with 2022.2.2.IntelliJ IDEA
+// Created with GoLand 2022.2
 // Description: 封装适用于 mall 项目的 API 返回码
 
 package gin_common

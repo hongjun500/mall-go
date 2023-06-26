@@ -22,7 +22,7 @@ func (s UmsAdminService) GetAdmin(username string) (models.UmsAdmin, error) {
 	key := constants.RedisDatabase + constants.RedisKeyAdmin + username
 	umsAdminJsonStr := redis.Get(s.DbFactory.RedisCli, context.Background(), key)
 	var umsAdmin models.UmsAdmin
-	err := convert.JsonToStruct(umsAdminJsonStr, &umsAdmin)
+	err := convert.JsonToAny(umsAdminJsonStr, &umsAdmin)
 	if err != nil {
 		return umsAdmin, err
 	}
@@ -32,7 +32,7 @@ func (s UmsAdminService) GetAdmin(username string) (models.UmsAdmin, error) {
 // SetAdmin 设置用户缓存
 func (s UmsAdminService) SetAdmin(umsAdmin models.UmsAdmin, exp time.Duration) {
 	key := constants.RedisDatabase + constants.RedisKeyAdmin + umsAdmin.Username
-	jsonStr := convert.StructToJson(umsAdmin)
+	jsonStr := convert.AnyToJson(umsAdmin)
 	redis.SetExpiration(s.DbFactory.RedisCli, context.Background(), key, jsonStr, exp)
 }
 
@@ -111,7 +111,7 @@ func (s UmsAdminService) GetResourceList(adminId int64) ([]models.UmsResource, e
 	var umsResources []models.UmsResource
 	for _, jsonStr := range umsResourceJsonStr {
 		var resource models.UmsResource
-		err := convert.JsonToStruct(jsonStr, &resource)
+		err := convert.JsonToAny(jsonStr, &resource)
 		if err != nil {
 			return umsResources, err
 		}
@@ -123,6 +123,6 @@ func (s UmsAdminService) GetResourceList(adminId int64) ([]models.UmsResource, e
 // SetResourceList 设置后台用户资源列表
 func (s UmsAdminService) SetResourceList(adminId int64, resourceList []models.UmsResource, exp time.Duration) {
 	key := constants.RedisDatabase + constants.RedisKeyResourceList + strconv.FormatInt(adminId, 10)
-	sliceStructToJson := convert.SliceStructToJson(resourceList)
+	sliceStructToJson := convert.AnyToJson(resourceList)
 	redis.LRPush(s.DbFactory.RedisCli, context.Background(), key, sliceStructToJson, exp)
 }

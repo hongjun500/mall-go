@@ -1,7 +1,7 @@
 // @author hongjun500
 // @date 2023/6/15 11:25
 // @tool ThinkPadX1隐士
-// Created with 2022.2.2.IntelliJ IDEA
+// Created with GoLand 2022.2
 // Description: 自定义动态权限数据源
 
 package security

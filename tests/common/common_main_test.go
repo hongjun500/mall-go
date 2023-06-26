@@ -10,33 +10,39 @@ package common
 
 import (
 	"context"
+	"log"
+	"testing"
+
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
-	"log"
-	"testing"
 )
 
 // 当前包下的全局变量
 var (
-	client *redis.Client
-	ctx    = context.Background()
-	db     *gorm.DB
+	dbFactory *database.DbFactory
+	redisCli  *redis.Client
+	typedCli  *elasticsearch.TypedClient
+	esCli     *elasticsearch.Client
+	ctx       = context.Background()
+	db        *gorm.DB
 )
 
 func TestMain(m *testing.M) {
 	conf.InitAdminConfigProperties()
 	var err error
-	client, err = database.NewRedisClient(conf.GlobalDatabaseConfigProperties)
+	redisCli, err = database.NewRedisClient(conf.GlobalDatabaseConfigProperties)
 	db, err = database.NewGormMySQL(conf.GlobalDatabaseConfigProperties)
+	es, err := database.NewEsTypedClient()
+	dbFactory = database.NewDbFactory(redisCli, db, es)
 	if err != nil {
 		return
 	}
+	typedCli = es.TypedCli
+	esCli = es.Cli
 	log.Print("gorm db: ", db)
-	if err != nil {
-		return // todo
-	}
-	log.Print("redis client: ", client)
+	log.Print("redis client: ", redisCli)
 	m.Run()
 }

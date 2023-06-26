@@ -1,114 +1,53 @@
 // @author hongjun500
 // @date 2023/6/9 13:20
 // @tool ThinkPadX1隐士
-// Created with 2022.2.2.IntelliJ IDEA
+// Created with GoLand 2022.2
 // Description: 针对 encoding/json 包的一些封装
 
 package convert
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"log"
+)
 
-// StructToJson 将对象转换成 json 字符串
-func StructToJson(obj any) string {
-	jsonBytes, err := json.Marshal(obj)
+// AnyToBytes 转换任意类型为字节切片
+func AnyToBytes(data any) []byte {
+	bytes, err := json.Marshal(data)
 	if err != nil {
-		return ""
+		log.Printf("any to bytes error: %v", err.Error())
+		return nil
 	}
-	return string(jsonBytes)
+	return bytes
 }
 
-// MapToJson 将 map 转换成 json 字符串
-func MapToJson(obj map[string]any) string {
-	jsonBytes, err := json.Marshal(obj)
-	if err != nil {
+// AnyToJson 转换任意类型为 json 字符串
+func AnyToJson(data any) string {
+	bytes := AnyToBytes(data)
+	if bytes == nil {
+		log.Printf("any to json error: %v", "bytes is nil")
 		return ""
 	}
-	return string(jsonBytes)
+	return string(bytes)
 }
 
-// SliceToJson 将切片转换成 json 字符串
-func SliceToJson(obj []any) string {
-	jsonBytes, err := json.Marshal(obj)
-	if err != nil {
-		return ""
-	}
-	return string(jsonBytes)
-}
-
-// SliceMapToJson 将切片 map 转换成 json 字符串
-func SliceMapToJson(obj []map[string]any) string {
-	jsonBytes, err := json.Marshal(obj)
-	if err != nil {
-		return ""
-	}
-	return string(jsonBytes)
-}
-
-// SliceStructToJson 将切片结构体转换成 json 字符串
-func SliceStructToJson(obj any) string {
-	jsonBytes, err := json.Marshal(obj)
-	if err != nil {
-		return ""
-	}
-	return string(jsonBytes)
-}
-
-// JsonToStruct 将 json 字符串转换成结构体 obj
-func JsonToStruct(jsonStr string, obj any) error {
-	err := json.Unmarshal([]byte(jsonStr), &obj)
+// BytesToAny 将字节切片转换成任意类型, data 为指针类型
+func BytesToAny(bytes []byte, data any) error {
+	err := json.Unmarshal(bytes, data)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-// JsonToMap 将 json 字符串转换成 map
-func JsonToMap(jsonStr string) (map[string]any, error) {
-	var result map[string]any
-	err := json.Unmarshal([]byte(jsonStr), &result)
+// JsonToAny 将 json 字符串转换成任意类型, data 为指针类型
+func JsonToAny(jsonStr string, data any) error {
+	bytes := []byte(jsonStr)
+	err := BytesToAny(bytes, data)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return result, nil
-}
-
-// JsonToSlice 将 json 字符串转换成切片
-func JsonToSlice(jsonStr string) ([]any, error) {
-	var result []any
-	err := json.Unmarshal([]byte(jsonStr), &result)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}
-
-// JsonToSliceMap 将 json 字符串转换成切片 map
-func JsonToSliceMap(jsonStr string) ([]map[string]any, error) {
-	var result []map[string]any
-	err := json.Unmarshal([]byte(jsonStr), &result)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}
-
-// JsonToSliceStruct 将 json 字符串转换成切片结构体
-func JsonToSliceStruct(jsonStr string, obj any) (any, error) {
-	err := json.Unmarshal([]byte(jsonStr), &obj)
-	if err != nil {
-		return nil, err
-	}
-	return obj, nil
-}
-
-// JsonToInterface 将 json 字符串转换成 interface
-func JsonToInterface(jsonStr string) (any, error) {
-	var result any
-	err := json.Unmarshal([]byte(jsonStr), &result)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
+	return nil
 }
 
 // JsonFormat 格式化 json 字符串

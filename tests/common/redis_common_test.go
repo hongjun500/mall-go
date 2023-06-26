@@ -1,22 +1,23 @@
 package common
 
 import (
-	"github.com/hongjun500/mall-go/pkg/redis"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/hongjun500/mall-go/pkg/redis"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewRedisClient(t *testing.T) {
 	t.Log("tests new redis client")
-	assert.NotEmpty(t, client)
-	t.Logf("client = %v", client)
+	assert.NotEmpty(t, redisCli)
+	t.Logf("redisCli = %v", redisCli)
 }
 
 func TestSet(t *testing.T) {
 	t.Log("tests redis set")
 
-	redis.SetExpiration(client, ctx, "test", "test", 5*time.Second)
+	redis.SetExpiration(redisCli, ctx, "test", "test", 5*time.Second)
 
 	t.Logf("set success")
 }
@@ -26,14 +27,14 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetExpire(t *testing.T) {
-	expire := redis.GetExpire(client, ctx, "test")
+	expire := redis.GetExpire(redisCli, ctx, "test")
 	t.Logf("expire = %v", expire)
 }
 
 func TestIncr(t *testing.T) {
 	t.Log("tests redis increment")
-	redis.SetExpiration(client, ctx, "test", 2, 5*time.Minute)
-	incr := redis.Incr(client, ctx, "test")
+	redis.SetExpiration(redisCli, ctx, "test", 2, 5*time.Minute)
+	incr := redis.Incr(redisCli, ctx, "test")
 	t.Logf("incr = %v", incr)
 	t.Logf("increment success")
 }
@@ -43,53 +44,53 @@ func TestHmSet(t *testing.T) {
 	m := make(map[string]any)
 	m["test"] = "test"
 	m["test1"] = "test1"
-	redis.HmSetAll(client, ctx, "m", m)
+	redis.HmSetAll(redisCli, ctx, "m", m)
 
-	redis.HmSet(client, ctx, "m", "test", "test->修改")
-	redis.HmSet(client, ctx, "m", "1", "1")
+	redis.HmSet(redisCli, ctx, "m", "test", "test->修改")
+	redis.HmSet(redisCli, ctx, "m", "1", "1")
 
-	getTest := redis.HmGet(client, ctx, "m", "test")
+	getTest := redis.HmGet(redisCli, ctx, "m", "test")
 	assert.Contains(t, getTest, "test->修改")
 
-	get1 := redis.HmGet(client, ctx, "m", "1")
+	get1 := redis.HmGet(redisCli, ctx, "m", "1")
 	assert.Equal(t, "1", get1[0])
 
-	keyTest := redis.HmHasKey(client, ctx, "m", "test")
+	keyTest := redis.HmHasKey(redisCli, ctx, "m", "test")
 	assert.Equal(t, true, keyTest)
 
-	hmIncr := redis.HmIncr(client, ctx, "m", "1", 1)
+	hmIncr := redis.HmIncr(redisCli, ctx, "m", "1", 1)
 	// assert.Equal(t, int64(2), hmIncr)
 	t.Logf("hmIncr = %v", hmIncr)
 
-	hmDel, i := redis.HmDel(client, ctx, "m", "test")
+	hmDel, i := redis.HmDel(redisCli, ctx, "m", "test")
 	assert.True(t, hmDel)
 	assert.Equal(t, int64(1), i)
 
-	hmLen := redis.HmLen(client, ctx, "m")
+	hmLen := redis.HmLen(redisCli, ctx, "m")
 	assert.Equal(t, int64(2), hmLen)
 	t.Logf("hmset success")
 
-	getAll := redis.HmGetAll(client, ctx, "m")
+	getAll := redis.HmGetAll(redisCli, ctx, "m")
 	t.Logf("getAll = %v", getAll)
-	redis.Expire(client, ctx, "m", 5*time.Second)
+	redis.Expire(redisCli, ctx, "m", 5*time.Second)
 }
 
 func TestHSet(t *testing.T) {
 	t.Log("tests redis hset")
 
-	add := redis.SAdd(client, ctx, "set", "test1", "test2", "test3")
+	add := redis.SAdd(redisCli, ctx, "set", "test1", "test2", "test3")
 	t.Logf("add = %v", add)
-	members := redis.SMembers(client, ctx, "set")
+	members := redis.SMembers(redisCli, ctx, "set")
 	assert.Len(t, members, 3)
 	t.Logf("members = %v", members)
 
-	card := redis.SCard(client, ctx, "set")
+	card := redis.SCard(redisCli, ctx, "set")
 	assert.Equal(t, int64(3), card)
 
-	redis.SRem(client, ctx, "set", "test1")
-	test1 := redis.SIsMember(client, ctx, "set", "test1")
+	redis.SRem(redisCli, ctx, "set", "test1")
+	test1 := redis.SIsMember(redisCli, ctx, "set", "test1")
 	assert.False(t, test1)
-	membersMap := redis.SMembersMap(client, ctx, "set")
+	membersMap := redis.SMembersMap(redisCli, ctx, "set")
 	t.Logf("membersMap = %v", membersMap)
 
 }
@@ -101,7 +102,7 @@ type Name struct {
 
 func TestList(t *testing.T) {
 	t.Log("tests redis list")
-	redis.LPush(client, ctx, "listStr", "test1", "test2", "test3")
+	redis.LPush(redisCli, ctx, "listStr", "test1", "test2", "test3")
 	n1 := new(Name)
 	n1.Name = "test1"
 	n1.Age = 1
@@ -111,7 +112,7 @@ func TestList(t *testing.T) {
 	n3 := new(Name)
 	n3.Name = "test3"
 	n3.Age = 3
-	redis.LPush(client, ctx, "listObj", n1, n2, n3)
-	lRange := redis.LRange(client, ctx, "listStr", 0, -1)
+	redis.LPush(redisCli, ctx, "listObj", n1, n2, n3)
+	lRange := redis.LRange(redisCli, ctx, "listStr", 0, -1)
 	t.Logf("lRange = %v", lRange)
 }
