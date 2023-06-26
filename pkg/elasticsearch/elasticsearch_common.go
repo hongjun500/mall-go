@@ -1,7 +1,7 @@
 // @author hongjun500
 // @date 2023/6/21 15:44
 // @tool ThinkPadX1隐士
-// Created with 2022.2.2.IntelliJ IDEA
+// Created with GoLand 2022.2
 // Description:
 
 package elasticsearch
@@ -9,20 +9,25 @@ package elasticsearch
 import (
 	"bytes"
 	"context"
-	"github.com/hongjun500/mall-go/pkg/convert"
+	"encoding/json"
+	"fmt"
 	"log"
 	"reflect"
+	"time"
 
+	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/indices/create"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/indices/putmapping"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/some"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/hongjun500/mall-go/internal/database"
+	"github.com/hongjun500/mall-go/pkg/convert"
 )
 
 const (
 	EsType     = "es_type"
 	EsAnalyzer = "es_analyzer"
-	EsField    = "field"
+	Json       = "json"
 	IkMaxWord  = "ik_max_word"
 )
 
@@ -45,7 +50,7 @@ func GetStructTag(t any) esTags {
 			tags[EsType] = tag.Get(EsType)
 			tags[EsAnalyzer] = tag.Get(EsAnalyzer)
 		}
-		esParam[field.Name] = tags
+		esParam[tag.Get(Json)] = tags
 	}
 	return esParam
 }
@@ -63,9 +68,16 @@ func HasIndex(db *database.DbFactory, ctx context.Context, index string) bool {
 // CreateIndex 创建索引
 func CreateIndex(db *database.DbFactory, ctx context.Context, params ...any) bool {
 	index := params[0].(string)
-	settings := params[1].(*types.IndexSettings)
-	mappings := params[2].(*types.TypeMapping)
 	creq := create.NewRequest()
+	var settings *types.IndexSettings
+	var mappings *types.TypeMapping
+
+	if len(params) >= 2 {
+		settings = params[1].(*types.IndexSettings)
+	} else if len(params) >= 3 {
+		settings = params[1].(*types.IndexSettings)
+		mappings = params[2].(*types.TypeMapping)
+	}
 	creq.Settings = settings
 	creq.Mappings = mappings
 	res, err := db.Es.TypedCli.Indices.Create(index).Request(creq).Do(ctx)
@@ -96,7 +108,7 @@ func PutMappingByStruct(db *database.DbFactory, ctx context.Context, params ...a
 				property[field] = types.NewTextProperty()
 			} else {
 				property[field] = &types.TextProperty{
-					Analyzer: &esAnalyzer,
+					Analyzer: some.String(esAnalyzer),
 					Type:     "text",
 				}
 			}
@@ -128,6 +140,16 @@ func PutMappingByStruct(db *database.DbFactory, ctx context.Context, params ...a
 	return true
 }
 
+// DeleteIndex 删除索引
+func DeleteIndex(db *database.DbFactory, ctx context.Context, index string) bool {
+	_, err := db.Es.TypedCli.Indices.Delete(index).Do(ctx)
+	if err != nil {
+		log.Printf("delete index error: %v", err.Error())
+		return false
+	}
+	return true
+}
+
 // AddDocument 添加单个文档
 func AddDocument(db *database.DbFactory, ctx context.Context, params ...any) bool {
 	index := params[0].(string)
@@ -141,13 +163,48 @@ func AddDocument(db *database.DbFactory, ctx context.Context, params ...any) boo
 	return res.Result.Name == "created"
 }
 
+// BulkAddDocument 批量添加文档
+func BulkAddDocument(db *database.DbFactory, ctx context.Context, params ...any) bool {
+	index := params[0].(string)
+	body := params[1].(any)
+
+	start := time.Now() // 记录开始时间
+
+	bs := convert.AnyToBytes(body)
+	var list []any
+	err := convert.BytesToAny(bs, &list)
+	if err != nil {
+		return false
+	}
+	bodyStr := ""
+	for _, data := range list {
+		m := data.(map[string]any)
+		if m["id"] == nil {
+			continue
+		}
+		by := convert.AnyToBytes(data)
+		meta := []byte(fmt.Sprintf(`{ "index" : { "_id" : "%d" } }%s`, m["id"], "\n"))
+		by = append(meta, by...)
+		by = append(by, []byte("\n")...)
+		bodyStr += string(by)
+	}
+	res, err := db.Es.Cli.Bulk(bytes.NewReader([]byte(bodyStr)), db.Es.Cli.Bulk.WithIndex(index))
+	if err != nil {
+		log.Printf("bulk add document error: %v", err.Error())
+		return false
+	}
+	elapsed := time.Since(start) // 计算耗时
+	fmt.Printf("耗时：%s\n", elapsed)
+	return !res.IsError()
+}
+
 // UpdateDocument 根据文档 id 更新文档
 func UpdateDocument(db *database.DbFactory, ctx context.Context, params ...any) bool {
 	index := params[0].(string)
 	id := params[1].(string)
 	body := params[2].(any)
 
-	toJson := convert.StructToJson(body)
+	toJson := convert.AnyToJson(body)
 	res, err := db.Es.TypedCli.Update(index, id).Raw(bytes.NewReader([]byte(toJson))).Do(ctx)
 	if err != nil {
 		log.Printf("update document error: %v", err.Error())
@@ -168,15 +225,34 @@ func DeleteDocument(db *database.DbFactory, ctx context.Context, params ...any) 
 	return res.Result.Name == "deleted"
 }
 
-// AddDocuments AddDocument 添加多个文档
-func AddDocuments(db *database.DbFactory, ctx context.Context, params ...any) bool {
+// SearchDocument 根据索引名 index 和 search.Request 条件查询文档
+func SearchDocument(db *database.DbFactory, ctx context.Context, params ...any) (any, error) {
 	index := params[0].(string)
-	// id := params[1].(string)
-	body := params[1].(any)
-	res, err := db.Es.TypedCli.Index(index).Request(body).Do(ctx)
+	body := params[1].(*search.Request)
+	start := time.Now()
+	res, err := db.Es.TypedCli.Search().Index(index).Request(body).Do(ctx)
 	if err != nil {
-		log.Printf("add document error: %v", err.Error())
-		return false
+		log.Printf("search document error: %v", err.Error())
+		return nil, err
 	}
-	return res.Result.Name == "created"
+	hits := res.Hits.Hits
+	data := make([]any, 0, len(hits)) // 预分配足够的容量
+	for _, hit := range hits {
+		if hit.Source_ != nil {
+			var result map[string]interface{}
+			// var result map[string]interface{}
+			err := json.Unmarshal(hit.Source_, &result)
+			// result, err = convert.JsonToMap(hit.Source_)
+			if err != nil {
+				log.Printf("failed to unmarshal search result: %v", err)
+				continue
+			}
+			data = append(data, result)
+		} else {
+			log.Println("empty source in hit")
+		}
+	}
+	elapsed := time.Since(start) // 计算耗时
+	fmt.Printf("耗时：%s\n", elapsed)
+	return data, nil
 }
