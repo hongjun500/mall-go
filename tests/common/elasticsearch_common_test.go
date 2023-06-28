@@ -42,7 +42,7 @@ func TestGetStructTags(t *testing.T) {
 }
 
 func TestDeleteIndex(t *testing.T) {
-	t.Log("delete index success: ", elasticsearch.DeleteIndex(dbFactory, ctx, index))
+	t.Log("delete index success: ", elasticsearch.DeleteIndex(dbFactory, ctx, "pms"))
 }
 
 func TestHasIndex(t *testing.T) {
@@ -96,7 +96,7 @@ func TestSearchAll(t *testing.T) {
 		Size: some.Int(1001),
 	}
 	t.Logf("search all: %+v", convert.AnyToJson(searchAllReq))
-	res, err := elasticsearch.SearchDocument(dbFactory, ctx, index, searchAllReq)
+	res, err := elasticsearch.SearchDocument(dbFactory, ctx, "pms", searchAllReq)
 	if err != nil {
 		t.Error(err)
 	}

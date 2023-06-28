@@ -1,6 +1,6 @@
-// @author hongjun500
-// @date 2023/6/21 15:44
-// @tool ThinkPadX1隐士
+//	@author	hongjun500
+//	@date	2023/6/21 15:44
+//	@tool	ThinkPadX1隐士
 // Created with GoLand 2022.2
 // Description:
 
@@ -123,7 +123,9 @@ func PutMappingByStruct(db *database.DbFactory, ctx context.Context, params ...a
 		case "boolean":
 			property[field] = types.NewBooleanProperty()
 		case "nested":
+			// todo 这里需要处理嵌套结构体
 			property[field] = types.NewNestedProperty()
+			processNestedStruct(property, field, reflect.ValueOf(field))
 		default:
 			continue
 		}
@@ -138,6 +140,39 @@ func PutMappingByStruct(db *database.DbFactory, ctx context.Context, params ...a
 		return false
 	}
 	return true
+}
+
+// 嵌套结构体的 mapping 处理
+func processNestedStruct(property map[string]types.Property, field string, nestedStruct reflect.Value) {
+	nestedType := nestedStruct.Type()
+
+	// 创建一个嵌套属性
+	nestedProperty := types.NewNestedProperty()
+
+	// 递归处理嵌套结构体的字段
+	for i := 0; i < nestedStruct.NumField(); i++ {
+		nestedField := nestedStruct.Field(i)
+		nestedFieldName := nestedType.Field(i).Name
+
+		// 处理嵌套结构体的字段类型
+		switch nestedField.Kind() {
+		case reflect.Struct:
+			// 递归处理嵌套结构体
+			processNestedStruct(nestedProperty.Properties, nestedFieldName, nestedField)
+		case reflect.String:
+
+			nestedProperty.Properties[nestedFieldName] = types.NewTextProperty()
+		case reflect.Int, reflect.Int64:
+			nestedProperty.Properties[nestedFieldName] = types.NewLongNumberProperty()
+		// 处理其他字段类型
+		// ...
+		default:
+			// 忽略不支持的字段类型
+			continue
+		}
+	}
+	// 将处理好的嵌套属性添加到主属性中
+	property[field] = nestedProperty
 }
 
 // DeleteIndex 删除索引
