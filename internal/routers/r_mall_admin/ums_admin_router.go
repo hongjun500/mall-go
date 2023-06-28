@@ -4,18 +4,18 @@
 // Created with GoLand 2022.2
 // Description: 后台用户路由
 
-package mall_admin
+package r_mall_admin
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongjun500/mall-go/internal/services"
+	"github.com/hongjun500/mall-go/internal/services/s_mall_admin"
 )
 
 type UmsAdminRouter struct {
-	services.UmsAdminService
+	s_mall_admin.UmsAdminService
 }
 
-func NewUmsAdminRouter(service services.UmsAdminService) *UmsAdminRouter {
+func NewUmsAdminRouter(service s_mall_admin.UmsAdminService) *UmsAdminRouter {
 	return &UmsAdminRouter{UmsAdminService: service}
 }
 

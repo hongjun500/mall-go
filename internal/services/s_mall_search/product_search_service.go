@@ -4,7 +4,7 @@
 // Created with GoLand 2022.2
 // Description:
 
-package services
+package s_mall_search
 
 import (
 	"github.com/gin-gonic/gin"
@@ -24,13 +24,15 @@ func NewProductSearchService(dbFactory *database.DbFactory) ProductSearchService
 
 // ImportAll 将数据库中的商品信息导入到 es
 //
-//	@Summary		将数据库中的商品信息导入到 es
-//	@Description	将数据库中的商品信息导入到 es
-//	@Tags			搜索商品管理
-//	@Accept			application/json
-//	@Produce		application/json
-//	@Success		200	{object}	gin_common.GinCommonResponse
-//	@Router			/product/importAll [post]
+// @Summary		将数据库中的商品信息导入到 es
+//
+//		@Description	将数据库中的商品信息导入到 es
+//		@Tags			搜索商品管理
+//		@Accept			application/json
+//		@Produce		application/json
+//	 @Security 		GinJWTMiddleware
+//		@Success		200	{object}	gin_common.GinCommonResponse
+//		@Router			/product/importAll [post]
 func (p *ProductSearchService) ImportAll(context *gin.Context) {
 	var product models.PmsProduct
 	pmsProducts, err := product.GetProductInfoById(p.DbFactory, 0)

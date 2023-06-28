@@ -2,13 +2,14 @@ package initialize
 
 import (
 	"github.com/gin-gonic/gin"
-	_ "github.com/hongjun500/mall-go/docs"
 	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/gin_common/security"
-	"github.com/hongjun500/mall-go/internal/routers"
-	"github.com/hongjun500/mall-go/internal/services"
+	"github.com/hongjun500/mall-go/internal/routers/r_mall_admin"
+	"github.com/hongjun500/mall-go/internal/routers/r_mall_search"
+	"github.com/hongjun500/mall-go/internal/services/s_mall_admin"
+	"github.com/hongjun500/mall-go/internal/services/s_mall_search"
 )
 
 // StartUpAdmin admin 模块启动初始化
@@ -29,13 +30,13 @@ func StartUpAdmin() *gin.Engine {
 	ginEngine := NewAdminGinEngine()
 
 	// 将与业务逻辑相关的封装到一个结构体中
-	coreService := services.NewCoreAdminService(sqlSessionFactory)
+	coreService := s_mall_admin.NewCoreAdminService(sqlSessionFactory)
 
 	// 将与路由相关的封装到一个结构体中
-	coreRouter := routers.NewCoreAdminRouter(coreService)
+	coreRouter := r_mall_admin.NewCoreAdminRouter(coreService)
 
 	// 初始化路由分组
-	routers.InitAdminGroupRouter(coreRouter, ginEngine)
+	r_mall_admin.InitAdminGroupRouter(coreRouter, ginEngine)
 
 	return ginEngine
 }
@@ -66,20 +67,20 @@ func StartUpPortal() *gin.Engine {
 
 // StartUpSearch search 模块启动初始化
 func StartUpSearch() *gin.Engine {
-	// todo search 的初始化
-	engine := gin.New()
-
+	engine := gin.Default()
+	// 通过 gorm 拿到 MySQL 数据库连接
+	gormMySQL, _ := database.NewGormMySQL(conf.GlobalDatabaseConfigProperties)
 	// 拿到 elasticsearch 的连接
 	es, _ := database.NewEsTypedClient()
 
-	sqlSessionFactory := database.NewDbFactory(nil, nil, es)
+	sqlSessionFactory := database.NewDbFactory(gormMySQL, nil, es)
 
-	coreSearchService := services.NewCoreSearchService(sqlSessionFactory)
+	coreSearchService := s_mall_search.NewCoreSearchService(sqlSessionFactory)
 
 	// 将与路由相关的封装到一个结构体中
-	coreRouter := routers.NewCoreSearchRouter(coreSearchService)
+	coreRouter := r_mall_search.NewCoreSearchRouter(coreSearchService)
 
 	// 初始化路由分组
-	routers.InitSearchGroupRouter(coreRouter, engine)
+	r_mall_search.InitSearchGroupRouter(coreRouter, engine)
 	return engine
 }

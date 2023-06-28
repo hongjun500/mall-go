@@ -1,0 +1,50 @@
+basePath: /
+definitions:
+  gin_common.GinCommonResponse:
+    properties:
+      code:
+        description: http 状态码
+        type: integer
+      data:
+        description: "返回的数据是任意类型\t如果有错误，则把错误信息也封装在此\n\n\t\t{\n\t\t\t\"err_code\":
+          300000,\n\t\t\t\"err_msg\": \"用户名已存在\"\n\t\t}"
+      message:
+        description: '返回的信息 例如: 操作成功或者操作失败'
+        type: string
+      status:
+        description: success or fail
+        type: string
+    type: object
+info:
+  contact: {}
+  description: mall-go API
+  title: mall-go API
+  version: v1
+paths:
+  /product/importAll:
+    post:
+      consumes:
+      - application/json
+      description: 将数据库中的商品信息导入到 es
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 将数据库中的商品信息导入到 es
+      tags:
+      - 搜索商品管理
+schemes:
+- http
+- https
+securityDefinitions:
+  GinJWTMiddleware:
+    description: Description for what is this security definition being used
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

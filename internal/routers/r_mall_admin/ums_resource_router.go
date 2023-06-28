@@ -4,18 +4,18 @@
 // Created with GoLand 2022.2
 // Description:
 
-package mall_admin
+package r_mall_admin
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongjun500/mall-go/internal/services"
+	"github.com/hongjun500/mall-go/internal/services/s_mall_admin"
 )
 
 type UmsResourceRouter struct {
-	services.UmsResourceService
+	s_mall_admin.UmsResourceService
 }
 
-func NewUmsResourceRouter(service services.UmsResourceService) *UmsResourceRouter {
+func NewUmsResourceRouter(service s_mall_admin.UmsResourceService) *UmsResourceRouter {
 	return &UmsResourceRouter{UmsResourceService: service}
 }
 

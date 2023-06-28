@@ -4,7 +4,7 @@
 // Created with GoLand 2022.2
 // Description: 后台菜单相关服务
 
-package services
+package s_mall_admin
 
 import (
 	"time"
@@ -26,6 +26,7 @@ func NewUmsMenuService(dbFactory *database.DbFactory) UmsMenuService {
 }
 
 // UmsMenuCreate 添加后台菜单
+//
 //	@Description	添加后台菜单
 //	@Summary		添加后台菜单
 //	@Description	添加后台菜单
@@ -79,6 +80,7 @@ func updateLevel(umsMenu *models.UmsMenu, s UmsMenuService) {
 }
 
 // UmsMenuUpdate 修改后台菜单
+//
 //	@Description	修改后台菜单
 //	@Summary		修改后台菜单
 //	@Description	修改后台菜单
@@ -119,6 +121,7 @@ func (s UmsMenuService) UmsMenuUpdate(context *gin.Context) {
 }
 
 // UmsMenuDelete 删除后台菜单
+//
 //	@Description	删除后台菜单
 //	@Summary		删除后台菜单
 //	@Description	删除后台菜单
@@ -147,6 +150,7 @@ func (s UmsMenuService) UmsMenuDelete(context *gin.Context) {
 }
 
 // UmsMenuItem 根据ID获取菜单详情
+//
 //	@Description	根据ID获取菜单详情
 //	@Summary		根据ID获取菜单详情
 //	@Description	根据ID获取菜单详情
@@ -174,6 +178,7 @@ func (s UmsMenuService) UmsMenuItem(context *gin.Context) {
 }
 
 // UmsMenuPageList 分页查询后台菜单
+//
 //	@Summary		分页查询后台菜单
 //	@Description	分页查询后台菜单
 //	@Tags			后台菜单管理
@@ -211,6 +216,7 @@ func (s UmsMenuService) UmsMenuPageList(context *gin.Context) {
 }
 
 // UmsMenuUpdateHidden 修改菜单显示状态
+//
 //	@Description	修改菜单显示状态
 //	@Summary		修改菜单显示状态
 //	@Description	修改菜单显示状态
@@ -239,6 +245,7 @@ func (s UmsMenuService) UmsMenuUpdateHidden(context *gin.Context) {
 }
 
 // UmsMenuTreeList 树形结构返回所有菜单列表
+//
 //	@Description	树形结构返回所有菜单列表
 //	@Summary		树形结构返回所有菜单列表
 //	@Tags			后台菜单管理

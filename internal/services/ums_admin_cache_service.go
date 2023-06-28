@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/models"
 	"github.com/hongjun500/mall-go/pkg/constants"
 	"github.com/hongjun500/mall-go/pkg/convert"
@@ -18,9 +19,9 @@ import (
 )
 
 // GetAdmin 获取缓存后台用户信息
-func (s UmsAdminService) GetAdmin(username string) (models.UmsAdmin, error) {
+func GetAdmin(db *database.DbFactory, username string) (models.UmsAdmin, error) {
 	key := constants.RedisDatabase + constants.RedisKeyAdmin + username
-	umsAdminJsonStr := redis.Get(s.DbFactory.RedisCli, context.Background(), key)
+	umsAdminJsonStr := redis.Get(db.RedisCli, context.Background(), key)
 	var umsAdmin models.UmsAdmin
 	err := convert.JsonToAny(umsAdminJsonStr, &umsAdmin)
 	if err != nil {
@@ -30,33 +31,33 @@ func (s UmsAdminService) GetAdmin(username string) (models.UmsAdmin, error) {
 }
 
 // SetAdmin 设置用户缓存
-func (s UmsAdminService) SetAdmin(umsAdmin models.UmsAdmin, exp time.Duration) {
+func SetAdmin(db *database.DbFactory, umsAdmin models.UmsAdmin, exp time.Duration) {
 	key := constants.RedisDatabase + constants.RedisKeyAdmin + umsAdmin.Username
 	jsonStr := convert.AnyToJson(umsAdmin)
-	redis.SetExpiration(s.DbFactory.RedisCli, context.Background(), key, jsonStr, exp)
+	redis.SetExpiration(db.RedisCli, context.Background(), key, jsonStr, exp)
 }
 
 // DelAdmin 删除用户缓存
-func (s UmsAdminService) DelAdmin(adminId int64) {
+func DelAdmin(db *database.DbFactory, adminId int64) {
 	m := new(models.UmsAdmin)
-	umsAdmin, err := m.SelectUmsAdminByUserId(s.DbFactory.GormMySQL, adminId)
+	umsAdmin, err := m.SelectUmsAdminByUserId(db.GormMySQL, adminId)
 	if err != nil {
 		return
 	}
 	key := constants.RedisDatabase + constants.RedisKeyAdmin + umsAdmin.Username
-	redis.Del(s.DbFactory.RedisCli, context.Background(), key)
+	redis.Del(db.RedisCli, context.Background(), key)
 }
 
 // DelResourceList 删除后台用户资源列表缓存
-func (s UmsAdminService) DelResourceList(adminId int64) {
+func DelResourceList(db *database.DbFactory, adminId int64) {
 	key := constants.RedisDatabase + constants.RedisKeyResourceList + strconv.FormatInt(adminId, 10)
-	redis.Del(s.DbFactory.RedisCli, context.Background(), key)
+	redis.Del(db.RedisCli, context.Background(), key)
 }
 
 // DelResourceListByRole 当角色相关资源信息改变时删除相关后台用户缓存
-func (s UmsRoleService) DelResourceListByRole(roleId int64) {
+func DelResourceListByRole(db *database.DbFactory, roleId int64) {
 	re := new(models.UmsAdminRoleRelation)
-	roleRelations, err := re.SelectUmsAdminRoleRelationByRoleId(s.DbFactory.GormMySQL, roleId)
+	roleRelations, err := re.SelectUmsAdminRoleRelationByRoleId(db.GormMySQL, roleId)
 	if err != nil {
 		return
 	}
@@ -66,14 +67,14 @@ func (s UmsRoleService) DelResourceListByRole(roleId int64) {
 		for _, roleRelation := range roleRelations {
 			keys = append(keys, keyPrefix+strconv.FormatInt(roleRelation.AdminId, 10))
 		}
-		redis.Del(s.DbFactory.RedisCli, context.Background(), keys...)
+		redis.Del(db.RedisCli, context.Background(), keys...)
 	}
 }
 
 // DelResourceListByRoleIds 当角色相关资源信息改变时删除相关后台用户缓存
-func (s UmsRoleService) DelResourceListByRoleIds(roleIds []int64) {
+func DelResourceListByRoleIds(db *database.DbFactory, roleIds []int64) {
 	re := new(models.UmsAdminRoleRelation)
-	roleRelations, err := re.SelectUmsAdminRoleRelationInRoleId(s.DbFactory.GormMySQL, roleIds)
+	roleRelations, err := re.SelectUmsAdminRoleRelationInRoleId(db.GormMySQL, roleIds)
 	if err != nil {
 		return
 	}
@@ -83,14 +84,14 @@ func (s UmsRoleService) DelResourceListByRoleIds(roleIds []int64) {
 		for _, roleRelation := range roleRelations {
 			keys = append(keys, keyPrefix+strconv.FormatInt(roleRelation.AdminId, 10))
 		}
-		redis.Del(s.DbFactory.RedisCli, context.Background(), keys...)
+		redis.Del(db.RedisCli, context.Background(), keys...)
 	}
 }
 
 // DelResourceListByResource 当资源信息改变时，删除资源项目后台用户缓存
-func (s UmsResourceService) DelResourceListByResource(resourceId int64) {
+func DelResourceListByResource(db *database.DbFactory, resourceId int64) {
 	rr := new(models.UmsRoleResourceRelation)
-	roleResourceRelations, err := rr.SelectAdminIdsByResourceId(s.DbFactory.GormMySQL, resourceId)
+	roleResourceRelations, err := rr.SelectAdminIdsByResourceId(db.GormMySQL, resourceId)
 	if err != nil {
 		return
 	}
@@ -100,14 +101,14 @@ func (s UmsResourceService) DelResourceListByResource(resourceId int64) {
 		for _, adminId := range roleResourceRelations {
 			keys = append(keys, keyPrefix+strconv.FormatInt(adminId, 10))
 		}
-		redis.Del(s.DbFactory.RedisCli, context.Background(), keys...)
+		redis.Del(db.RedisCli, context.Background(), keys...)
 	}
 }
 
 // GetResourceList 获取后台用户资源列表
-func (s UmsAdminService) GetResourceList(adminId int64) ([]models.UmsResource, error) {
+func GetResourceList(db *database.DbFactory, adminId int64) ([]models.UmsResource, error) {
 	key := constants.RedisDatabase + constants.RedisKeyResourceList + strconv.FormatInt(adminId, 10)
-	umsResourceJsonStr := redis.LRange(s.DbFactory.RedisCli, context.Background(), key, 0, -1)
+	umsResourceJsonStr := redis.LRange(db.RedisCli, context.Background(), key, 0, -1)
 	var umsResources []models.UmsResource
 	for _, jsonStr := range umsResourceJsonStr {
 		var resource models.UmsResource
@@ -121,8 +122,8 @@ func (s UmsAdminService) GetResourceList(adminId int64) ([]models.UmsResource, e
 }
 
 // SetResourceList 设置后台用户资源列表
-func (s UmsAdminService) SetResourceList(adminId int64, resourceList []models.UmsResource, exp time.Duration) {
+func SetResourceList(db *database.DbFactory, adminId int64, resourceList []models.UmsResource, exp time.Duration) {
 	key := constants.RedisDatabase + constants.RedisKeyResourceList + strconv.FormatInt(adminId, 10)
 	sliceStructToJson := convert.AnyToJson(resourceList)
-	redis.LRPush(s.DbFactory.RedisCli, context.Background(), key, sliceStructToJson, exp)
+	redis.LRPush(db.RedisCli, context.Background(), key, sliceStructToJson, exp)
 }

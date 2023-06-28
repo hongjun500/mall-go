@@ -1,0 +1,74 @@
+{
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "mall-go API",
+        "title": "mall-go API",
+        "contact": {},
+        "version": "v1"
+    },
+    "basePath": "/",
+    "paths": {
+        "/product/importAll": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "将数据库中的商品信息导入到 es",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "搜索商品管理"
+                ],
+                "summary": "将数据库中的商品信息导入到 es",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "gin_common.GinCommonResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "http 状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "返回的数据是任意类型\t如果有错误，则把错误信息也封装在此\n\n\t\t{\n\t\t\t\"err_code\": 300000,\n\t\t\t\"err_msg\": \"用户名已存在\"\n\t\t}"
+                },
+                "message": {
+                    "description": "返回的信息 例如: 操作成功或者操作失败",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "success or fail",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "GinJWTMiddleware": {
+            "description": "Description for what is this security definition being used",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

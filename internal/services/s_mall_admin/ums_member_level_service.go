@@ -4,7 +4,7 @@
 // Created with GoLand 2022.2
 // Description:
 
-package services
+package s_mall_admin
 
 import (
 	"github.com/gin-gonic/gin"

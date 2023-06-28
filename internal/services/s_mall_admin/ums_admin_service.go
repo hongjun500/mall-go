@@ -1,4 +1,4 @@
-package services
+package s_mall_admin
 
 import (
 	"crypto/rand"
@@ -13,6 +13,7 @@ import (
 	"github.com/hongjun500/mall-go/internal/models"
 	"github.com/hongjun500/mall-go/internal/request_dto/base"
 	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
+	"github.com/hongjun500/mall-go/internal/services"
 	"github.com/hongjun500/mall-go/pkg/security"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -27,7 +28,7 @@ func NewUmsAdminService(dbFactory *database.DbFactory) UmsAdminService {
 
 func (s UmsAdminService) getAdminByUsername(username string) (models.UmsAdmin, error) {
 	// 先从缓存中获取
-	cacheAdmin, _ := s.GetAdmin(username)
+	cacheAdmin, _ := services.GetAdmin(s.DbFactory, username)
 	if cacheAdmin.Id > 0 {
 		return cacheAdmin, nil
 	}
@@ -40,7 +41,7 @@ func (s UmsAdminService) getAdminByUsername(username string) (models.UmsAdmin, e
 	if umsAdmins != nil && len(umsAdmins) > 0 {
 		umsAdmin = *umsAdmins[0]
 		// 存入缓存
-		s.SetAdmin(umsAdmin, 0)
+		services.SetAdmin(s.DbFactory, umsAdmin, 0)
 		return umsAdmin, nil
 	}
 	return umsAdmin, nil
@@ -48,7 +49,7 @@ func (s UmsAdminService) getAdminByUsername(username string) (models.UmsAdmin, e
 
 func (s UmsAdminService) GetResource(adminId int64) []models.UmsResource {
 	// 先从缓存中获取
-	list, _ := s.GetResourceList(adminId)
+	list, _ := services.GetResourceList(s.DbFactory, adminId)
 	if list != nil && len(list) > 0 {
 		return list
 	}
@@ -57,7 +58,7 @@ func (s UmsAdminService) GetResource(adminId int64) []models.UmsResource {
 	umsResources := umsRR.SelectRoleResourceRelationsByAdminId(s.DbFactory.GormMySQL, adminId)
 	if umsResources != nil && len(umsResources) > 0 {
 		// 存入缓存
-		s.SetResourceList(adminId, umsResources, 0)
+		services.SetResourceList(s.DbFactory, adminId, umsResources, 0)
 	}
 	return umsResources
 }
@@ -88,6 +89,7 @@ func VerifyPassword(password, hashedPassword string) bool {
 }
 
 // UmsAdminRegister 用户注册
+//
 //	@Summary		用户注册
 //	@Description	用户注册
 //	@Tags			后台用户管理
@@ -139,6 +141,7 @@ func (s UmsAdminService) UmsAdminRegister(context *gin.Context) {
 }
 
 // UmsAdminLogin 用户登录
+//
 //	@Summary		用户登录
 //	@Description	用户登录
 //	@Tags			后台用户管理
@@ -214,6 +217,7 @@ func (s UmsAdminService) UmsAdminLogout(context *gin.Context) {
 }
 
 // UmsAdminAuthTest 用户鉴权测试
+//
 //	@Summary		用户鉴权测试
 //	@Description	用户鉴权测试
 //	@Tags			后台用户管理
@@ -236,6 +240,7 @@ func (s UmsAdminService) UmsAdminAuthTest(context *gin.Context) {
 }
 
 // UmsAdminRefreshToken 刷新 token
+//
 //	@Summary		刷新 token
 //	@Description	刷新 token
 //	@Tags			后台用户管理
@@ -264,6 +269,7 @@ func (s UmsAdminService) UmsRoleList(adminId int64) []*models.UmsRole {
 }
 
 // UmsAdminInfo 根据用户 ID 获取用户信息
+//
 //	@Summary		根据用户 ID 获取用户信息
 //	@Description	根据用户 ID 获取用户信息
 //	@Tags			后台用户管理
@@ -310,6 +316,7 @@ func (s UmsAdminService) UmsAdminInfo(context *gin.Context) {
 }
 
 // UmsAdminListPage 分页查询用户
+//
 //	@Summary		分页查询用户
 //	@Description	分页查询用户
 //	@Tags			后台用户管理
@@ -338,6 +345,7 @@ func (s UmsAdminService) UmsAdminListPage(context *gin.Context) {
 }
 
 // UmsAdminItem 获取指定用户信息
+//
 //	@Summary		获取指定用户信息
 //	@Description	获取指定用户信息
 //	@Tags			后台用户管理
@@ -365,6 +373,7 @@ func (s UmsAdminService) UmsAdminItem(context *gin.Context) {
 }
 
 // UmsAdminUpdate 修改指定用户信息
+//
 //	@Summary		修改指定用户信息
 //	@Description	修改指定用户信息
 //	@Tags			后台用户管理
@@ -403,11 +412,12 @@ func (s UmsAdminService) UmsAdminUpdate(context *gin.Context) {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	s.DelAdmin(userDTO.UserId)
+	services.DelAdmin(s.DbFactory, userDTO.UserId)
 	gin_common.CreateSuccess(context, id)
 }
 
 // UmsAdminDelete 删除指定用户信息
+//
 //	@Summary		删除指定用户信息
 //	@Description	删除指定用户信息
 //	@Tags			后台用户管理
@@ -430,12 +440,13 @@ func (s UmsAdminService) UmsAdminDelete(context *gin.Context) {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	s.DelAdmin(userDTO.UserId)
-	s.DelResourceList(userDTO.UserId)
+	services.DelAdmin(s.DbFactory, userDTO.UserId)
+	services.DelResourceList(s.DbFactory, userDTO.UserId)
 	gin_common.CreateSuccess(context, id)
 }
 
 // UmsAdminUpdateStatus 修改指定用户状态
+//
 //	@Summary		修改指定用户状态
 //	@Description	修改指定用户状态
 //	@Tags			后台用户管理
@@ -462,11 +473,12 @@ func (s UmsAdminService) UmsAdminUpdateStatus(context *gin.Context) {
 		gin_common.CreateFail(context, gin_common.DatabaseError)
 		return
 	}
-	s.DelAdmin(pathVariableDTO.Id)
+	services.DelAdmin(s.DbFactory, pathVariableDTO.Id)
 	gin_common.CreateSuccess(context, id)
 }
 
 // UmsAdminUpdatePassword 修改指定用户密码
+//
 //	@Summary		修改指定用户密码
 //	@Description	修改指定用户密码
 //	@Tags			后台用户管理
@@ -512,11 +524,12 @@ func (s UmsAdminService) UmsAdminUpdatePassword(context *gin.Context) {
 		return
 	}
 	// 删除缓存的用户数据
-	s.DelAdmin(getAdmin.Id)
+	services.DelAdmin(s.DbFactory, getAdmin.Id)
 	gin_common.CreateSuccess(context, status)
 }
 
 // UmsAdminRoleUpdate 修改指定用户角色
+//
 //	@Summary		修改指定用户角色
 //	@Description	修改指定用户角色
 //	@Tags			后台用户管理
@@ -560,11 +573,12 @@ func (s UmsAdminService) UmsAdminRoleUpdate(context *gin.Context) {
 			return
 		}
 	}
-	s.DelResourceList(adminId)
+	services.DelResourceList(s.DbFactory, adminId)
 	gin_common.CreateSuccess(context, count)
 }
 
 // UmsAdminRoleItem 获取指定用户的角色
+//
 //	@Summary		获取指定用户的角色
 //	@Description	获取指定用户的角色
 //	@Tags			后台用户管理

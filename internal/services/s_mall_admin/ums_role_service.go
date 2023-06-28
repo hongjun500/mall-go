@@ -4,7 +4,7 @@
 // Created with GoLand 2022.2
 // Description:
 
-package services
+package s_mall_admin
 
 import (
 	"github.com/gin-gonic/gin"
@@ -13,6 +13,7 @@ import (
 	"github.com/hongjun500/mall-go/internal/models"
 	"github.com/hongjun500/mall-go/internal/request_dto/base"
 	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
+	"github.com/hongjun500/mall-go/internal/services"
 )
 
 type UmsRoleService struct {
@@ -114,7 +115,7 @@ func (s UmsRoleService) UmsRoleDelete(context *gin.Context) {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	s.DelResourceListByRoleIds(dto.Ids)
+	services.DelResourceListByRoleIds(s.DbFactory, dto.Ids)
 	gin_common.CreateSuccess(context, rows)
 }
 
@@ -304,6 +305,6 @@ func (s UmsRoleService) UmsRoleAllocResource(context *gin.Context) {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	s.DelResourceListByRole(dto.RoleId)
+	services.DelResourceListByRole(s.DbFactory, dto.RoleId)
 	gin_common.CreateSuccess(context, rows)
 }

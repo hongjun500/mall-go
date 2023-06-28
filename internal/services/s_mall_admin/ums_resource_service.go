@@ -4,7 +4,7 @@
 // Created with GoLand 2022.2
 //	@Description:
 
-package services
+package s_mall_admin
 
 import (
 	"github.com/gin-gonic/gin"
@@ -13,6 +13,7 @@ import (
 	"github.com/hongjun500/mall-go/internal/models"
 	"github.com/hongjun500/mall-go/internal/request_dto/base"
 	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
+	"github.com/hongjun500/mall-go/internal/services"
 )
 
 type UmsResourceService struct {
@@ -87,7 +88,7 @@ func (s UmsResourceService) UmsResourceUpdate(context *gin.Context) {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	s.DelResourceListByResource(pathVariableDTO.Id)
+	services.DelResourceListByResource(s.DbFactory, pathVariableDTO.Id)
 	gin_common.CreateSuccess(context, rows)
 }
 
@@ -144,7 +145,7 @@ func (s UmsResourceService) UmsResourceDelete(context *gin.Context) {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	s.DelResourceListByResource(pathVariableDTO.Id)
+	services.DelResourceListByResource(s.DbFactory, pathVariableDTO.Id)
 	gin_common.CreateSuccess(context, rows)
 }
 

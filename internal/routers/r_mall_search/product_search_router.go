@@ -4,18 +4,18 @@
 // Created with GoLand 2022.2
 // Description:
 
-package mall_search
+package r_mall_search
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongjun500/mall-go/internal/services"
+	"github.com/hongjun500/mall-go/internal/services/s_mall_search"
 )
 
 type ProductSearchRouter struct {
-	services.ProductSearchService
+	s_mall_search.ProductSearchService
 }
 
-func NewSearchRouter(service services.ProductSearchService) *ProductSearchRouter {
+func NewSearchRouter(service s_mall_search.ProductSearchService) *ProductSearchRouter {
 	return &ProductSearchRouter{ProductSearchService: service}
 }
 

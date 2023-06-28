@@ -3,26 +3,27 @@ package services
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/hongjun500/mall-go/internal/conf"
-	"github.com/hongjun500/mall-go/internal/gin_common"
-	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
-	"github.com/hongjun500/mall-go/internal/services"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/hongjun500/mall-go/internal/conf"
+	"github.com/hongjun500/mall-go/internal/gin_common"
+	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
+	"github.com/hongjun500/mall-go/internal/services/s_mall_admin"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHashPassword(t *testing.T) {
-	password, err := services.HashPassword("123456")
+	password, err := s_mall_admin.HashPassword("123456")
 	assert.NoError(t, err, "HashPassword should not return an error")
 	assert.NotEmpty(t, password, "Hashed password should not be empty")
 }
 
 func TestVerifyPassword(t *testing.T) {
 	password := "123456"
-	hashPassword, _ := services.HashPassword(password)
-	verify := services.VerifyPassword(password, hashPassword)
+	hashPassword, _ := s_mall_admin.HashPassword(password)
+	verify := s_mall_admin.VerifyPassword(password, hashPassword)
 	_ = "$2a$10$cDLM3NGJJgfBfQsfpjNSGeK5xImWfs8W5SrS709L.eZYV6qZRAy1e"
 	assert.Equal(t, true, verify, "verify success")
 }

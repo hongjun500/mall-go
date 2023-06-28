@@ -4,7 +4,7 @@
 // Created with GoLand 2022.2
 // Description: 后台资源分类服务
 
-package services
+package s_mall_admin
 
 import (
 	"github.com/gin-gonic/gin"
