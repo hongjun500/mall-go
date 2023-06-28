@@ -1,7 +1,7 @@
-// @author hongjun500
-// @date 2023/6/19 18:19
-// @tool ThinkPadX1隐士
-// Created with 2022.2.2.IntelliJ IDEA
+//	@author	hongjun500
+//	@date	2023/6/19 18:19
+//	@tool	ThinkPadX1隐士
+// Created with GoLand 2022.2
 // Description:
 
 package database
@@ -33,7 +33,7 @@ func NewEsTypedClient() (*Es, error) {
 	cert, _ := os.ReadFile("D:\\elasticsearch-8.7.0\\config\\certs\\http_ca.crt")
 
 	config := elasticsearch.Config{
-		Addresses: []string{"https://localhost:9200"},
+		Addresses: []string{"http://localhost:9200"},
 		Username:  "elastic",
 		Password:  "elastic",
 		// CloudID:                "",

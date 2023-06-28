@@ -1,6 +1,6 @@
-// @author hongjun500
-// @date 2023/6/9 13:20
-// @tool ThinkPadX1隐士
+//	@author	hongjun500
+//	@date	2023/6/9 13:20
+//	@tool	ThinkPadX1隐士
 // Created with GoLand 2022.2
 // Description: 针对 encoding/json 包的一些封装
 

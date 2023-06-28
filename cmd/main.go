@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	_ "github.com/hongjun500/mall-go/docs/mall_search"
+	// _ "github.com/hongjun500/mall-go/docs/mall_admin"
 	"github.com/hongjun500/mall-go/cmd/admin"
 	"github.com/hongjun500/mall-go/cmd/portal"
 	"github.com/hongjun500/mall-go/cmd/search"
@@ -16,15 +18,6 @@ var (
 	g errgroup.Group
 )
 
-// @title mall-go API
-// @description mall-go API
-// @version v1
-// @BasePath /
-// @schemes http https
-// @securityDefinitions.apikey GinJWTMiddleware
-// @in header
-// @name Authorization
-// @description Description for what is this security definition being used
 func main() {
 
 	// 初始化全部配置

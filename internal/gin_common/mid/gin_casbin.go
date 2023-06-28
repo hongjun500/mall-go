@@ -1,6 +1,6 @@
-// @author hongjun500
-// @date 2023/6/15 14:06
-// @tool ThinkPadX1隐士
+//	@author	hongjun500
+//	@date	2023/6/15 14:06
+//	@tool	ThinkPadX1隐士
 // Created with GoLand 2022.2
 // Description: 使用 casbin 封装的动态权限认证，并将其封装成 gin 的中间件
 

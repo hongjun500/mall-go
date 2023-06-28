@@ -1,6 +1,6 @@
-// @author hongjun500
-// @date 2023/6/26 15:35
-// @tool ThinkPadX1隐士
+//	@author	hongjun500
+//	@date	2023/6/26 15:35
+//	@tool	ThinkPadX1隐士
 // Created with 2022.2.2.IntelliJ IDEA
 // Description:
 
@@ -36,8 +36,8 @@ func (*PmsProduct) TableName() string {
 }
 
 // GetProductInfoById 根据商品 id 获取商品相关信息
-func (pmsProduct *PmsProduct) GetProductInfoById(db *database.DbFactory, id int64) ([]PmsProduct, error) {
-	var pmsProducts []PmsProduct
+func (pmsProduct *PmsProduct) GetProductInfoById(db *database.DbFactory, id int64) ([]*PmsProduct, error) {
+	var pmsProducts []*PmsProduct
 	query := db.GormMySQL.Preload("ProductAttributeValueList").
 		Preload("ProductAttributeValueList.ProductAttribute").
 		Where("delete_status = ? AND publish_status = ?", 0, 1)

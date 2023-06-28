@@ -1,10 +1,10 @@
-// @author hongjun500
-// @date 2023/6/11
-// @tool ThinkPadX1隐士
+//	@author	hongjun500
+//	@date	2023/6/11
+//	@tool	ThinkPadX1隐士
 // Created with GoLand 2022.2
 // Description: 后台菜单管理路由
 
-package routers
+package mall_admin
 
 import (
 	"github.com/gin-gonic/gin"

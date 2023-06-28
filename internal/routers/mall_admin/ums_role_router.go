@@ -1,10 +1,10 @@
-// @author hongjun500
-// @date 2023/6/13 15:47
-// @tool ThinkPadX1隐士
+//	@author	hongjun500
+//	@date	2023/6/13 15:47
+//	@tool	ThinkPadX1隐士
 // Created with GoLand 2022.2
 // Description:
 
-package routers
+package mall_admin
 
 import (
 	"github.com/gin-gonic/gin"

@@ -1,6 +1,6 @@
-// @author hongjun500
-// @date 2023/6/13 15:48
-// @tool ThinkPadX1隐士
+//	@author	hongjun500
+//	@date	2023/6/13 15:48
+//	@tool	ThinkPadX1隐士
 // Created with GoLand 2022.2
 // Description:
 
@@ -24,15 +24,16 @@ func NewUmsRoleService(dbFactory *database.DbFactory) UmsRoleService {
 }
 
 // UmsRoleCreate 添加角色
-// @Description 添加角色
-// @Summary 添加角色
-// @Tags 后台角色管理
-// @Accept application/json
-// @Produce application/json
-// @Param request body ums_admin.UmsRoleCreateDTO true "添加角色"
-// @Security GinJWTMiddleware
-// @Success 200 {object} gin_common.GinCommonResponse
-// @Router /role/create [post]
+//
+//	@Description	添加角色
+//	@Summary		添加角色
+//	@Tags			后台角色管理
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body	ums_admin.UmsRoleCreateDTO	true	"添加角色"
+//	@Security		GinJWTMiddleware
+//	@Success		200	{object}	gin_common.GinCommonResponse
+//	@Router			/role/create [post]
 func (s UmsRoleService) UmsRoleCreate(context *gin.Context) {
 	var dto ums_admin.UmsRoleCreateDTO
 	err := context.ShouldBind(&dto)
@@ -55,16 +56,17 @@ func (s UmsRoleService) UmsRoleCreate(context *gin.Context) {
 }
 
 // UmsRoleUpdate 修改角色
-// @Description 修改角色
-// @Summary 修改角色
-// @Tags 后台角色管理
-// @Accept application/json
-// @Produce application/json
-// @Param id path int true "id"
-// @Param request body ums_admin.UmsRoleCreateDTO true "修改角色"
-// @Security GinJWTMiddleware
-// @Success 200 {object} gin_common.GinCommonResponse
-// @Router /role/update/{id} [post]
+//
+//	@Description	修改角色
+//	@Summary		修改角色
+//	@Tags			后台角色管理
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path	int							true	"id"
+//	@Param			request	body	ums_admin.UmsRoleCreateDTO	true	"修改角色"
+//	@Security		GinJWTMiddleware
+//	@Success		200	{object}	gin_common.GinCommonResponse
+//	@Router			/role/update/{id} [post]
 func (s UmsRoleService) UmsRoleUpdate(context *gin.Context) {
 	var dto ums_admin.UmsRoleCreateDTO
 	var pathVariable base.PathVariableDTO
@@ -89,15 +91,16 @@ func (s UmsRoleService) UmsRoleUpdate(context *gin.Context) {
 }
 
 // UmsRoleDelete 批量删除角色
-// @Description 批量删除角色
-// @Summary 批量删除角色
-// @Tags 后台角色管理
-// @Accept application/json
-// @Produce application/json
-// @Param ids query []int64 true "ids"
-// @Security GinJWTMiddleware
-// @Success 200 {object} gin_common.GinCommonResponse
-// @Router /role/delete [post]
+//
+//	@Description	批量删除角色
+//	@Summary		批量删除角色
+//	@Tags			后台角色管理
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			ids	query	[]int64	true	"ids"
+//	@Security		GinJWTMiddleware
+//	@Success		200	{object}	gin_common.GinCommonResponse
+//	@Router			/role/delete [post]
 func (s UmsRoleService) UmsRoleDelete(context *gin.Context) {
 	var dto ums_admin.IdsDTO
 	err := context.ShouldBind(&dto)
@@ -116,14 +119,15 @@ func (s UmsRoleService) UmsRoleDelete(context *gin.Context) {
 }
 
 // UmsRoleListAll 获取所有角色
-// @Description 获取所有角色
-// @Summary 获取所有角色
-// @Tags 后台角色管理
-// @Accept application/json
-// @Produce application/json
-// @Security GinJWTMiddleware
-// @Success 200 {object} gin_common.GinCommonResponse
-// @Router /role/listAll [get]
+//
+//	@Description	获取所有角色
+//	@Summary		获取所有角色
+//	@Tags			后台角色管理
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Security		GinJWTMiddleware
+//	@Success		200	{object}	gin_common.GinCommonResponse
+//	@Router			/role/listAll [get]
 func (s UmsRoleService) UmsRoleListAll(context *gin.Context) {
 	var m models.UmsRole
 	list, err := m.SelectAll(s.DbFactory.GormMySQL)
@@ -135,17 +139,18 @@ func (s UmsRoleService) UmsRoleListAll(context *gin.Context) {
 }
 
 // UmsRoleList 根据角色名称分页获取角色列表
-// @Description 根据角色名称分页获取角色列表
-// @Summary 根据角色名称分页获取角色列表
-// @Tags 后台角色管理
-// @Accept multipart/form-data
-// @Produce application/json
-// @Param keyword query string false "keyword"
-// @Param pageSize query int true "pageSize"
-// @Param pageNum query int true "pageNum"
-// @Security GinJWTMiddleware
-// @Success 200 {object} gin_common.GinCommonResponse
-// @Router /role/list [get]
+//
+//	@Description	根据角色名称分页获取角色列表
+//	@Summary		根据角色名称分页获取角色列表
+//	@Tags			后台角色管理
+//	@Accept			multipart/form-data
+//	@Produce		application/json
+//	@Param			keyword		query	string	false	"keyword"
+//	@Param			pageSize	query	int		true	"pageSize"
+//	@Param			pageNum		query	int		true	"pageNum"
+//	@Security		GinJWTMiddleware
+//	@Success		200	{object}	gin_common.GinCommonResponse
+//	@Router			/role/list [get]
 func (s UmsRoleService) UmsRoleList(context *gin.Context) {
 	var dto ums_admin.UmsRoleListPageDTO
 	err := context.ShouldBind(&dto)
@@ -163,16 +168,17 @@ func (s UmsRoleService) UmsRoleList(context *gin.Context) {
 }
 
 // UmsRoleUpdateStatus 修改角色状态
-// @Description 修改角色状态
-// @Summary 修改角色状态
-// @Tags 后台角色管理
-// @Accept application/json
-// @Produce application/json
-// @Param id path int true "id"
-// @Param status query int true "status"
-// @Security GinJWTMiddleware
-// @Success 200 {object} gin_common.GinCommonResponse
-// @Router /role/updateStatus/{id} [post]
+//
+//	@Description	修改角色状态
+//	@Summary		修改角色状态
+//	@Tags			后台角色管理
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path	int	true	"id"
+//	@Param			status	query	int	true	"status"
+//	@Security		GinJWTMiddleware
+//	@Success		200	{object}	gin_common.GinCommonResponse
+//	@Router			/role/updateStatus/{id} [post]
 func (s UmsRoleService) UmsRoleUpdateStatus(context *gin.Context) {
 	var pathVariableDTO base.PathVariableDTO
 	var dto ums_admin.UmsRoleStatusDTO
@@ -192,15 +198,16 @@ func (s UmsRoleService) UmsRoleUpdateStatus(context *gin.Context) {
 }
 
 // UmsRoleListMenu 获取角色相关菜单
-// @Description 获取角色相关菜单
-// @Summary 获取角色相关菜单
-// @Tags 后台角色管理
-// @Accept application/json
-// @Produce application/json
-// @Param roleId path int true "roleId"
-// @Security GinJWTMiddleware
-// @Success 200 {object} gin_common.GinCommonResponse
-// @Router /role/listMenu/{roleId} [get]
+//
+//	@Description	获取角色相关菜单
+//	@Summary		获取角色相关菜单
+//	@Tags			后台角色管理
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			roleId	path	int	true	"roleId"
+//	@Security		GinJWTMiddleware
+//	@Success		200	{object}	gin_common.GinCommonResponse
+//	@Router			/role/listMenu/{roleId} [get]
 func (s UmsRoleService) UmsRoleListMenu(context *gin.Context) {
 	var dto ums_admin.UmsRolePathVariableDTO
 	err := context.ShouldBindUri(&dto)
@@ -218,15 +225,16 @@ func (s UmsRoleService) UmsRoleListMenu(context *gin.Context) {
 }
 
 // UmsRoleListResource 获取角色相关资源
-// @Description 获取角色相关资源
-// @Summary 获取角色相关资源
-// @Tags 后台角色管理
-// @Accept application/json
-// @Produce application/json
-// @Param roleId path int true "roleId"
-// @Security GinJWTMiddleware
-// @Success 200 {object} gin_common.GinCommonResponse
-// @Router /role/listResource/{roleId} [get]
+//
+//	@Description	获取角色相关资源
+//	@Summary		获取角色相关资源
+//	@Tags			后台角色管理
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			roleId	path	int	true	"roleId"
+//	@Security		GinJWTMiddleware
+//	@Success		200	{object}	gin_common.GinCommonResponse
+//	@Router			/role/listResource/{roleId} [get]
 func (s UmsRoleService) UmsRoleListResource(context *gin.Context) {
 	var dto ums_admin.UmsRolePathVariableDTO
 	err := context.ShouldBindUri(&dto)
@@ -244,16 +252,17 @@ func (s UmsRoleService) UmsRoleListResource(context *gin.Context) {
 }
 
 // UmsRoleAllocMenu 修改角色菜单
-// @Description 修改角色菜单
-// @Summary 修改角色菜单
-// @Tags 后台角色管理
-// @Accept multipart/form-data
-// @Produce application/json
-// @Param roleId query int true "roleId"
-// @Param menuIds query []int true "menuIds"
-// @Security GinJWTMiddleware
-// @Success 200 {object} gin_common.GinCommonResponse
-// @Router /role/allocMenu/{roleId} [post]
+//
+//	@Description	修改角色菜单
+//	@Summary		修改角色菜单
+//	@Tags			后台角色管理
+//	@Accept			multipart/form-data
+//	@Produce		application/json
+//	@Param			roleId	query	int		true	"roleId"
+//	@Param			menuIds	query	[]int	true	"menuIds"
+//	@Security		GinJWTMiddleware
+//	@Success		200	{object}	gin_common.GinCommonResponse
+//	@Router			/role/allocMenu/{roleId} [post]
 func (s UmsRoleService) UmsRoleAllocMenu(context *gin.Context) {
 	var dto ums_admin.UmsRoleAllocMenuDTO
 	err := context.ShouldBind(&dto)
@@ -271,16 +280,17 @@ func (s UmsRoleService) UmsRoleAllocMenu(context *gin.Context) {
 }
 
 // UmsRoleAllocResource 给角色分配资源
-// @Description 给角色分配资源
-// @Summary 给角色分配资源
-// @Tags 后台角色管理
-// @Accept multipart/form-data
-// @Produce application/json
-// @Param roleId query int true "roleId"
-// @Param resourceIds query []int true "resourceIds"
-// @Security GinJWTMiddleware
-// @Success 200 {object} gin_common.GinCommonResponse
-// @Router /role/allocResource/{roleId} [post]
+//
+//	@Description	给角色分配资源
+//	@Summary		给角色分配资源
+//	@Tags			后台角色管理
+//	@Accept			multipart/form-data
+//	@Produce		application/json
+//	@Param			roleId		query	int		true	"roleId"
+//	@Param			resourceIds	query	[]int	true	"resourceIds"
+//	@Security		GinJWTMiddleware
+//	@Success		200	{object}	gin_common.GinCommonResponse
+//	@Router			/role/allocResource/{roleId} [post]
 func (s UmsRoleService) UmsRoleAllocResource(context *gin.Context) {
 	var dto ums_admin.UmsRoleAllocResourceDTO
 	err := context.ShouldBind(&dto)
