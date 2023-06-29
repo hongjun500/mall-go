@@ -13,6 +13,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/some"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
+	"github.com/hongjun500/mall-go/internal/es_index"
 	"github.com/hongjun500/mall-go/pkg/convert"
 	"github.com/hongjun500/mall-go/pkg/elasticsearch"
 )
@@ -56,8 +57,9 @@ func TestCreateIndex(t *testing.T) {
 }
 
 func TestPutMapping(t *testing.T) {
-	esTags := elasticsearch.GetStructTag(Product{})
-	t.Log("put mapping success: ", elasticsearch.PutMappingByStruct(dbFactory, ctx, index, esTags))
+	_ = elasticsearch.GetStructTag(es_index.EsProduct{})
+	esProduct := es_index.EsProduct{}
+	t.Log("put mapping success: ", elasticsearch.PutMappingByStruct(dbFactory, ctx, index, esProduct))
 }
 
 func TestBulkIndex(t *testing.T) {

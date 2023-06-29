@@ -40,7 +40,7 @@ database:
 
   elasticsearch:
     Addresses:
-      - https://localhost:9200
+      - http://localhost:9200
     Username: elastic
     Password: elastic
     CaCertPath: D:\elasticsearch-8.7.0\config\certs\http_ca.crt

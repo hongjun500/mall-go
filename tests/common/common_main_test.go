@@ -31,7 +31,6 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	conf.InitAdminConfigProperties()
 	var err error
 	redisCli, err = database.NewRedisClient(conf.GlobalDatabaseConfigProperties.RedisConfigProperties)
 	db, err = database.NewGormMySQL(conf.GlobalDatabaseConfigProperties.GormMysqlConfigProperties)

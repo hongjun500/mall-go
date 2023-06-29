@@ -39,6 +39,7 @@ var (
 type esTags map[string]map[string]string
 
 // GetStructTag 获取结构体的 elasticsearch 标签
+// Deprecated: 弃用
 func GetStructTag(t any) esTags {
 	tt := reflect.TypeOf(t)
 	esParam := make(map[string]map[string]string, 0)
@@ -88,49 +89,74 @@ func CreateIndex(db *database.DbFactory, ctx context.Context, params ...any) boo
 	return res.Acknowledged
 }
 
+// 处理 结构体关于 elasticsearch 的标签，生成 mapping
+func processStructTag(property map[string]types.Property, value any) {
+	t := reflect.TypeOf(value)
+	v := reflect.ValueOf(value)
+	newProperty := make(map[string]types.Property)
+
+	for i := 0; i < t.NumField(); i++ {
+		fieldTag := t.Field(i).Tag
+		esType := fieldTag.Get(EsType)
+		if esType == "" {
+			continue
+		}
+		fieldName := fieldTag.Get(Json)
+		esAnalyzer := fieldTag.Get(EsAnalyzer)
+
+		switch esType {
+		case "nested":
+			sliceType := v.Field(i)
+			st := sliceType.Type()
+			if st.Elem().Kind() == reflect.Struct {
+				nestedProperty := types.NewNestedProperty()
+				processStructTag(nestedProperty.Properties, reflect.Zero(st.Elem()).Interface())
+				newProperty[fieldName] = nestedProperty
+			}
+
+		case "text":
+			if esAnalyzer == "" {
+				newProperty[fieldName] = types.NewTextProperty()
+			} else {
+				newProperty[fieldName] = &types.TextProperty{
+					Analyzer: some.String(esAnalyzer),
+					Type:     esType,
+				}
+			}
+		case "keyword":
+			newProperty[fieldName] = types.NewKeywordProperty()
+		case "integer":
+			newProperty[fieldName] = types.NewIntegerNumberProperty()
+		case "long":
+			newProperty[fieldName] = types.NewLongNumberProperty()
+		case "float":
+			newProperty[fieldName] = types.NewFloatNumberProperty()
+		case "date":
+			newProperty[fieldName] = types.NewDateProperty()
+		case "boolean":
+			newProperty[fieldName] = types.NewBooleanProperty()
+		default:
+			continue
+		}
+	}
+
+	// 将新的属性添加到原始的 property map 中
+	for k, v := range newProperty {
+		property[k] = v
+	}
+}
+
+// property[field] = types.NewNestedProperty()
+// processNestedStruct(property, field, reflect.ValueOf(field))
 // PutMappingByStruct 根据结构体更新 mapping
 func PutMappingByStruct(db *database.DbFactory, ctx context.Context, params ...any) bool {
 	index := params[0].(string)
 	// mappings := params[1].(*types.TypeMapping)
-	tags := params[1].(esTags)
+	t := params[1]
 
 	property := make(map[string]types.Property, 0)
 
-	for field, tag := range tags {
-		esType := tag[EsType]
-		esAnalyzer := tag[EsAnalyzer]
-		if tag[EsType] == "" {
-			continue
-		}
-		switch esType {
-		case "text":
-			if esAnalyzer == "" {
-				property[field] = types.NewTextProperty()
-			} else {
-				property[field] = &types.TextProperty{
-					Analyzer: some.String(esAnalyzer),
-					Type:     "text",
-				}
-			}
-		case "keyword":
-			property[field] = types.NewKeywordProperty()
-		case "long":
-			property[field] = types.NewLongNumberProperty()
-		case "float":
-			property[field] = types.NewFloatNumberProperty()
-		case "date":
-			property[field] = types.NewDateProperty()
-		case "boolean":
-			property[field] = types.NewBooleanProperty()
-		case "nested":
-			// todo 这里需要处理嵌套结构体
-			property[field] = types.NewNestedProperty()
-			processNestedStruct(property, field, reflect.ValueOf(field))
-		default:
-			continue
-		}
-
-	}
+	processStructTag(property, t)
 
 	putreq := putmapping.NewRequest()
 	putreq.Properties = property

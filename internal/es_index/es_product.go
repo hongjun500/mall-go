@@ -16,24 +16,24 @@ import (
 )
 
 type EsProduct struct {
-	Id                  int64                      `json:"id" es_type:"long"`
-	ProductSn           string                     `json:"product_sn" es_type:"keyword"`
-	BrandId             int64                      `json:"brand_id" es_type:"long"`
-	BrandName           string                     `json:"brand_name" es_type:"keyword"`
-	ProductCategoryId   int64                      `json:"product_category_id" es_type:"long"`
-	ProductCategoryName string                     `json:"product_category_name" es_type:"keyword"`
-	Pic                 string                     `json:"pic" es_type:"keyword"`
-	Name                string                     `json:"name" es_type:"text" es_analyzer:"ik_max_word"`
-	SubTitle            string                     `json:"sub_title" es_type:"text" es_analyzer:"ik_max_word"`
-	KeyWord             string                     `json:"key_word" es_type:"text" es_analyzer:"ik_max_word"`
-	Price               string                     `json:"price" es_type:"float"`
-	Sale                int                        `json:"sale" es_type:"integer"`
-	NewStatus           int                        `json:"new_status" es_type:"integer"`
-	RecommendStatus     int                        `json:"recommand_status" es_type:"integer"`
-	Stock               int                        `json:"stock" es_type:"integer"`
-	PromotionType       int                        `json:"promotion_type" es_type:"integer"`
-	Sort                int                        `json:"sort" es_type:"integer"`
-	AttrValues          []*EsProductAttributeValue `json:"attr_value_list" es_type:"nested"`
+	Id                  int64                     `json:"id" es_type:"long"`
+	ProductSn           string                    `json:"product_sn" es_type:"keyword"`
+	BrandId             int64                     `json:"brand_id" es_type:"long"`
+	BrandName           string                    `json:"brand_name" es_type:"keyword"`
+	ProductCategoryId   int64                     `json:"product_category_id" es_type:"long"`
+	ProductCategoryName string                    `json:"product_category_name" es_type:"keyword"`
+	Pic                 string                    `json:"pic" es_type:"keyword"`
+	Name                string                    `json:"name" es_type:"text" es_analyzer:"ik_max_word"`
+	SubTitle            string                    `json:"sub_title" es_type:"text" es_analyzer:"ik_max_word"`
+	KeyWord             string                    `json:"key_word" es_type:"text" es_analyzer:"ik_max_word"`
+	Price               string                    `json:"price" es_type:"float"`
+	Sale                int                       `json:"sale" es_type:"integer"`
+	NewStatus           int                       `json:"new_status" es_type:"integer"`
+	RecommendStatus     int                       `json:"recommand_status" es_type:"integer"`
+	Stock               int                       `json:"stock" es_type:"integer"`
+	PromotionType       int                       `json:"promotion_type" es_type:"integer"`
+	Sort                int                       `json:"sort" es_type:"integer"`
+	AttrValues          []EsProductAttributeValue `json:"attr_value_list" es_type:"nested"`
 }
 
 type EsProductAttributeValue struct {
@@ -75,9 +75,9 @@ func ConvertEsProductFromPmsProduct(pmsProducts []*models.PmsProduct) []*EsProdu
 			PromotionType:       pmsProduct.PromotionType,
 			Sort:                pmsProduct.Sort,
 		}
-		var attrValues []*EsProductAttributeValue
+		var attrValues []EsProductAttributeValue
 		for _, pmsProductAttributeValue := range pmsProduct.ProductAttributeValueList {
-			attrValues = append(attrValues, &EsProductAttributeValue{
+			attrValues = append(attrValues, EsProductAttributeValue{
 				Id:                 pmsProductAttributeValue.Id,
 				ProductAttributeId: pmsProductAttributeValue.ProductAttributeId,
 				Value:              pmsProductAttributeValue.Value,
