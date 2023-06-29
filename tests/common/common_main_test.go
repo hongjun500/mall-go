@@ -33,9 +33,9 @@ var (
 func TestMain(m *testing.M) {
 	conf.InitAdminConfigProperties()
 	var err error
-	redisCli, err = database.NewRedisClient(conf.GlobalDatabaseConfigProperties)
-	db, err = database.NewGormMySQL(conf.GlobalDatabaseConfigProperties)
-	es, err := database.NewEsTypedClient()
+	redisCli, err = database.NewRedisClient(conf.GlobalDatabaseConfigProperties.RedisConfigProperties)
+	db, err = database.NewGormMySQL(conf.GlobalDatabaseConfigProperties.GormMysqlConfigProperties)
+	es, err := database.NewEsTypedClient(conf.GlobalDatabaseConfigProperties.ElasticSearchConfigProperties)
 	dbFactory = database.NewDbFactory(redisCli, db, es)
 	if err != nil {
 		return

@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/database"
 )
 
@@ -19,7 +20,7 @@ var ctx = context.Background()
 
 func TestMain(m *testing.M) {
 	// 获取 elasticsearch 连接
-	es, _ := database.NewEsTypedClient()
+	es, _ := database.NewEsTypedClient(conf.GlobalDatabaseConfigProperties.ElasticSearchConfigProperties)
 	esTypedClient = es.TypedCli
 	m.Run()
 }

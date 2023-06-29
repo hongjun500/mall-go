@@ -52,7 +52,7 @@ func InitAdminConfigProperties() {
 
 }
 func InitPortalConfigProperties() {
-	// todo 改为 search 服务所需配置项
+	// todo 改为 portal 服务所需配置项
 	log.Println("------ InitPortalConfigProperties ------")
 	viper.SetConfigType("yml")
 	viper.SetConfigName("portal-config")
@@ -87,7 +87,6 @@ func InitPortalConfigProperties() {
 }
 
 func InitSearchConfigProperties() {
-	// todo 改为 search 服务所需配置项
 	log.Println("------ InitSearchConfigProperties ------")
 	viper.SetConfigType("yml")
 	viper.SetConfigName("search-config")
@@ -111,14 +110,12 @@ func InitSearchConfigProperties() {
 		viper.WatchConfig()
 		// var gorMysqlConfigProperties GormMysqlConfigProperties
 		// var redisConfigProperties RedisConfigProperties
+		var esConfigProperties ElasticSearchConfigProperties
 		_ = viper.UnmarshalKey("server", &GlobalSearchServerConfigProperties)
-		// _ = viper.UnmarshalKey("security", &GlobalJwtConfigProperties)
 		// _ = viper.UnmarshalKey("database.gorm_mysql", &gorMysqlConfigProperties)
 		// _ = viper.UnmarshalKey("database.redis", &redisConfigProperties)
-		// GlobalDatabaseConfigProperties = DatabaseConfigProperties{
-		// 	GormMysqlConfigProperties: gorMysqlConfigProperties,
-		// 	RedisConfigProperties:     redisConfigProperties,
-		// }
+		_ = viper.UnmarshalKey("database.elasticsearch", &esConfigProperties)
+		GlobalDatabaseConfigProperties.ElasticSearchConfigProperties = esConfigProperties
 		log.Println("配置项初始化完成")
 	}
 
@@ -127,10 +124,25 @@ func InitSearchConfigProperties() {
 // 使用默认配置项
 func initDefaultConfigProperties() {
 	GlobalAdminServerConfigProperties = ServerConfigProperties{
-		GinRunMode:  "debug",
-		Host:        "localhost",
-		Port:        "8080",
-		ReadTimeout: 60,
+		ApplicationName: "mall-admin",
+		GinRunMode:      "debug",
+		Host:            "localhost",
+		Port:            "8080",
+		ReadTimeout:     60,
+	}
+	GlobalPortalServerConfigProperties = ServerConfigProperties{
+		ApplicationName: "mall-portal",
+		GinRunMode:      "debug",
+		Host:            "localhost",
+		Port:            "8081",
+		ReadTimeout:     60,
+	}
+	GlobalSearchServerConfigProperties = ServerConfigProperties{
+		ApplicationName: "mall-search",
+		GinRunMode:      "debug",
+		Host:            "localhost",
+		Port:            "8082",
+		ReadTimeout:     60,
 	}
 	GlobalJwtConfigProperties = JwtConfigProperties{
 		TokenHeader: "Authorization",
@@ -162,6 +174,12 @@ func initDefaultConfigProperties() {
 			Port:     "6379",
 			Password: "",
 			Database: 0,
+		},
+		ElasticSearchConfigProperties: ElasticSearchConfigProperties{
+			Addresses:  []string{"https://localhost:9200"},
+			Username:   "elastic",
+			Password:   "elastic",
+			CACertPath: "./configs/http_ca.crt",
 		},
 	}
 }

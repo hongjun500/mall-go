@@ -1,15 +1,10 @@
 server:
+  ApplicationName: mall-search
   Enable: true
   GinRunMode: debug
   Host: localhost
   Port: 8082
   ReadTimeout: 60
-
-jwt:
-  tokenHeader: "Authorization"
-  tokenHead: "Bearer "
-  secret: "mall-go-security-secret"
-  expiration: 604800
 
 database:
   gorm_mysql:
@@ -43,7 +38,10 @@ database:
     Wait: true
     MaxConnLifetime: 60
 
-# Path: configs\admin-config.yml
-
-
+  elasticsearch:
+    Addresses:
+      - https://localhost:9200
+    Username: elastic
+    Password: elastic
+    CaCertPath: D:\elasticsearch-8.7.0\config\certs\http_ca.crt
 

@@ -11,15 +11,15 @@ import (
 )
 
 // NewRedisClient 初始化 redis 连接
-func NewRedisClient(properties conf.DatabaseConfigProperties) (*redis.Client, error) {
+func NewRedisClient(properties conf.RedisConfigProperties) (*redis.Client, error) {
 	var client *redis.Client
 	var err error
 	once := sync.Once{}
 	once.Do(func() {
 		client = redis.NewClient(&redis.Options{
-			Addr:     properties.RedisConfigProperties.Host + ":" + properties.RedisConfigProperties.Port,
-			Password: properties.RedisConfigProperties.Password,
-			DB:       properties.RedisConfigProperties.Database,
+			Addr:     properties.Host + ":" + properties.Port,
+			Password: properties.Password,
+			DB:       properties.Database,
 		})
 		ctx := context.Background()
 		ping := client.Ping(ctx)

@@ -8,17 +8,20 @@ var (
 	GlobalPortalServerConfigProperties = ServerConfigProperties{}
 	GlobalSearchServerConfigProperties = ServerConfigProperties{}
 	GlobalJwtConfigProperties          = JwtConfigProperties{}
-	GlobalDatabaseConfigProperties     = DatabaseConfigProperties{}
+	// GlobalDatabaseConfigProperties 如果不同服务的数据库配置不同，可以在这里分别定义
+	GlobalDatabaseConfigProperties = DatabaseConfigProperties{}
 )
 
 // ServerConfigProperties 服务配置属性
 type ServerConfigProperties struct {
 	// 启动
-	Enable      bool
-	GinRunMode  string
-	Host        string
-	Port        string
-	ReadTimeout int
+	Enable bool
+	// release, debug, test
+	GinRunMode      string
+	Host            string
+	Port            string
+	ApplicationName string
+	ReadTimeout     int
 }
 
 // JwtConfigProperties security 配置属性
@@ -50,6 +53,7 @@ type GormMysqlConfigProperties struct {
 	GormLogLevel int
 }
 
+// RedisConfigProperties redis 配置属性
 type RedisConfigProperties struct {
 	Host     string
 	Port     string
@@ -57,7 +61,17 @@ type RedisConfigProperties struct {
 	Database int
 }
 
+type ElasticSearchConfigProperties struct {
+	// host:port
+	Addresses []string
+	Username  string
+	Password  string
+	// http_ca证书路径 (http_ca.crt)
+	CACertPath string
+}
+
 type DatabaseConfigProperties struct {
-	GormMysqlConfigProperties GormMysqlConfigProperties
-	RedisConfigProperties     RedisConfigProperties
+	GormMysqlConfigProperties     GormMysqlConfigProperties
+	RedisConfigProperties         RedisConfigProperties
+	ElasticSearchConfigProperties ElasticSearchConfigProperties
 }

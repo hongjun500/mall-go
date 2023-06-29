@@ -13,6 +13,7 @@ import (
 	"sync"
 
 	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/hongjun500/mall-go/internal/conf"
 )
 
 type Es struct {
@@ -22,7 +23,7 @@ type Es struct {
 }
 
 // NewEsTypedClient 初始化 适用于 go api 的 elasticsearch 连接
-func NewEsTypedClient() (*Es, error) {
+func NewEsTypedClient(properties conf.ElasticSearchConfigProperties) (*Es, error) {
 	es := new(Es)
 	var typedClient *elasticsearch.TypedClient
 	var client *elasticsearch.Client
@@ -30,12 +31,12 @@ func NewEsTypedClient() (*Es, error) {
 	once := sync.Once{}
 
 	// ca证书
-	cert, _ := os.ReadFile("D:\\elasticsearch-8.7.0\\config\\certs\\http_ca.crt")
+	cert, _ := os.ReadFile(properties.CACertPath)
 
-	config := elasticsearch.Config{
-		Addresses: []string{"http://localhost:9200"},
-		Username:  "elastic",
-		Password:  "elastic",
+	cfg := elasticsearch.Config{
+		Addresses: properties.Addresses,
+		Username:  properties.Username,
+		Password:  properties.Password,
 		// CloudID:                "",
 		// APIKey:                 "",
 		// ServiceToken:           "",
@@ -45,8 +46,8 @@ func NewEsTypedClient() (*Es, error) {
 	}
 
 	once.Do(func() {
-		typedClient, err = elasticsearch.NewTypedClient(config)
-		client, err = elasticsearch.NewClient(config)
+		typedClient, err = elasticsearch.NewTypedClient(cfg)
+		client, err = elasticsearch.NewClient(cfg)
 		if err != nil {
 			log.Fatal("NewEsClient Fail, ERR = ", err)
 		}

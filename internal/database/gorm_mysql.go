@@ -15,18 +15,18 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func newMySQL(properties conf.DatabaseConfigProperties) (db *sql.DB, err error) {
+func newMySQL(properties conf.GormMysqlConfigProperties) (db *sql.DB, err error) {
 	// 设置时区为东八区
-	loc, _ := time.LoadLocation(conf.GlobalDatabaseConfigProperties.GormMysqlConfigProperties.Loc)
+	loc, _ := time.LoadLocation(properties.Loc)
 	config := mysql.Config{
-		User:   properties.GormMysqlConfigProperties.Username,
-		Passwd: properties.GormMysqlConfigProperties.Password,
+		User:   properties.Username,
+		Passwd: properties.Password,
 		Net:    "tcp",
-		Addr:   properties.GormMysqlConfigProperties.Host + ":" + properties.GormMysqlConfigProperties.Port,
-		DBName: properties.GormMysqlConfigProperties.Database,
+		Addr:   properties.Host + ":" + properties.Port,
+		DBName: properties.Database,
 		Loc:    loc,
 		// time.Time 与 mysql 日期类型互转
-		ParseTime: conf.GlobalDatabaseConfigProperties.GormMysqlConfigProperties.ParseTime,
+		ParseTime: properties.ParseTime,
 		// 允许本地密码认证
 		AllowNativePasswords: true,
 	}
@@ -48,7 +48,7 @@ func newMySQL(properties conf.DatabaseConfigProperties) (db *sql.DB, err error) 
 }
 
 // NewGormMySQL 初始化 gorm 对于 MySQL 的连接
-func NewGormMySQL(properties conf.DatabaseConfigProperties) (*gorm.DB, error) {
+func NewGormMySQL(properties conf.GormMysqlConfigProperties) (*gorm.DB, error) {
 	// gorm 对于 MySQL 的连接
 	var db *gorm.DB
 	var err error
@@ -64,11 +64,11 @@ func NewGormMySQL(properties conf.DatabaseConfigProperties) (*gorm.DB, error) {
 		gormLogger := logger.New(
 			log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 			logger.Config{
-				SlowThreshold:             properties.GormMysqlConfigProperties.GormSlowThreshold,             // Slow SQL threshold
-				LogLevel:                  logger.LogLevel(properties.GormMysqlConfigProperties.GormLogLevel), // Log level
-				IgnoreRecordNotFoundError: properties.GormMysqlConfigProperties.GormIgnoreRecordNotFoundError, // Ignore ErrRecordNotFound error for logger
-				ParameterizedQueries:      properties.GormMysqlConfigProperties.GormParameterizedQueries,      // Don't include params in the SQL log
-				Colorful:                  properties.GormMysqlConfigProperties.GormColorful,                  // Disable color
+				SlowThreshold:             properties.GormSlowThreshold,             // Slow SQL threshold
+				LogLevel:                  logger.LogLevel(properties.GormLogLevel), // Log level
+				IgnoreRecordNotFoundError: properties.GormIgnoreRecordNotFoundError, // Ignore ErrRecordNotFound error for logger
+				ParameterizedQueries:      properties.GormParameterizedQueries,      // Don't include params in the SQL log
+				Colorful:                  properties.GormColorful,                  // Disable color
 			},
 		)
 

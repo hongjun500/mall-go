@@ -16,10 +16,10 @@ import (
 func StartUpAdmin() *gin.Engine {
 
 	// 通过 gorm 拿到 MySQL 数据库连接
-	gormMySQL, _ := database.NewGormMySQL(conf.GlobalDatabaseConfigProperties)
+	gormMySQL, _ := database.NewGormMySQL(conf.GlobalDatabaseConfigProperties.GormMysqlConfigProperties)
 
 	// 拿到 Redis 数据库连接
-	redisClient, _ := database.NewRedisClient(conf.GlobalDatabaseConfigProperties)
+	redisClient, _ := database.NewRedisClient(conf.GlobalDatabaseConfigProperties.RedisConfigProperties)
 
 	// 将与数据库相关的封装到一个结构体中
 	sqlSessionFactory := database.NewDbFactory(gormMySQL, redisClient, nil)
@@ -70,9 +70,9 @@ func StartUpPortal() *gin.Engine {
 // StartUpSearch search 模块启动初始化
 func StartUpSearch() *gin.Engine {
 	// 通过 gorm 拿到 MySQL 数据库连接
-	gormMySQL, _ := database.NewGormMySQL(conf.GlobalDatabaseConfigProperties)
+	gormMySQL, _ := database.NewGormMySQL(conf.GlobalDatabaseConfigProperties.GormMysqlConfigProperties)
 	// 拿到 elasticsearch 的连接
-	es, _ := database.NewEsTypedClient()
+	es, _ := database.NewEsTypedClient(conf.GlobalDatabaseConfigProperties.ElasticSearchConfigProperties)
 
 	sqlSessionFactory := database.NewDbFactory(gormMySQL, nil, es)
 
@@ -93,7 +93,7 @@ func StartUpSearch() *gin.Engine {
 func NewSearchGinEngine() *gin.Engine {
 	ginEngine := gin.Default()
 
-	gin.SetMode(conf.GlobalAdminServerConfigProperties.GinRunMode)
+	gin.SetMode(conf.GlobalSearchServerConfigProperties.GinRunMode)
 
 	// 强制日志颜色化
 	// gin.ForceConsoleColor()

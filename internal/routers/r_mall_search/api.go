@@ -9,7 +9,7 @@ package r_mall_search
 import (
 	"github.com/gin-gonic/gin"
 	docs "github.com/hongjun500/mall-go/docs/mall_search"
-	"github.com/hongjun500/mall-go/internal/gin_common/mid"
+	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_search"
 
 	swaggerFiles "github.com/swaggo/files"
@@ -26,18 +26,18 @@ func NewCoreSearchRouter(service *s_mall_search.CoreSearchService) *CoreSearchRo
 	}
 }
 
-// InitSearchGroupRouter 搜索路由
+// InitSearchGroupRouter 搜索服务路由组
 func InitSearchGroupRouter(coreSearchRouter *CoreSearchRouter, ginEngine *gin.Engine) {
-
 	// 设置 Swagger 路由
 	ginEngine.GET("/swagger/*any",
 		ginSwagger.WrapHandler(swaggerFiles.Handler,
-			ginSwagger.InstanceName("mall_search"),
-			ginSwagger.URL("http://localhost:8082/swagger/mall_search/doc.json"),
+			ginSwagger.InstanceName(conf.GlobalSearchServerConfigProperties.ApplicationName),
+			ginSwagger.URL("http://localhost:"+
+				conf.GlobalSearchServerConfigProperties.Port+
+				"/swagger/"+conf.GlobalSearchServerConfigProperties.ApplicationName+"/doc.json"),
 			ginSwagger.PersistAuthorization(true)))
-	docs.SwaggerInfomall_search.Title = "mall_search"
-
-	ginEngine.Use(mid.GinJWTMiddleware()).Use(mid.GinCasbinMiddleware())
+	docs.SwaggerInfomall_search.Title = conf.GlobalSearchServerConfigProperties.ApplicationName
+	// ginEngine.Use(mid.GinJWTMiddleware()).Use(mid.GinCasbinMiddleware())
 
 	coreSearchRouter.GroupProductRouter(ginEngine.Group("/product"))
 }
