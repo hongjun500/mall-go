@@ -36,6 +36,8 @@ func InitSearchGroupRouter(coreSearchRouter *CoreSearchRouter, ginEngine *gin.En
 			ginSwagger.URL("http://localhost:8082/swagger/mall_search/doc.json"),
 			ginSwagger.PersistAuthorization(true)))
 	docs.SwaggerInfomall_search.Title = "mall_search"
+
 	ginEngine.Use(mid.GinJWTMiddleware()).Use(mid.GinCasbinMiddleware())
+
 	coreSearchRouter.GroupProductRouter(ginEngine.Group("/product"))
 }

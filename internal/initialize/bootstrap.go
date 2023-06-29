@@ -55,6 +55,8 @@ func NewAdminGinEngine() *gin.Engine {
 
 	// 跨域中间件
 	ginEngine.Use(mid.GinCORSMiddleware())
+	// 全局错误处理中间件
+	ginEngine.Use(mid.ErrorMiddleware())
 	return ginEngine
 }
 
@@ -67,7 +69,6 @@ func StartUpPortal() *gin.Engine {
 
 // StartUpSearch search 模块启动初始化
 func StartUpSearch() *gin.Engine {
-	engine := gin.Default()
 	// 通过 gorm 拿到 MySQL 数据库连接
 	gormMySQL, _ := database.NewGormMySQL(conf.GlobalDatabaseConfigProperties)
 	// 拿到 elasticsearch 的连接
@@ -80,7 +81,29 @@ func StartUpSearch() *gin.Engine {
 	// 将与路由相关的封装到一个结构体中
 	coreRouter := r_mall_search.NewCoreSearchRouter(coreSearchService)
 
+	// 初始化 gin 引擎
+	ginEngine := NewSearchGinEngine()
+
 	// 初始化路由分组
-	r_mall_search.InitSearchGroupRouter(coreRouter, engine)
-	return engine
+	r_mall_search.InitSearchGroupRouter(coreRouter, ginEngine)
+	return ginEngine
+}
+
+// NewSearchGinEngine 初始化 gin 引擎
+func NewSearchGinEngine() *gin.Engine {
+	ginEngine := gin.Default()
+
+	gin.SetMode(conf.GlobalAdminServerConfigProperties.GinRunMode)
+
+	// 强制日志颜色化
+	// gin.ForceConsoleColor()
+	// 限流中间件
+	/*r.Use(limits.RequestSizeLimiter(10))
+	r.Use(cors.Default())*/
+
+	// 跨域中间件
+	ginEngine.Use(mid.GinCORSMiddleware())
+	// 全局错误处理中间件
+	ginEngine.Use(mid.ErrorMiddleware())
+	return ginEngine
 }
