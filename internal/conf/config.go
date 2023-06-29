@@ -124,7 +124,7 @@ func InitSearchConfigProperties() {
 // 使用默认配置项
 func initDefaultConfigProperties() {
 	GlobalAdminServerConfigProperties = ServerConfigProperties{
-		ApplicationName: "mall-admin",
+		ApplicationName: "mall_admin",
 		GinRunMode:      "debug",
 		Host:            "localhost",
 		Port:            "8080",
@@ -138,7 +138,7 @@ func initDefaultConfigProperties() {
 		ReadTimeout:     60,
 	}
 	GlobalSearchServerConfigProperties = ServerConfigProperties{
-		ApplicationName: "mall-search",
+		ApplicationName: "mall_search",
 		GinRunMode:      "debug",
 		Host:            "localhost",
 		Port:            "8082",

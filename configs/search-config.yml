@@ -1,5 +1,5 @@
 server:
-  ApplicationName: mall-search
+  ApplicationName: mall_search
   Enable: true
   GinRunMode: debug
   Host: localhost

@@ -1,5 +1,5 @@
 server:
-  ApplicationName: mall-admin
+  ApplicationName: mall_admin
   Enable: true
   GinRunMode: debug
   Host: localhost
