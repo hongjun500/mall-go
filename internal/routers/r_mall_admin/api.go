@@ -63,19 +63,3 @@ func InitAdminGroupRouter(coreRouter *CoreAdminRouter, ginEngine *gin.Engine) {
 	coreRouter.GroupUmsRoleRouter(ginEngine.Group("/role"))
 	coreRouter.GroupUmsMemberLevelRouter(ginEngine.Group("/memberLevel"))
 }
-
-// UnauthorizedGroupRouter  未授权路由
-func (router *CoreAdminRouter) UnauthorizedGroupRouter(routerEngine *gin.Engine) {
-	unAuthGroup := routerEngine.Group("/admin")
-	{
-		// 用户注册
-		unAuthGroup.POST("/register", router.UmsAdminService.UmsAdminRegister)
-		/*adminGroup.POST("/register", router.UmsAdminRegister) 这样写也可以*/
-
-		// 用户登录
-		unAuthGroup.POST("/login", router.UmsAdminService.UmsAdminLogin)
-		// 用户登出
-		unAuthGroup.POST("/logout", router.UmsAdminService.UmsAdminLogout)
-		unAuthGroup.GET("/authTest", router.UmsAdminService.UmsAdminAuthTest)
-	}
-}

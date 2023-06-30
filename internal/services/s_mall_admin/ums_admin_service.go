@@ -64,7 +64,7 @@ func (s UmsAdminService) GetResource(adminId int64) []models.UmsResource {
 }
 
 // HashPassword 加密密码
-func HashPassword(password string) (string, error) {
+func hashPassword(password string) (string, error) {
 	// 生成随机盐值
 	salt := make([]byte, 16)
 	if _, err := rand.Read(salt); err != nil {
@@ -88,94 +88,49 @@ func VerifyPassword(password, hashedPassword string) bool {
 	return err == nil
 }
 
-// UmsAdminRegister 用户注册
-//
-//	@Summary		用户注册
-//	@Description	用户注册
-//	@Tags			后台用户管理
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		ums_admin.UmsAdminRegisterDTO	true	"用户注册"
-//	@Success		200		{object}	gin_common.GinCommonResponse
-//	@Router			/admin/register [post]
-func (s UmsAdminService) UmsAdminRegister(context *gin.Context) {
-	var request ums_admin.UmsAdminRegisterDTO
-	err := context.ShouldBind(&request)
-	if err != nil {
-		gin_common.CreateFail(context, gin_common.ParameterValidationError)
-		// 这些地方需要手动 return
-		return
-	}
+func (s UmsAdminService) UmsAdminRegister(request ums_admin.UmsAdminRegisterDTO) error {
 	// 检查用户名是否重复了
 	var umsAdmin *models.UmsAdmin
 	umsAdmins, err := umsAdmin.SelectUmsAdminByUsername(s.DbFactory.GormMySQL, request.Username)
 	if err != nil {
-		gin_common.CreateFail(context, err.Error())
-		return
+		return gin_common.NewGinCommonError(err.Error())
 	}
 	if umsAdmins != nil && len(umsAdmins) > 0 {
-		gin_common.CreateFail(context, gin_common.UsernameAlreadyExists)
-		return
+		return gin_common.NewGinCommonError(gin_common.UsernameAlreadyExists)
 	}
 	// 密码加密
-	hashPassword, _ := HashPassword(request.Password)
+	hash, _ := hashPassword(request.Password)
 
 	// 创建用户参数
 	umsAdmin = &models.UmsAdmin{
 		Username: request.Username,
-		Password: hashPassword,
+		Password: hash,
 		Icon:     request.Icon,
 		Email:    request.Email,
 		Nickname: request.Nickname,
 		Note:     request.Note,
 	}
-	register, err := umsAdmin.InsertUmsAdmin(s.DbFactory.GormMySQL)
-	if err != nil {
-		gin_common.CreateFail(context, err.Error())
-		return
+	registers, err := umsAdmin.InsertUmsAdmin(s.DbFactory.GormMySQL)
+	if err != nil || registers <= 0 {
+		return gin_common.GinCommonError{ErrCode: gin_common.DatabaseError}
 	}
-	if register > 0 {
-		gin_common.Create(context)
-		return
-	}
+	return nil
 }
 
-// UmsAdminLogin 用户登录
-//
-//	@Summary		用户登录
-//	@Description	用户登录
-//	@Tags			后台用户管理
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		ums_admin.UmsAdminLoginDTO	true	"用户登录"
-//	@Success		200		{object}	gin_common.GinCommonResponse
-//	@Router			/admin/login [post]
-func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
-	var umsAdminLogin ums_admin.UmsAdminLoginDTO
-	err := context.ShouldBind(&umsAdminLogin)
-	if err != nil {
-		gin_common.CreateFail(context, gin_common.ParameterValidationError)
-		// 这些地方需要手动 return
-		return
-	}
-	// var umsAdmin *models.UmsAdmin
-	// umsAdmins, err := umsAdmin.SelectUmsAdminByUsername(s.DbFactory.GormMySQL, umsAdminLogin.Username)
+func (s UmsAdminService) UmsAdminLogin(umsAdminLogin ums_admin.UmsAdminLoginDTO, others ...string) (map[string]string, error) {
+
 	umsAdmin, err := s.getAdminByUsername(umsAdminLogin.Username)
 	if err != nil {
-		gin_common.CreateFail(context, gin_common.DatabaseError)
-		return
+		return nil, gin_common.NewGinCommonError(gin_common.DatabaseError)
 	}
 	if umsAdmin.Id == 0 {
-		gin_common.CreateFail(context, gin_common.UsernameOrPasswordError)
-		return
+		return nil, gin_common.NewGinCommonError(gin_common.UsernameOrPasswordError)
 	}
 	if !VerifyPassword(umsAdminLogin.Password, umsAdmin.Password) {
-		gin_common.CreateFail(context, gin_common.UsernameOrPasswordError)
-		return
+		return nil, gin_common.NewGinCommonError(gin_common.UsernameOrPasswordError)
 	}
 	if umsAdmin.Status == 0 {
-		gin_common.CreateFail(context, gin_common.AccountLocked)
-		return
+		return nil, gin_common.NewGinCommonError(gin_common.AccountLocked)
 	}
 	if "admin" != umsAdmin.Username {
 		// 获取用户资源
@@ -186,8 +141,7 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 
 	token := security.GenerateToken(umsAdmin.Username, umsAdmin.Id)
 	if token == "" {
-		gin_common.CreateFail(context, gin_common.TokenGenFail)
-		return
+		return nil, gin_common.NewGinCommonError(gin_common.TokenGenFail)
 	}
 	now := time.Now()
 	umsAdmin.LoginTime = &now
@@ -196,17 +150,16 @@ func (s UmsAdminService) UmsAdminLogin(context *gin.Context) {
 
 	umsAdminLoginLog := new(models.UmsAdminLoginLog)
 	umsAdminLoginLog.AdminId = umsAdmin.Id
-	umsAdminLoginLog.Ip = context.ClientIP()
-	umsAdminLoginLog.Address = context.Request.Host
-	umsAdminLoginLog.UserAgent = context.Request.UserAgent()
+	umsAdminLoginLog.Ip = others[0]
+	umsAdminLoginLog.Address = others[1]
+	umsAdminLoginLog.UserAgent = others[2]
 	// 记录登录日志
 	_, _ = umsAdminLoginLog.SaveLoginLog(s.DbFactory.GormMySQL)
 
 	tokenMap := make(map[string]string)
 	tokenMap["token"] = token
 	tokenMap["tokenHead"] = conf.GlobalJwtConfigProperties.TokenHead
-	gin_common.CreateSuccess(context, tokenMap)
-
+	return tokenMap, nil
 }
 
 // UmsAdminLogout 用户登出
@@ -512,12 +465,12 @@ func (s UmsAdminService) UmsAdminUpdatePassword(context *gin.Context) {
 		gin_common.CreateFail(context, "旧密码错误")
 		return
 	}
-	hashPassword, err := HashPassword(umsAdminUpdatePassword.NewPassword)
+	hash, err := hashPassword(umsAdminUpdatePassword.NewPassword)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.UnknownError)
 		return
 	}
-	getAdmin.Password = hashPassword
+	getAdmin.Password = hash
 	status, err := getAdmin.UpdateUmsAdminPasswordByUserId(s.DbFactory.GormMySQL)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.UnknownError)
