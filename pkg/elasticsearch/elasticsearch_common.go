@@ -146,8 +146,6 @@ func processStructTag(property map[string]types.Property, value any) {
 	}
 }
 
-// property[field] = types.NewNestedProperty()
-// processNestedStruct(property, field, reflect.ValueOf(field))
 // PutMappingByStruct 根据结构体更新 mapping
 func PutMappingByStruct(db *database.DbFactory, ctx context.Context, params ...any) bool {
 	index := params[0].(string)
@@ -155,7 +153,7 @@ func PutMappingByStruct(db *database.DbFactory, ctx context.Context, params ...a
 	t := params[1]
 
 	property := make(map[string]types.Property, 0)
-
+	// 处理结构体标签
 	processStructTag(property, t)
 
 	putreq := putmapping.NewRequest()
@@ -166,39 +164,6 @@ func PutMappingByStruct(db *database.DbFactory, ctx context.Context, params ...a
 		return false
 	}
 	return true
-}
-
-// 嵌套结构体的 mapping 处理
-func processNestedStruct(property map[string]types.Property, field string, nestedStruct reflect.Value) {
-	nestedType := nestedStruct.Type()
-
-	// 创建一个嵌套属性
-	nestedProperty := types.NewNestedProperty()
-
-	// 递归处理嵌套结构体的字段
-	for i := 0; i < nestedStruct.NumField(); i++ {
-		nestedField := nestedStruct.Field(i)
-		nestedFieldName := nestedType.Field(i).Name
-
-		// 处理嵌套结构体的字段类型
-		switch nestedField.Kind() {
-		case reflect.Struct:
-			// 递归处理嵌套结构体
-			processNestedStruct(nestedProperty.Properties, nestedFieldName, nestedField)
-		case reflect.String:
-
-			nestedProperty.Properties[nestedFieldName] = types.NewTextProperty()
-		case reflect.Int, reflect.Int64:
-			nestedProperty.Properties[nestedFieldName] = types.NewLongNumberProperty()
-		// 处理其他字段类型
-		// ...
-		default:
-			// 忽略不支持的字段类型
-			continue
-		}
-	}
-	// 将处理好的嵌套属性添加到主属性中
-	property[field] = nestedProperty
 }
 
 // DeleteIndex 删除索引

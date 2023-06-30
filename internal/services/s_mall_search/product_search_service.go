@@ -34,3 +34,9 @@ func (p ProductSearchService) ImportAll() error {
 	esProduct.PutEsProductsDocument(p.DbFactory, esProducts)
 	return nil
 }
+
+// Delete 根据 id 删除商品
+func (p ProductSearchService) Delete(id int64) (bool, error) {
+	esProduct := new(es_index.EsProduct)
+	return esProduct.DelDocument(p.DbFactory, id), nil
+}

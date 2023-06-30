@@ -9,6 +9,7 @@ package r_mall_search
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/gin_common"
+	"github.com/hongjun500/mall-go/internal/request_dto/base"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_search"
 )
 
@@ -32,6 +33,8 @@ func (router *ProductSearchRouter) GroupProductRouter(searchGroup *gin.RouterGro
 
 		// 导入所有数据库中商品到ES
 		searchGroup.POST("/importAll", router.importAll)
+		// 根据id删除商品
+		searchGroup.GET("/delete/:id", router.delete)
 	}
 }
 
@@ -51,4 +54,25 @@ func (router *ProductSearchRouter) importAll(c *gin.Context) {
 		return
 	}
 	gin_common.Create(c)
+}
+
+// delete 根据id删除商品
+// @Summary		将数据库中的商品信息导入到 es
+// @Description	将数据库中的商品信息导入到 es
+// @Tags		搜索商品管理
+// @Accept		application/json
+// @Produce		application/json
+// @Param		id	path	int	true	"id"
+// @Security 	GinJWTMiddleware
+// @Success		200	{object}	gin_common.GinCommonResponse
+// @Router		/product/delete/{id} [get]
+func (router *ProductSearchRouter) delete(c *gin.Context) {
+	var pathVariableDTO base.PathVariableDTO
+	err := c.BindUri(&pathVariableDTO)
+	if err != nil {
+		gin_common.CreateFail(c, gin_common.ParameterValidationError)
+		return
+	}
+	result, _ := router.ProductSearchService.Delete(pathVariableDTO.Id)
+	gin_common.CreateSuccess(c, result)
 }

@@ -30,18 +30,6 @@ type Product struct {
 	BrandName string  `json:"brand_name" es_type:"keyword"`
 }
 
-func TestGetStructTags(t *testing.T) {
-	product := Product{
-		Id:        1,
-		Name:      "测试商品",
-		Price:     100.0,
-		Count:     100,
-		BrandName: "华为",
-	}
-	tags := elasticsearch.GetStructTag(product)
-	t.Log(tags)
-}
-
 func TestDeleteIndex(t *testing.T) {
 	t.Log("delete index success: ", elasticsearch.DeleteIndex(dbFactory, ctx, "pms"))
 }
