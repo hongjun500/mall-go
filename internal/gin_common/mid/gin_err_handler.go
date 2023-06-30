@@ -15,6 +15,7 @@ func ErrorMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
+				// log.Debugf(assert.CollectT{})
 				gin_common.CreateFail(c, gin_common.UnknownError)
 				c.Abort()
 				return

@@ -75,6 +75,26 @@ var CommonErrorConst = map[int]string{
 	TokenInvalid: "token不合法",
 }
 
+func (ginCommonError GinCommonError) Error() string {
+	if ginCommonError.ErrCode != 0 {
+		return CommonErrorConst[ginCommonError.ErrCode]
+	}
+	return ginCommonError.ErrMsg
+}
+
+func NewGinCommonError(err any) error {
+	commonError := &GinCommonError{}
+	if errCode, ok := err.(int); ok {
+		commonError.ErrCode = errCode
+		commonError.ErrMsg = commonError.Error()
+	}
+	if errMsg, ok := err.(string); ok {
+		commonError.ErrCode = CustomError
+		commonError.ErrMsg = errMsg
+	}
+	return commonError
+}
+
 // CreateAny 创建一个通用的返回信息,不取用 Http 状态码,而是自己定义 status 为 success 或 fail
 // 2023/6/14 15:09 改动: 增加了 Code 和 Message 字段 适用于 mall 项目
 func CreateAny(context *gin.Context, Code int, Message, status string, result any) {
@@ -102,11 +122,11 @@ func Create(context *gin.Context) {
 	CreateSuccess(context, nil)
 }
 
-// CreateFiledParam 创建一个失败的返回信息,接收 http 状态码，并且将具体的错误信息封装到 Data 中
-func CreateFiledParam(context *gin.Context, errs ...any) {
+// CreateFailedParam 创建一个失败的返回信息,接收 http 状态码，并且将具体的错误信息封装到 Data 中
+func CreateFailedParam(context *gin.Context, errs ...any) {
 	resultCode := errs[0].(*ResultCode)
 	message := errs[1].(string)
-	customError := errs[2].(GinCommonError)
+	customError := errs[2].(error)
 	if resultCode != nil && message == "" {
 		CreateAny(context, resultCode.GetCode(), resultCode.GetMessage(), "fail", customError)
 	} else if message != "" && resultCode == nil {
@@ -119,36 +139,29 @@ func CreateFiledParam(context *gin.Context, errs ...any) {
 }
 
 // CreateFail 创建一个失败的返回信息,并且将具体的错误信息封装到 Data 中
-func CreateFail(context *gin.Context, result any) {
-	switch errCodeMsg := result.(type) {
-	case int:
-		// 失败时将错误信息封装到 Data 中
-		err := GinCommonError{ErrCode: errCodeMsg, ErrMsg: CommonErrorConst[errCodeMsg]}
-		CreateFiledParam(context, IErrorCodeConst[FAILED], "", err)
-	// 接收一个自定义错误信息
-	case string:
-		customErr := GinCommonError{ErrCode: CustomError, ErrMsg: errCodeMsg}
-		CreateFiledParam(context, IErrorCodeConst[FAILED], "", customErr)
-	default:
-		CreateFiledParam(context, IErrorCodeConst[FAILED], "", GinCommonError{ErrCode: UnknownError, ErrMsg: CommonErrorConst[UnknownError]})
+func CreateFail(context *gin.Context, errs any) {
+	if commonError, ok := errs.(*GinCommonError); ok {
+		CreateFailedParam(context, IErrorCodeConst[FAILED], "", commonError)
 	}
-}
-
-func CreateFailed(context *gin.Context) {
-	CreateFiledParam(context, IErrorCodeConst[FAILED], IErrorCodeConst[FAILED].GetMessage())
+	if errMsg, ok := errs.(string); ok {
+		CreateFailedParam(context, IErrorCodeConst[FAILED], "", NewGinCommonError(errMsg))
+	}
+	if errCode, ok := errs.(int); ok {
+		CreateFailedParam(context, IErrorCodeConst[FAILED], "", NewGinCommonError(errCode))
+	}
 }
 
 // CreateValidateFailed 创建一个参数验证失败的返回信息
 func CreateValidateFailed(context *gin.Context, message string) {
-	CreateFiledParam(context, IErrorCodeConst[VALIDATE_FAILED], message, GinCommonError{ErrCode: ParameterValidationError, ErrMsg: CommonErrorConst[ParameterValidationError]})
+	CreateFailedParam(context, IErrorCodeConst[VALIDATE_FAILED], message, GinCommonError{ErrCode: ParameterValidationError, ErrMsg: CommonErrorConst[ParameterValidationError]})
 }
 
 // CreateUnauthorized 创建一个未授权的返回信息
 func CreateUnauthorized(context *gin.Context) {
-	CreateFiledParam(context, IErrorCodeConst[UNAUTHORIZED], IErrorCodeConst[UNAUTHORIZED].GetMessage(), GinCommonError{ErrCode: Unauthorized, ErrMsg: CommonErrorConst[Unauthorized]})
+	CreateFailedParam(context, IErrorCodeConst[UNAUTHORIZED], IErrorCodeConst[UNAUTHORIZED].GetMessage(), GinCommonError{ErrCode: Unauthorized, ErrMsg: CommonErrorConst[Unauthorized]})
 }
 
 // CreateForbidden 创建一个禁止访问的返回信息
 func CreateForbidden(context *gin.Context) {
-	CreateFiledParam(context, IErrorCodeConst[FORBIDDEN], IErrorCodeConst[FORBIDDEN].GetMessage(), GinCommonError{ErrCode: AccountForbidden, ErrMsg: CommonErrorConst[AccountForbidden]})
+	CreateFailedParam(context, IErrorCodeConst[FORBIDDEN], IErrorCodeConst[FORBIDDEN].GetMessage(), GinCommonError{ErrCode: AccountForbidden, ErrMsg: CommonErrorConst[AccountForbidden]})
 }
