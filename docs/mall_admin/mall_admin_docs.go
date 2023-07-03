@@ -174,7 +174,7 @@ const docTemplatemall_admin = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsAdminLoginDTO"
+                            "$ref": "#/definitions/ums_admin_dto.UmsAdminLoginDTO"
                         }
                     }
                 ],
@@ -236,7 +236,7 @@ const docTemplatemall_admin = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsAdminRegisterDTO"
+                            "$ref": "#/definitions/ums_admin_dto.UmsAdminRegisterDTO"
                         }
                     }
                 ],
@@ -364,7 +364,7 @@ const docTemplatemall_admin = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsAdminUpdateDTO"
+                            "$ref": "#/definitions/ums_admin_dto.UmsAdminUpdateDTO"
                         }
                     }
                 ],
@@ -403,7 +403,7 @@ const docTemplatemall_admin = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsAdminUpdatePasswordDTO"
+                            "$ref": "#/definitions/ums_admin_dto.UmsAdminUpdatePasswordDTO"
                         }
                     }
                 ],
@@ -559,7 +559,7 @@ const docTemplatemall_admin = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsMenuCreateDTO"
+                            "$ref": "#/definitions/ums_admin_dto.UmsMenuCreateDTO"
                         }
                     }
                 ],
@@ -721,7 +721,7 @@ const docTemplatemall_admin = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsMenuCreateDTO"
+                            "$ref": "#/definitions/ums_admin_dto.UmsMenuCreateDTO"
                         }
                     }
                 ],
@@ -841,7 +841,7 @@ const docTemplatemall_admin = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsResourceCreateDTO"
+                            "$ref": "#/definitions/ums_admin_dto.UmsResourceCreateDTO"
                         }
                     }
                 ],
@@ -1014,7 +1014,7 @@ const docTemplatemall_admin = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsResourceCreateDTO"
+                            "$ref": "#/definitions/ums_admin_dto.UmsResourceCreateDTO"
                         }
                     }
                 ],
@@ -1090,7 +1090,7 @@ const docTemplatemall_admin = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsResourceCategoryCreateDTO"
+                            "$ref": "#/definitions/ums_admin_dto.UmsResourceCategoryCreateDTO"
                         }
                     }
                 ],
@@ -1201,7 +1201,7 @@ const docTemplatemall_admin = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsResourceCategoryCreateDTO"
+                            "$ref": "#/definitions/ums_admin_dto.UmsResourceCategoryCreateDTO"
                         }
                     }
                 ],
@@ -1336,7 +1336,7 @@ const docTemplatemall_admin = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsRoleCreateDTO"
+                            "$ref": "#/definitions/ums_admin_dto.UmsRoleCreateDTO"
                         }
                     }
                 ],
@@ -1575,7 +1575,7 @@ const docTemplatemall_admin = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsRoleCreateDTO"
+                            "$ref": "#/definitions/ums_admin_dto.UmsRoleCreateDTO"
                         }
                     }
                 ],
@@ -1655,7 +1655,7 @@ const docTemplatemall_admin = `{
                 }
             }
         },
-        "ums_admin.UmsAdminLoginDTO": {
+        "ums_admin_dto.UmsAdminLoginDTO": {
             "type": "object",
             "required": [
                 "password",
@@ -1672,40 +1672,7 @@ const docTemplatemall_admin = `{
                 }
             }
         },
-        "ums_admin.UmsAdminRegisterDTO": {
-            "type": "object",
-            "required": [
-                "password",
-                "username"
-            ],
-            "properties": {
-                "email": {
-                    "description": "邮箱",
-                    "type": "string"
-                },
-                "icon": {
-                    "description": "用户头像",
-                    "type": "string"
-                },
-                "nickname": {
-                    "description": "用户昵称",
-                    "type": "string"
-                },
-                "note": {
-                    "description": "备注",
-                    "type": "string"
-                },
-                "password": {
-                    "description": "密文密码",
-                    "type": "string"
-                },
-                "username": {
-                    "description": "用户名",
-                    "type": "string"
-                }
-            }
-        },
-        "ums_admin.UmsAdminUpdateDTO": {
+        "ums_admin_dto.UmsAdminRegisterDTO": {
             "type": "object",
             "required": [
                 "password",
@@ -1738,7 +1705,40 @@ const docTemplatemall_admin = `{
                 }
             }
         },
-        "ums_admin.UmsAdminUpdatePasswordDTO": {
+        "ums_admin_dto.UmsAdminUpdateDTO": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "icon": {
+                    "description": "用户头像",
+                    "type": "string"
+                },
+                "nickname": {
+                    "description": "用户昵称",
+                    "type": "string"
+                },
+                "note": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密文密码",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "ums_admin_dto.UmsAdminUpdatePasswordDTO": {
             "type": "object",
             "required": [
                 "newPassword",
@@ -1760,7 +1760,7 @@ const docTemplatemall_admin = `{
                 }
             }
         },
-        "ums_admin.UmsMenuCreateDTO": {
+        "ums_admin_dto.UmsMenuCreateDTO": {
             "type": "object",
             "properties": {
                 "hidden": {
@@ -1796,7 +1796,7 @@ const docTemplatemall_admin = `{
                 }
             }
         },
-        "ums_admin.UmsResourceCategoryCreateDTO": {
+        "ums_admin_dto.UmsResourceCategoryCreateDTO": {
             "type": "object",
             "properties": {
                 "name": {
@@ -1809,7 +1809,7 @@ const docTemplatemall_admin = `{
                 }
             }
         },
-        "ums_admin.UmsResourceCreateDTO": {
+        "ums_admin_dto.UmsResourceCreateDTO": {
             "type": "object",
             "properties": {
                 "categoryId": {
@@ -1830,7 +1830,7 @@ const docTemplatemall_admin = `{
                 }
             }
         },
-        "ums_admin.UmsRoleCreateDTO": {
+        "ums_admin_dto.UmsRoleCreateDTO": {
             "type": "object",
             "required": [
                 "name"

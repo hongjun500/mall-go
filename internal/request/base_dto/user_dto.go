@@ -7,7 +7,7 @@
  todo 中间件 可用于将请求头中的 token 解析出来的用户信息传递到 请求体中
 */
 
-package base
+package base_dto
 
 type UserDTO struct {
 	UserId int64 `json:"userId" uri:"user_id"`

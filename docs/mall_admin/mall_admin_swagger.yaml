@@ -288,7 +288,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsAdminLoginDTO'
+          $ref: '#/definitions/ums_admin_dto.UmsAdminLoginDTO'
       produces:
       - application/json
       responses:
@@ -327,7 +327,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsAdminRegisterDTO'
+          $ref: '#/definitions/ums_admin_dto.UmsAdminRegisterDTO'
       produces:
       - application/json
       responses:
@@ -406,7 +406,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsAdminUpdateDTO'
+          $ref: '#/definitions/ums_admin_dto.UmsAdminUpdateDTO'
       produces:
       - application/json
       responses:
@@ -430,7 +430,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsAdminUpdatePasswordDTO'
+          $ref: '#/definitions/ums_admin_dto.UmsAdminUpdatePasswordDTO'
       produces:
       - application/json
       responses:
@@ -531,7 +531,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsMenuCreateDTO'
+          $ref: '#/definitions/ums_admin_dto.UmsMenuCreateDTO'
       produces:
       - application/json
       responses:
@@ -637,7 +637,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsMenuCreateDTO'
+          $ref: '#/definitions/ums_admin_dto.UmsMenuCreateDTO'
       produces:
       - application/json
       responses:
@@ -714,7 +714,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsResourceCreateDTO'
+          $ref: '#/definitions/ums_admin_dto.UmsResourceCreateDTO'
       produces:
       - application/json
       responses:
@@ -823,7 +823,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsResourceCreateDTO'
+          $ref: '#/definitions/ums_admin_dto.UmsResourceCreateDTO'
       produces:
       - application/json
       responses:
@@ -847,7 +847,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsResourceCategoryCreateDTO'
+          $ref: '#/definitions/ums_admin_dto.UmsResourceCategoryCreateDTO'
       produces:
       - application/json
       responses:
@@ -916,7 +916,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsResourceCategoryCreateDTO'
+          $ref: '#/definitions/ums_admin_dto.UmsResourceCategoryCreateDTO'
       produces:
       - application/json
       responses:
@@ -1002,7 +1002,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsRoleCreateDTO'
+          $ref: '#/definitions/ums_admin_dto.UmsRoleCreateDTO'
       produces:
       - application/json
       responses:
@@ -1152,7 +1152,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/ums_admin.UmsRoleCreateDTO'
+          $ref: '#/definitions/ums_admin_dto.UmsRoleCreateDTO'
       produces:
       - application/json
       responses:

@@ -4,7 +4,7 @@
 // Created with GoLand 2022.2
 // Description: 通用的请求数据对象
 
-package base
+package base_dto
 
 type (
 	// PageDTO 分页请求的数据传输对象

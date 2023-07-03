@@ -6,13 +6,13 @@
  * Description: ums_admin_dto.go
  */
 
-package ums_admin
+package ums_admin_dto
 
-import "github.com/hongjun500/mall-go/internal/request_dto/base"
+import "github.com/hongjun500/mall-go/internal/request/base_dto"
 
 // UmsAdminRegisterDTO 用户注册请求参数
 type UmsAdminRegisterDTO struct {
-	// base.PageDTO
+	// base_dto.PageDTO
 
 	// 用户名
 	Username string `json:"username" form:"username" binding:"required"`
@@ -38,7 +38,7 @@ type UmsAdminLoginDTO struct {
 
 // UmsAdminPageDTO 用户分页查询请求参数
 type UmsAdminPageDTO struct {
-	base.PageDTO
+	base_dto.PageDTO
 	// 用户名
 	Username string `json:"username" form:"keyword"`
 }
