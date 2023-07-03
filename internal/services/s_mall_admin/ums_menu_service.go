@@ -7,10 +7,10 @@
 package s_mall_admin
 
 import (
+	"github.com/hongjun500/mall-go/pkg"
 	"time"
 
 	"github.com/hongjun500/mall-go/internal/database"
-	"github.com/hongjun500/mall-go/internal/gorm_common"
 	"github.com/hongjun500/mall-go/internal/models"
 	"github.com/hongjun500/mall-go/internal/request/base_dto"
 	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
@@ -103,7 +103,7 @@ func (s UmsMenuService) UmsMenuItem(dto ums_admin_dto.UmsMenuCreateDTO) (*models
 }
 
 // UmsMenuPageList 分页查询后台菜单
-func (s UmsMenuService) UmsMenuPageList(pageDTO base_dto.PageDTO, parentIdDTO ums_admin_dto.UmsMenuListDTO) (gorm_common.CommonPage, error) {
+func (s UmsMenuService) UmsMenuPageList(pageDTO base_dto.PageDTO, parentIdDTO ums_admin_dto.UmsMenuListDTO) (*pkg.CommonPage, error) {
 	umsMenu := new(models.UmsMenu)
 	page, err := umsMenu.SelectPage(s.DbFactory.GormMySQL, pageDTO.PageNum, pageDTO.PageSize, parentIdDTO.ParentId)
 	if err != nil {

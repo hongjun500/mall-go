@@ -8,11 +8,11 @@ package es_index
 
 import (
 	"context"
+	"github.com/hongjun500/mall-go/internal"
 
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/models"
-	"github.com/hongjun500/mall-go/pkg/elasticsearch"
 )
 
 type PageInfo interface {
@@ -101,23 +101,23 @@ func ConvertEsProductFromPmsProduct(pmsProducts []*models.PmsProduct) []*EsProdu
 // PutEsProductsDocument 将 esProducts 存入 es 文档
 func (esProduct *EsProduct) PutEsProductsDocument(db *database.DbFactory, esProducts []*EsProduct) {
 	// 判断索引是否存在
-	if !elasticsearch.HasIndex(db, context.Background(), esProduct.IndexName()) {
+	if !internal.HasIndex(db, context.Background(), esProduct.IndexName()) {
 		// 创建索引
 		settings := &types.IndexSettings{NumberOfShards: "1", NumberOfReplicas: "0"}
-		elasticsearch.CreateIndex(db, context.Background(), esProduct.IndexName(), settings)
+		internal.CreateIndex(db, context.Background(), esProduct.IndexName(), settings)
 	}
 	// 创建 mapping
-	elasticsearch.PutMappingByStruct(db, context.Background(), esProduct.IndexName(), EsProduct{})
+	internal.PutMappingByStruct(db, context.Background(), esProduct.IndexName(), EsProduct{})
 
-	elasticsearch.BulkAddDocument(db, context.Background(), esProduct.IndexName(), esProducts)
+	internal.BulkAddDocument(db, context.Background(), esProduct.IndexName(), esProducts)
 }
 
 func (esProduct *EsProduct) DelDocument(db *database.DbFactory, id int64) bool {
-	ok := elasticsearch.DeleteDocument(db, context.Background(), esProduct.IndexName(), id)
+	ok := internal.DeleteDocument(db, context.Background(), esProduct.IndexName(), id)
 	return ok
 }
 
 func (esProduct *EsProduct) DelDocuments(db *database.DbFactory, ids []int64) bool {
-	ok := elasticsearch.BulkDeleteDocument(db, context.Background(), esProduct.IndexName(), ids)
+	ok := internal.BulkDeleteDocument(db, context.Background(), esProduct.IndexName(), ids)
 	return ok
 }

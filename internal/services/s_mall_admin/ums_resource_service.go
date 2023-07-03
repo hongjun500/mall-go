@@ -8,10 +8,10 @@ package s_mall_admin
 
 import (
 	"github.com/hongjun500/mall-go/internal/database"
-	"github.com/hongjun500/mall-go/internal/gorm_common"
 	"github.com/hongjun500/mall-go/internal/models"
 	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
 	"github.com/hongjun500/mall-go/internal/services"
+	"github.com/hongjun500/mall-go/pkg"
 )
 
 type UmsResourceService struct {
@@ -77,7 +77,7 @@ func (s UmsResourceService) UmsResourceDelete(id int64) (int64, error) {
 }
 
 // UmsResourcePageList 分页模糊查询后台资源
-func (s UmsResourceService) UmsResourcePageList(dto ums_admin_dto.UmsResourcePageListDTO) (gorm_common.CommonPage, error) {
+func (s UmsResourceService) UmsResourcePageList(dto ums_admin_dto.UmsResourcePageListDTO) (*pkg.CommonPage, error) {
 	m := new(models.UmsResource)
 	page, err := m.SelectPage(s.DbFactory.GormMySQL, dto.CategoryId, dto.NameKeyword, dto.UrlKeyword, dto.PageNum, dto.PageSize)
 	if err != nil {

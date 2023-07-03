@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"fmt"
-	"log"
 	"sync"
 
 	"github.com/hongjun500/mall-go/internal/conf"
@@ -30,7 +29,7 @@ func NewRedisClient(properties conf.RedisConfigProperties) (*redis.Client, error
 	})
 
 	if err != nil || client == nil {
-		log.Fatalln("NewRedisClient Fail, ERR = ", err)
+		// log.Fatalln("NewRedisClient Fail, ERR = ", err)
 	}
 	fmt.Println("Redis Connected!")
 	return client, nil

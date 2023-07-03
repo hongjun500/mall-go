@@ -1,7 +1,8 @@
 package models
 
 import (
-	"github.com/hongjun500/mall-go/internal/gorm_common"
+	"github.com/hongjun500/mall-go/internal"
+	"github.com/hongjun500/mall-go/pkg"
 	"gorm.io/gorm"
 )
 
@@ -40,11 +41,11 @@ func (usmResource *UmsResource) SelectAll(db *gorm.DB) ([]*UmsResource, error) {
 	return umsResources, nil
 }
 
-func (usmResource *UmsResource) SelectPage(db *gorm.DB, categoryId int64, NameKeyword string, UrlKeyword string, pageNum, pageSize int) (gorm_common.CommonPage, error) {
+func (usmResource *UmsResource) SelectPage(db *gorm.DB, categoryId int64, NameKeyword string, UrlKeyword string, pageNum, pageSize int) (*pkg.CommonPage, error) {
 	var umsResources []*UmsResource
-	page := gorm_common.NewPage(pageNum, pageSize)
-
-	err := gorm_common.ExecutePagedQuery(db, page, &umsResources, func(dbQuery *gorm.DB) *gorm.DB {
+	page := internal.NewGormPage(db, pageNum, pageSize)
+	page.List = &umsResources
+	page.QueryFunc = func(dbQuery *gorm.DB) *gorm.DB {
 		if categoryId != 0 {
 			dbQuery = dbQuery.Where("category_id = ?", categoryId)
 		}
@@ -55,11 +56,12 @@ func (usmResource *UmsResource) SelectPage(db *gorm.DB, categoryId int64, NameKe
 			dbQuery = dbQuery.Where("url like ?", "%"+UrlKeyword+"%")
 		}
 		return dbQuery
-	})
-	if err != nil {
-		return nil, err
 	}
-	return page, nil
+	err := page.Paginate()
+	if err != nil {
+		return page.CommonPage, err
+	}
+	return page.CommonPage, nil
 }
 
 func (usmResource *UmsResource) Insert(db *gorm.DB) (int64, error) {

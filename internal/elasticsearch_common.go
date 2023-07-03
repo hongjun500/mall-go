@@ -4,12 +4,11 @@
 // Created with GoLand 2022.2
 // Description:
 
-package elasticsearch
+package internal
 
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"reflect"
@@ -297,9 +296,8 @@ func SearchDocument(db *database.DbFactory, ctx context.Context, params ...any) 
 	for _, hit := range hits {
 		if hit.Source_ != nil {
 			var result map[string]interface{}
-			// var result map[string]interface{}
-			err := json.Unmarshal(hit.Source_, &result)
-			// result, err = convert.JsonToMap(hit.Source_)
+			// err := json.Unmarshal(hit.Source_, &result)
+			err = convert.BytesToAny(hit.Source_, &result)
 			if err != nil {
 				log.Printf("failed to unmarshal search result: %v", err)
 				continue

@@ -1,9 +1,10 @@
 package models
 
 import (
+	"github.com/hongjun500/mall-go/internal"
+	"github.com/hongjun500/mall-go/pkg"
 	"time"
 
-	"github.com/hongjun500/mall-go/internal/gorm_common"
 	"gorm.io/gorm"
 )
 
@@ -62,7 +63,7 @@ func (umsAdmin *UmsAdmin) SelectUmsAdminByUserId(db *gorm.DB, userId int64) (*Um
 }
 
 // SelectUmsAdminPage 分页获取用户列表
-func (umsAdmin *UmsAdmin) SelectUmsAdminPage(db *gorm.DB, keyword string, pageNum, pageSize int) (gorm_common.CommonPage, error) {
+func (umsAdmin *UmsAdmin) SelectUmsAdminPage(db *gorm.DB, keyword string, pageNum, pageSize int) (*pkg.CommonPage, error) {
 	/*var umsAdmins []*UmsAdmin
 	dbQuery := db.Offset((pageNum - 1) * pageSize).Limit(pageSize)
 	if keyword != "" {
@@ -73,17 +74,20 @@ func (umsAdmin *UmsAdmin) SelectUmsAdminPage(db *gorm.DB, keyword string, pageNu
 		return nil, tx.Error
 	}*/
 	var umsAdmins []*UmsAdmin
-	page := gorm_common.NewPage(pageNum, pageSize)
-	if err := gorm_common.ExecutePagedQuery(db, page, &umsAdmins, func(query *gorm.DB) *gorm.DB {
+	page := internal.NewGormPage(db, pageNum, pageSize)
+	page.List = &umsAdmins
+	page.QueryFunc = func(query *gorm.DB) *gorm.DB {
 		if keyword != "" {
 			return query.Where("username like  ? or nick_name like ?", "%"+keyword+"%", "%"+keyword+"%")
 		}
 		return query
-	}); err != nil {
-		return nil, err // 处理错误
+	}
+	err := page.Paginate()
+	if err != nil {
+		return page.CommonPage, err
 	}
 
-	return page, nil
+	return page.CommonPage, err
 }
 
 // UpdateUmsAdminByUserId 更新用户信息

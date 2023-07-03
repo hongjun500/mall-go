@@ -2,12 +2,12 @@ package s_mall_admin
 
 import (
 	"crypto/rand"
+	"github.com/hongjun500/mall-go/pkg"
 	"time"
 
 	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/gin_common"
-	"github.com/hongjun500/mall-go/internal/gorm_common"
 	"github.com/hongjun500/mall-go/internal/models"
 	"github.com/hongjun500/mall-go/internal/request/base_dto"
 	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
@@ -201,7 +201,7 @@ func (s UmsAdminService) UmsAdminInfo(username string) (map[string]any, error) {
 }
 
 // UmsAdminListPage 分页查询用户
-func (s UmsAdminService) UmsAdminListPage(request ums_admin_dto.UmsAdminPageDTO) (gorm_common.CommonPage, error) {
+func (s UmsAdminService) UmsAdminListPage(request ums_admin_dto.UmsAdminPageDTO) (*pkg.CommonPage, error) {
 	var umsAdmin *models.UmsAdmin
 	page, err := umsAdmin.SelectUmsAdminPage(s.DbFactory.GormMySQL, request.Username, request.PageNum, request.PageSize)
 	if err != nil {

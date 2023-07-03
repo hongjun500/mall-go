@@ -1,7 +1,8 @@
 package models
 
 import (
-	"github.com/hongjun500/mall-go/internal/gorm_common"
+	"github.com/hongjun500/mall-go/internal"
+	"github.com/hongjun500/mall-go/pkg"
 	"gorm.io/gorm"
 )
 
@@ -88,21 +89,23 @@ func (umsMenu *UmsMenu) Delete(db *gorm.DB, id int64) (int64, error) {
 }
 
 // SelectPage 获取菜单分页列表
-func (umsMenu *UmsMenu) SelectPage(db *gorm.DB, pageNum, pageSize int, parentId int64) (gorm_common.CommonPage, error) {
+func (umsMenu *UmsMenu) SelectPage(db *gorm.DB, pageNum, pageSize int, parentId int64) (*pkg.CommonPage, error) {
 	var menus []*UmsMenu
-	page := gorm_common.NewPage(pageNum, pageSize)
-	page.SetOrderBy("sort")
-	page.SetSort("desc")
-	err := gorm_common.ExecutePagedQuery(db, page, &menus, func(db *gorm.DB) *gorm.DB {
+	page := internal.NewGormPage(db, pageNum, pageSize)
+	page.List = &menus
+	page.OrderBy = "sort"
+	page.Sort = "desc"
+	page.QueryFunc = func(dbQuery *gorm.DB) *gorm.DB {
 		if parentId != 0 {
-			return db.Where("parent_id = ?", parentId)
+			return dbQuery.Where("parent_id = ?", parentId)
 		}
-		return db
-	})
-	if err != nil {
-		return nil, err
+		return dbQuery
 	}
-	return page, nil
+	err := page.Paginate()
+	if err != nil {
+		return page.CommonPage, err
+	}
+	return page.CommonPage, nil
 }
 
 // UpdateHidden 更新菜单显示状态

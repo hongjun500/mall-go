@@ -1,7 +1,8 @@
 package models
 
 import (
-	"github.com/hongjun500/mall-go/internal/gorm_common"
+	"github.com/hongjun500/mall-go/internal"
+	"github.com/hongjun500/mall-go/pkg"
 	"gorm.io/gorm"
 )
 
@@ -87,19 +88,21 @@ func (role *UmsRole) SelectAll(db *gorm.DB) ([]*UmsRole, error) {
 }
 
 // SelectPage 根据 name 的关键字分页获取角色信息
-func (role *UmsRole) SelectPage(db *gorm.DB, keyword string, pageNum, pageSize int) (gorm_common.CommonPage, error) {
+func (role *UmsRole) SelectPage(db *gorm.DB, keyword string, pageNum, pageSize int) (*pkg.CommonPage, error) {
 	var roles []*UmsRole
-	page := gorm_common.NewPage(pageNum, pageSize)
-	err := gorm_common.ExecutePagedQuery(db, page, &roles, func(dbQuery *gorm.DB) *gorm.DB {
+	page := internal.NewGormPage(db, pageNum, pageSize)
+	page.List = &roles
+	page.QueryFunc = func(dbQuery *gorm.DB) *gorm.DB {
 		if keyword != "" {
 			dbQuery = dbQuery.Where("name like ?", "%"+keyword+"%")
 		}
 		return dbQuery
-	})
-	if err != nil {
-		return nil, err
 	}
-	return page, nil
+	err := page.Paginate()
+	if err != nil {
+		return page.CommonPage, err
+	}
+	return page.CommonPage, err
 }
 
 // SelectMenu 根据管理员 ID 获取角色的菜单

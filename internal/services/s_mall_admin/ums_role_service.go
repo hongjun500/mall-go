@@ -8,10 +8,10 @@ package s_mall_admin
 
 import (
 	"github.com/hongjun500/mall-go/internal/database"
-	"github.com/hongjun500/mall-go/internal/gorm_common"
 	"github.com/hongjun500/mall-go/internal/models"
 	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
 	"github.com/hongjun500/mall-go/internal/services"
+	"github.com/hongjun500/mall-go/pkg"
 )
 
 type UmsRoleService struct {
@@ -49,7 +49,7 @@ func (s UmsRoleService) UmsRoleDelete(dto ums_admin_dto.IdsDTO) (int64, error) {
 }
 
 // UmsRoleList 根据角色名称分页获取角色列表
-func (s UmsRoleService) UmsRoleList(dto ums_admin_dto.UmsRoleListPageDTO) (gorm_common.CommonPage, error) {
+func (s UmsRoleService) UmsRoleList(dto ums_admin_dto.UmsRoleListPageDTO) (*pkg.CommonPage, error) {
 	m := new(models.UmsRole)
 	page, err := m.SelectPage(s.DbFactory.GormMySQL, dto.Keyword, dto.PageNum, dto.PageSize)
 	if err != nil {

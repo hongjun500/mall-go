@@ -8,12 +8,12 @@ package s_mall_search
 
 import (
 	"context"
+	"github.com/hongjun500/mall-go/internal"
 	"strconv"
 
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/es_index"
 	"github.com/hongjun500/mall-go/internal/models"
-	"github.com/hongjun500/mall-go/pkg/elasticsearch"
 )
 
 type ProductSearchService struct {
@@ -61,7 +61,7 @@ func (p ProductSearchService) Create(id int64) (*es_index.EsProduct, error) {
 	}
 	esProducts := es_index.ConvertEsProductFromPmsProduct(pmsProducts)
 	esProduct = esProducts[0]
-	elasticsearch.CreateDocument(p.DbFactory, context.Background(), esProduct.IndexName(), strconv.Itoa(int(esProduct.Id)), esProduct)
+	internal.CreateDocument(p.DbFactory, context.Background(), esProduct.IndexName(), strconv.Itoa(int(esProduct.Id)), esProduct)
 	return esProduct, nil
 }
 
