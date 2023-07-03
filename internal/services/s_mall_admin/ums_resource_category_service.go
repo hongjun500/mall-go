@@ -7,12 +7,10 @@
 package s_mall_admin
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/database"
-	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/models"
-	"github.com/hongjun500/mall-go/internal/request_dto/base"
-	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
+	"github.com/hongjun500/mall-go/internal/request/base_dto"
+	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
 )
 
 type UmsResourceCategoryService struct {
@@ -24,106 +22,45 @@ func NewUmsResourceCategoryService(dbFactory *database.DbFactory) UmsResourceCat
 }
 
 // UmsResourceCategoryList 查询所有后台资源分类
-//
-//	@Description	查询所有后台资源分类
-//	@Summary		查询所有后台资源分类
-//	@Tags			后台资源分类管理
-//	@Accept			multipart/form-data
-//	@Produce		json
-//	@Security		GinJWTMiddleware
-//	@Success		200	{object}	gin_common.GinCommonResponse
-//	@Router			/resourceCategory/listAll [get]
-func (s UmsResourceCategoryService) UmsResourceCategoryList(context *gin.Context) {
+func (s UmsResourceCategoryService) UmsResourceCategoryList() ([]*models.UmsResourceCategory, error) {
 	var umsResourceCategory models.UmsResourceCategory
 	list, err := umsResourceCategory.SelectAll(s.DbFactory.GormMySQL)
 	if err != nil {
-		gin_common.CreateFail(context, gin_common.ParameterValidationError)
-		return
+		return nil, err
 	}
-	gin_common.CreateSuccess(context, list)
+	return list, nil
 }
 
 // UmsResourceCategoryCreate 添加后台资源分类
-//
-//	@Description	添加后台资源分类
-//	@Summary		添加后台资源分类
-//	@Tags			后台资源分类管理
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body	ums_admin.UmsResourceCategoryCreateDTO	true	"添加后台资源分类"
-//	@Security		GinJWTMiddleware
-//	@Success		200	{object}	gin_common.GinCommonResponse
-//	@Router			/resourceCategory/create [post]
-func (s UmsResourceCategoryService) UmsResourceCategoryCreate(context *gin.Context) {
-	var dto ums_admin.UmsResourceCategoryCreateDTO
-	err := context.ShouldBind(&dto)
-	if err != nil {
-		gin_common.CreateFail(context, gin_common.ParameterValidationError)
-		return
-	}
+func (s UmsResourceCategoryService) UmsResourceCategoryCreate(dto ums_admin_dto.UmsResourceCategoryCreateDTO) (int64, error) {
 	umsResourceCategory := new(models.UmsResourceCategory)
 	umsResourceCategory.Name = dto.Name
 	umsResourceCategory.Sort = dto.Sort
 	rows, err := umsResourceCategory.Insert(s.DbFactory.GormMySQL)
 	if err != nil {
-		return
+		return 0, err
 	}
-	gin_common.CreateSuccess(context, rows)
+	return rows, nil
 }
 
 // UmsResourceCategoryUpdate 修改后台资源分类
-//
-//	@Description	修改后台资源分类
-//	@Summary		修改后台资源分类
-//	@Tags			后台资源分类管理
-//	@Accept			json
-//	@Produce		json
-//	@Param			id		path	int										true	"id"
-//	@Param			request	body	ums_admin.UmsResourceCategoryCreateDTO	true	"修改后台资源分类"
-//	@Security		GinJWTMiddleware
-//	@Success		200	{object}	gin_common.GinCommonResponse
-//	@Router			/resourceCategory/update/{id} [post]
-func (s UmsResourceCategoryService) UmsResourceCategoryUpdate(context *gin.Context) {
-	var dto ums_admin.UmsResourceCategoryCreateDTO
-	var pathVariableDTO base.PathVariableDTO
-	err := context.ShouldBind(&dto)
-	err = context.ShouldBindUri(&pathVariableDTO)
-	if err != nil {
-		gin_common.CreateFail(context, gin_common.ParameterValidationError)
-		return
-	}
+func (s UmsResourceCategoryService) UmsResourceCategoryUpdate(pathVariableDTO base_dto.PathVariableDTO, dto ums_admin_dto.UmsResourceCategoryCreateDTO) (int64, error) {
 	umsResourceCategory := new(models.UmsResourceCategory)
 	umsResourceCategory.Name = dto.Name
 	umsResourceCategory.Sort = dto.Sort
 	rows, err := umsResourceCategory.Update(s.DbFactory.GormMySQL, pathVariableDTO.Id)
 	if err != nil {
-		return
+		return 0, err
 	}
-	gin_common.CreateSuccess(context, rows)
+	return rows, nil
 }
 
 // UmsResourceCategoryDelete 删除后台资源分类
-//
-//	@Description	删除后台资源分类
-//	@Summary		删除后台资源分类
-//	@Tags			后台资源分类管理
-//	@Accept			json
-//	@Produce		json
-//	@Param			id	path	int	true	"id"
-//	@Security		GinJWTMiddleware
-//	@Success		200	{object}	gin_common.GinCommonResponse
-//	@Router			/resourceCategory/delete/{id} [post]
-func (s UmsResourceCategoryService) UmsResourceCategoryDelete(context *gin.Context) {
-	var pathVariableDTO base.PathVariableDTO
-	err := context.ShouldBindUri(&pathVariableDTO)
-	if err != nil {
-		gin_common.CreateFail(context, gin_common.ParameterValidationError)
-		return
-	}
+func (s UmsResourceCategoryService) UmsResourceCategoryDelete(id int64) (int64, error) {
 	umsResourceCategory := new(models.UmsResourceCategory)
-	rows, err := umsResourceCategory.Delete(s.DbFactory.GormMySQL, pathVariableDTO.Id)
+	rows, err := umsResourceCategory.Delete(s.DbFactory.GormMySQL, id)
 	if err != nil {
-		return
+		return 0, err
 	}
-	gin_common.CreateSuccess(context, rows)
+	return rows, nil
 }
