@@ -39,7 +39,7 @@ func (router *UmsAdminRouter) GroupUmsAdminRouter(umsAdminGroup *gin.RouterGroup
 	// 用户列表分页
 	umsAdminGroup.GET("/list", router.list)
 	// 获取指定用户信息
-	umsAdminGroup.GET("/:id", router.itemInfo)
+	umsAdminGroup.GET("/:id", router.detail)
 	// 修改指定用户信息
 	umsAdminGroup.POST("/update/:id", router.update)
 	// 删除指定用户
@@ -222,7 +222,7 @@ func (router *UmsAdminRouter) list(context *gin.Context) {
 	gin_common.CreateSuccess(context, page)
 }
 
-// itemInfo 获取指定用户信息
+// detail 获取指定用户信息
 //
 //	@Summary		获取指定用户信息
 //	@Description	获取指定用户信息
@@ -233,7 +233,7 @@ func (router *UmsAdminRouter) list(context *gin.Context) {
 //	@Security		GinJWTMiddleware
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/admin/{id} [get]
-func (router *UmsAdminRouter) itemInfo(context *gin.Context) {
+func (router *UmsAdminRouter) detail(context *gin.Context) {
 	var userDTO base_dto.UserDTO
 	err := context.ShouldBindUri(&userDTO)
 	// 占位符

@@ -4,9 +4,9 @@
 // Created with GoLand 2022.2
 // Description:
 
-package ums_admin
+package ums_admin_dto
 
-import "github.com/hongjun500/mall-go/internal/request_dto/base"
+import "github.com/hongjun500/mall-go/internal/request/base_dto"
 
 type UmsResourceCreateDTO struct {
 	// 资源名称
@@ -20,7 +20,7 @@ type UmsResourceCreateDTO struct {
 }
 
 type UmsResourcePageListDTO struct {
-	base.PageDTO
+	base_dto.PageDTO
 	// 资源分类ID
 	CategoryId int64 `form:"categoryId"`
 	// 资源名称模糊关键字

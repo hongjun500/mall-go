@@ -32,7 +32,7 @@ func (router *UmsMenuRouter) GroupUmsMenuRouter(umsMenuGroup *gin.RouterGroup) {
 		// 删除菜单
 		umsMenuGroup.POST("/delete/:id", router.delete)
 		// 根据ID获取菜单详情
-		umsMenuGroup.GET("/:id", router.itemInfo)
+		umsMenuGroup.GET("/:id", router.detail)
 		// 分页获取菜单列表
 		umsMenuGroup.GET("/list/:parentId", router.listPage)
 		// 修改菜单显示状态
@@ -121,9 +121,8 @@ func (router *UmsMenuRouter) delete(context *gin.Context) {
 	gin_common.CreateSuccess(context, rows)
 }
 
-// itemInfo 根据ID获取菜单详情
+// detail 根据ID获取菜单详情
 //
-//	@Description	根据ID获取菜单详情
 //	@Summary		根据ID获取菜单详情
 //	@Description	根据ID获取菜单详情
 //	@Tags			后台菜单管理
@@ -133,7 +132,7 @@ func (router *UmsMenuRouter) delete(context *gin.Context) {
 //	@Security		GinJWTMiddleware
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/menu/{id} [get]
-func (router *UmsMenuRouter) itemInfo(context *gin.Context) {
+func (router *UmsMenuRouter) detail(context *gin.Context) {
 	var dto ums_admin_dto.UmsMenuCreateDTO
 	err := context.ShouldBindUri(&dto)
 	if err != nil {
@@ -183,7 +182,6 @@ func (router *UmsMenuRouter) listPage(context *gin.Context) {
 
 // updateHidden 修改菜单显示状态
 //
-//	@Description	修改菜单显示状态
 //	@Summary		修改菜单显示状态
 //	@Description	修改菜单显示状态
 //	@Tags			后台菜单管理
