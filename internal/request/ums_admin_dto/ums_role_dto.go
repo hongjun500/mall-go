@@ -4,9 +4,9 @@
 // Created with GoLand 2022.2
 // Description: 角色请求传输数据对象
 
-package ums_admin
+package ums_admin_dto
 
-import "github.com/hongjun500/mall-go/internal/request_dto/base"
+import "github.com/hongjun500/mall-go/internal/request/base_dto"
 
 type (
 	UmsRolePathVariableDTO struct {
@@ -29,7 +29,7 @@ type (
 		Ids []int64 `json:"ids" form:"ids" binding:"required"`
 	}
 	UmsRoleListPageDTO struct {
-		base.PageDTO
+		base_dto.PageDTO
 		Keyword string `json:"keyword" form:"keyword"`
 	}
 	UmsRoleStatusDTO struct {
