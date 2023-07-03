@@ -7,11 +7,9 @@
 package s_mall_admin
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/database"
-	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/models"
-	"github.com/hongjun500/mall-go/internal/request_dto/ums_member"
+	"github.com/hongjun500/mall-go/internal/request/ums_member_dto"
 )
 
 type UmsMemberLevelService struct {
@@ -23,27 +21,11 @@ func NewUmsMemberLevelService(dbFactory *database.DbFactory) UmsMemberLevelServi
 }
 
 // UmsMemberLevelList 查看所有会员等级
-//
-//	@Description	查看所有会员等级
-//	@Summary		查看所有会员等级
-//	@Tags			会员等级管理
-//	@Accept			multipart/form-data
-//	@Produce		application/json
-//	@Param			defaultStatus	query	int	false	"是否为默认等级：0->不是；1->是"
-//	@Security		GinJWTMiddleware
-//	@Success		200	{object}	gin_common.GinCommonResponse
-//	@Router			/memberLevel/list [get]
-func (s UmsMemberLevelService) UmsMemberLevelList(context *gin.Context) {
-	var dto ums_member.UmsMemberLevelListDTO
-	if err := context.ShouldBind(&dto); err != nil {
-		gin_common.CreateFail(context, gin_common.ParameterValidationError)
-		return
-	}
+func (s UmsMemberLevelService) UmsMemberLevelList(dto ums_member_dto.UmsMemberLevelListDTO) ([]*models.UmsMemberLevel, error) {
 	var umsMemberLevel models.UmsMemberLevel
 	list, err := umsMemberLevel.SelectByDefaultStatus(s.DbFactory.GormMySQL, dto.DefaultStatus)
 	if err != nil {
-		gin_common.CreateFail(context, gin_common.DatabaseError)
-		return
+		return nil, err
 	}
-	gin_common.CreateSuccess(context, list)
+	return list, nil
 }

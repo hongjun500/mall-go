@@ -9,7 +9,7 @@ import (
 
 	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/gin_common"
-	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
+	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_admin"
 	"github.com/stretchr/testify/assert"
 )
@@ -30,7 +30,7 @@ func TestVerifyPassword(t *testing.T) {
 
 func TestUmsAdminRegister(t *testing.T) {
 
-	var umsAdminRequest ums_admin.UmsAdminRegisterDTO
+	var umsAdminRequest ums_admin_dto.UmsAdminRegisterDTO
 	umsAdminRequest.Username = "hongjun"
 	umsAdminRequest.Password = "123456"
 	umsAdminRequest.Icon = "http://www.baidu.com"
@@ -53,7 +53,7 @@ func TestUmsAdminRegister(t *testing.T) {
 }
 
 func TestUmsAdminLogin(t *testing.T) {
-	var umsAdminLogin ums_admin.UmsAdminLoginDTO
+	var umsAdminLogin ums_admin_dto.UmsAdminLoginDTO
 	umsAdminLogin.Username = "hongjun500"
 	umsAdminLogin.Password = "123456"
 	body, err := json.Marshal(umsAdminLogin)

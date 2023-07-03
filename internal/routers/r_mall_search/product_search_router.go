@@ -9,7 +9,7 @@ package r_mall_search
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/gin_common"
-	"github.com/hongjun500/mall-go/internal/request_dto/base"
+	"github.com/hongjun500/mall-go/internal/request/base_dto"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_search"
 )
 
@@ -67,7 +67,7 @@ func (router *ProductSearchRouter) importAll(c *gin.Context) {
 // @Success		200	{object}	gin_common.GinCommonResponse
 // @Router		/product/delete/{id} [get]
 func (router *ProductSearchRouter) delete(c *gin.Context) {
-	var pathVariableDTO base.PathVariableDTO
+	var pathVariableDTO base_dto.PathVariableDTO
 	err := c.BindUri(&pathVariableDTO)
 	if err != nil {
 		gin_common.CreateFail(c, gin_common.ParameterValidationError)
