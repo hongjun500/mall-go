@@ -9,12 +9,11 @@ package s_mall_admin
 import (
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/database"
-	"github.com/hongjun500/mall-go/internal/gin_common"
+	"github.com/hongjun500/mall-go/internal/gorm_common"
 	"github.com/hongjun500/mall-go/internal/models"
-	"github.com/hongjun500/mall-go/internal/request_dto/base"
-	"github.com/hongjun500/mall-go/internal/request_dto/ums_admin"
+	"github.com/hongjun500/mall-go/internal/request/base_dto"
+	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
 )
 
 type UmsMenuService struct {
@@ -26,24 +25,7 @@ func NewUmsMenuService(dbFactory *database.DbFactory) UmsMenuService {
 }
 
 // UmsMenuCreate 添加后台菜单
-//
-//	@Description	添加后台菜单
-//	@Summary		添加后台菜单
-//	@Description	添加后台菜单
-//	@Tags			后台菜单管理
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body	ums_admin.UmsMenuCreateDTO	true	"添加后台菜单"
-//	@Security		GinJWTMiddleware
-//	@Success		200	{object}	gin_common.GinCommonResponse
-//	@Router			/menu/create [post]
-func (s UmsMenuService) UmsMenuCreate(context *gin.Context) {
-	var umsMenuCreateDTO ums_admin.UmsMenuCreateDTO
-	err := context.ShouldBind(&umsMenuCreateDTO)
-	if err != nil {
-		gin_common.CreateFail(context, gin_common.ParameterValidationError)
-		return
-	}
+func (s UmsMenuService) UmsMenuCreate(umsMenuCreateDTO ums_admin_dto.UmsMenuCreateDTO) (int64, error) {
 	umsMenu := new(models.UmsMenu)
 	umsMenu.ParentID = umsMenuCreateDTO.ParentId
 	now := time.Now()
@@ -56,12 +38,11 @@ func (s UmsMenuService) UmsMenuCreate(context *gin.Context) {
 	umsMenu.Hidden = int64(umsMenuCreateDTO.Hidden)
 	// 计算层级
 	updateLevel(umsMenu, s)
-	menu, err := umsMenu.InsertUmsMenu(s.DbFactory.GormMySQL)
+	rows, err := umsMenu.InsertUmsMenu(s.DbFactory.GormMySQL)
 	if err != nil {
-		gin_common.CreateFail(context, gin_common.UnknownError)
-		return
+		return 0, err
 	}
-	gin_common.CreateSuccess(context, menu)
+	return rows, nil
 }
 
 // updateLevel 更新菜单层级
@@ -80,25 +61,7 @@ func updateLevel(umsMenu *models.UmsMenu, s UmsMenuService) {
 }
 
 // UmsMenuUpdate 修改后台菜单
-//
-//	@Description	修改后台菜单
-//	@Summary		修改后台菜单
-//	@Description	修改后台菜单
-//	@Tags			后台菜单管理
-//	@Accept			json
-//	@Produce		json
-//	@Param			id		path	int64						true	"菜单ID"
-//	@Param			request	body	ums_admin.UmsMenuCreateDTO	true	"修改后台菜单"
-//	@Security		GinJWTMiddleware
-//	@Success		200	{object}	gin_common.GinCommonResponse
-//	@Router			/menu/update/{id} [post]
-func (s UmsMenuService) UmsMenuUpdate(context *gin.Context) {
-	var umsMenuCreateDTO ums_admin.UmsMenuCreateDTO
-	err := context.ShouldBind(&umsMenuCreateDTO)
-	if err != nil {
-		gin_common.CreateFail(context, gin_common.ParameterValidationError)
-		return
-	}
+func (s UmsMenuService) UmsMenuUpdate(umsMenuCreateDTO ums_admin_dto.UmsMenuCreateDTO) (int64, error) {
 	umsMenu := new(models.UmsMenu)
 	umsMenu.Id = umsMenuCreateDTO.Id
 	umsMenu.ParentID = umsMenuCreateDTO.ParentId
@@ -112,154 +75,59 @@ func (s UmsMenuService) UmsMenuUpdate(context *gin.Context) {
 	updateLevel(umsMenu, s)
 	var menus []*models.UmsMenu
 	menus = append(menus, umsMenu)
-	err = umsMenu.Update(s.DbFactory.GormMySQL, menus)
+	err := umsMenu.Update(s.DbFactory.GormMySQL, menus)
 	if err != nil {
-		gin_common.CreateFail(context, gin_common.UnknownError)
-		return
+		return 0, err
 	}
-	gin_common.CreateSuccess(context, len(menus))
+	return int64(len(menus)), nil
 }
 
 // UmsMenuDelete 删除后台菜单
-//
-//	@Description	删除后台菜单
-//	@Summary		删除后台菜单
-//	@Description	删除后台菜单
-//	@Tags			后台菜单管理
-//	@Accept			json
-//	@Produce		json
-//	@Param			id	path	int64	true	"菜单ID"
-//	@Security		GinJWTMiddleware
-//	@Success		200	{object}	gin_common.GinCommonResponse
-//	@Router			/menu/delete/{id} [post]
-func (s UmsMenuService) UmsMenuDelete(context *gin.Context) {
-	var dto ums_admin.UmsMenuCreateDTO
-	err := context.ShouldBind(&dto)
-	if err != nil {
-		gin_common.CreateFail(context, gin_common.ParameterValidationError)
-		return
-	}
+func (s UmsMenuService) UmsMenuDelete(dto ums_admin_dto.UmsMenuCreateDTO) (int64, error) {
 	umsMenu := new(models.UmsMenu)
-
-	result, err := umsMenu.Delete(s.DbFactory.GormMySQL, dto.Id)
+	rows, err := umsMenu.Delete(s.DbFactory.GormMySQL, dto.Id)
 	if err != nil {
-		gin_common.CreateFail(context, gin_common.UnknownError)
-		return
+		return 0, err
 	}
-	gin_common.CreateSuccess(context, result)
+	return rows, err
 }
 
 // UmsMenuItem 根据ID获取菜单详情
-//
-//	@Description	根据ID获取菜单详情
-//	@Summary		根据ID获取菜单详情
-//	@Description	根据ID获取菜单详情
-//	@Tags			后台菜单管理
-//	@Accept			json
-//	@Produce		json
-//	@Param			id	path	int64	true	"菜单ID"
-//	@Security		GinJWTMiddleware
-//	@Success		200	{object}	gin_common.GinCommonResponse
-//	@Router			/menu/{id} [get]
-func (s UmsMenuService) UmsMenuItem(context *gin.Context) {
-	var dto ums_admin.UmsMenuCreateDTO
-	err := context.ShouldBindUri(&dto)
-	if err != nil {
-		gin_common.CreateFail(context, gin_common.ParameterValidationError)
-		return
-	}
+func (s UmsMenuService) UmsMenuItem(dto ums_admin_dto.UmsMenuCreateDTO) (*models.UmsMenu, error) {
 	umsMenu := new(models.UmsMenu)
 	result, err := umsMenu.SelectById(s.DbFactory.GormMySQL, dto.Id)
 	if err != nil {
-		gin_common.CreateFail(context, gin_common.UnknownError)
-		return
+		return nil, err
 	}
-	gin_common.CreateSuccess(context, result)
+	return result, nil
 }
 
 // UmsMenuPageList 分页查询后台菜单
-//
-//	@Summary		分页查询后台菜单
-//	@Description	分页查询后台菜单
-//	@Tags			后台菜单管理
-//	@Accept			multipart/form-data
-//	@Produce		json
-//	@Param			parentId	path	int64	true	"父级菜单ID"
-//	@Param			pageNum		query	int64	true	"页码"
-//	@Param			pageSize	query	int64	true	"每页数量"
-//	@Security		GinJWTMiddleware
-//	@Success		200	{object}	gin_common.GinCommonResponse
-//	@Router			/menu/list/{parentId} [get]
-func (s UmsMenuService) UmsMenuPageList(context *gin.Context) {
-	//	@Param	pageNum		formData	int64	true	"页码"
-	//	@Param	pageSize	formData	int64	true	"每页数量"
-	// 这会导致swagger文档中的参数不正确
-
-	var pageDTO base.PageDTO
-	var parentIdDTO ums_admin.UmsMenuListDTO
-	err := context.ShouldBind(&pageDTO)
-	err = context.ShouldBindUri(&parentIdDTO)
-	// parentId, _ := strconv.ParseInt(context.Param("parentId"), 10, 64)
-	if err != nil {
-		gin_common.CreateFail(context, gin_common.ParameterValidationError)
-		return
-	}
+func (s UmsMenuService) UmsMenuPageList(pageDTO base_dto.PageDTO, parentIdDTO ums_admin_dto.UmsMenuListDTO) (gorm_common.CommonPage, error) {
 	umsMenu := new(models.UmsMenu)
-
 	page, err := umsMenu.SelectPage(s.DbFactory.GormMySQL, pageDTO.PageNum, pageDTO.PageSize, parentIdDTO.ParentId)
-
 	if err != nil {
-		gin_common.CreateFail(context, gin_common.UnknownError)
-		return
+		return nil, err
 	}
-	gin_common.CreateSuccess(context, page)
+	return page, nil
 }
 
 // UmsMenuUpdateHidden 修改菜单显示状态
-//
-//	@Description	修改菜单显示状态
-//	@Summary		修改菜单显示状态
-//	@Description	修改菜单显示状态
-//	@Tags			后台菜单管理
-//	@Accept			json
-//	@Produce		json
-//	@Param			id		path		int64	true	"菜单ID"
-//	@Param			hidden	formData	int64	true	"是否隐藏"
-//	@Security		GinJWTMiddleware
-//	@Success		200	{object}	gin_common.GinCommonResponse
-//	@Router			/menu/updateHidden/{id} [post]
-func (s UmsMenuService) UmsMenuUpdateHidden(context *gin.Context) {
-	var dto ums_admin.UmsMenuHiddenDTO
-	err := context.ShouldBind(&dto)
-	if err != nil {
-		gin_common.CreateFail(context, gin_common.ParameterValidationError)
-		return
-	}
+func (s UmsMenuService) UmsMenuUpdateHidden(dto ums_admin_dto.UmsMenuHiddenDTO) (int64, error) {
 	umsMenu := new(models.UmsMenu)
-	result, err := umsMenu.UpdateHidden(s.DbFactory.GormMySQL, dto.Id, dto.Hidden)
+	rows, err := umsMenu.UpdateHidden(s.DbFactory.GormMySQL, dto.Id, dto.Hidden)
 	if err != nil {
-		gin_common.CreateFail(context, gin_common.UnknownError)
-		return
+		return 0, err
 	}
-	gin_common.CreateSuccess(context, result)
+	return rows, nil
 }
 
 // UmsMenuTreeList 树形结构返回所有菜单列表
-//
-//	@Description	树形结构返回所有菜单列表
-//	@Summary		树形结构返回所有菜单列表
-//	@Tags			后台菜单管理
-//	@Accept			json
-//	@Produce		json
-//	@Security		GinJWTMiddleware
-//	@Success		200	{object}	gin_common.GinCommonResponse
-//	@Router			/menu/treeList [get]
-func (s UmsMenuService) UmsMenuTreeList(context *gin.Context) {
+func (s UmsMenuService) UmsMenuTreeList() ([]*models.UmsMenuNode, error) {
 	umsMenu := new(models.UmsMenu)
 	result, err := umsMenu.SelectAll(s.DbFactory.GormMySQL)
 	if err != nil {
-		gin_common.CreateFail(context, gin_common.UnknownError)
-		return
+		return nil, err
 	}
 	// 转换树形结构
 	var umsMenuNodes []*models.UmsMenuNode
@@ -268,7 +136,7 @@ func (s UmsMenuService) UmsMenuTreeList(context *gin.Context) {
 			umsMenuNodes = append(umsMenuNodes, convertMenuTreeNode(menu, result))
 		}
 	}
-	gin_common.CreateSuccess(context, umsMenuNodes)
+	return umsMenuNodes, nil
 }
 
 // ConvertMenuTreeNode 转换菜单树形结构
