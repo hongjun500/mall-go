@@ -73,6 +73,6 @@ func (router *ProductSearchRouter) delete(c *gin.Context) {
 		gin_common.CreateFail(c, gin_common.ParameterValidationError)
 		return
 	}
-	result, _ := router.ProductSearchService.Delete(pathVariableDTO.Id)
-	gin_common.CreateSuccess(c, result)
+	rows, _ := router.ProductSearchService.Delete(pathVariableDTO.Id)
+	gin_common.CreateSuccess(c, rows)
 }

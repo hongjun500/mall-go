@@ -176,8 +176,8 @@ func DeleteIndex(db *database.DbFactory, ctx context.Context, index string) bool
 	return true
 }
 
-// AddDocument 添加单个文档
-func AddDocument(db *database.DbFactory, ctx context.Context, params ...any) bool {
+// CreateDocument 添加单个文档
+func CreateDocument(db *database.DbFactory, ctx context.Context, params ...any) bool {
 	index := params[0].(string)
 	id := params[1].(string)
 	body := params[2].(any)
@@ -249,6 +249,37 @@ func DeleteDocument(db *database.DbFactory, ctx context.Context, params ...any) 
 		return false
 	}
 	return res.Result.Name == "deleted"
+}
+
+// BulkDeleteDocument 批量删除文档
+func BulkDeleteDocument(db *database.DbFactory, ctx context.Context, params ...any) bool {
+	index := params[0].(string)
+	body := params[1].(any)
+
+	start := time.Now() // 记录开始时间
+	bs := convert.AnyToBytes(body)
+	var list []any
+	err := convert.BytesToAny(bs, &list)
+	if err != nil {
+		return false
+	}
+	bodyStr := ""
+	for _, data := range list {
+		m := data.(map[string]any)
+		if m["id"] == nil {
+			continue
+		}
+		meta := []byte(fmt.Sprintf(`{ "delete" : { "_id" : "%d" } }%s`, m["id"], "\n"))
+		bodyStr += string(meta)
+	}
+	res, err := db.Es.Cli.Bulk(bytes.NewReader([]byte(bodyStr)), db.Es.Cli.Bulk.WithIndex(index))
+	if err != nil {
+		log.Printf("bulk delete document error: %v", err.Error())
+		return false
+	}
+	elapsed := time.Since(start) // 计算耗时
+	fmt.Printf("耗时：%s\n", elapsed)
+	return !res.IsError()
 }
 
 // SearchDocument 根据索引名 index 和 search.Request 条件查询文档

@@ -7,9 +7,13 @@
 package s_mall_search
 
 import (
+	"context"
+	"strconv"
+
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/es_index"
 	"github.com/hongjun500/mall-go/internal/models"
+	"github.com/hongjun500/mall-go/pkg/elasticsearch"
 )
 
 type ProductSearchService struct {
@@ -39,4 +43,30 @@ func (p ProductSearchService) ImportAll() error {
 func (p ProductSearchService) Delete(id int64) (bool, error) {
 	esProduct := new(es_index.EsProduct)
 	return esProduct.DelDocument(p.DbFactory, id), nil
+}
+
+// DeleteBatch 根据 id 批量删除商品
+func (p ProductSearchService) DeleteBatch(ids []int64) (bool, error) {
+	esProduct := new(es_index.EsProduct)
+	return esProduct.DelDocuments(p.DbFactory, ids), nil
+}
+
+// Create 根据id创建商品
+func (p ProductSearchService) Create(id int64) (*es_index.EsProduct, error) {
+	esProduct := new(es_index.EsProduct)
+	var product models.PmsProduct
+	pmsProducts, err := product.GetProductInfoById(p.DbFactory, id)
+	if err != nil {
+		return esProduct, err
+	}
+	esProducts := es_index.ConvertEsProductFromPmsProduct(pmsProducts)
+	esProduct = esProducts[0]
+	elasticsearch.CreateDocument(p.DbFactory, context.Background(), esProduct.IndexName(), strconv.Itoa(int(esProduct.Id)), esProduct)
+	return esProduct, nil
+}
+
+// PageSearchByName 根据关键字搜索名称或者副标题
+func (p ProductSearchService) PageSearchByName(keyword string, pageNum int, pageSize int, sort int) ([]*es_index.EsProduct, int64, error) {
+
+	return nil, 0, nil
 }

@@ -15,6 +15,13 @@ import (
 	"github.com/hongjun500/mall-go/pkg/elasticsearch"
 )
 
+type PageInfo interface {
+	SetTotalPage(totalPage int)
+	SetPageNum(pageNum int)
+	SetPageSize(pageSize int)
+	SetTotal(total int)
+}
+
 type EsProduct struct {
 	Id                  int64                     `json:"id" es_type:"long"`
 	ProductSn           string                    `json:"productSn" es_type:"keyword"`
@@ -107,5 +114,10 @@ func (esProduct *EsProduct) PutEsProductsDocument(db *database.DbFactory, esProd
 
 func (esProduct *EsProduct) DelDocument(db *database.DbFactory, id int64) bool {
 	ok := elasticsearch.DeleteDocument(db, context.Background(), esProduct.IndexName(), id)
+	return ok
+}
+
+func (esProduct *EsProduct) DelDocuments(db *database.DbFactory, ids []int64) bool {
+	ok := elasticsearch.BulkDeleteDocument(db, context.Background(), esProduct.IndexName(), ids)
 	return ok
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	docs "github.com/hongjun500/mall-go/docs/mall_search"
 	"github.com/hongjun500/mall-go/internal/conf"
+	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_search"
 
 	swaggerFiles "github.com/swaggo/files"
@@ -37,7 +38,6 @@ func InitSearchGroupRouter(coreSearchRouter *CoreSearchRouter, ginEngine *gin.En
 				"/swagger/"+conf.GlobalSearchServerConfigProperties.ApplicationName+"/doc.json"),
 			ginSwagger.PersistAuthorization(true)))
 	docs.SwaggerInfomall_search.Title = conf.GlobalSearchServerConfigProperties.ApplicationName
-	// ginEngine.Use(mid.GinJWTMiddleware()).Use(mid.GinCasbinMiddleware())
-
+	ginEngine.Use(mid.GinJWTMiddleware()).Use(mid.GinCasbinMiddleware())
 	coreSearchRouter.GroupProductRouter(ginEngine.Group("/product"))
 }
