@@ -181,7 +181,7 @@ func TestElasticSearchPage2(t *testing.T) {
 		},
 	}
 	t.Log(searchReq)
-	page := internal.NewElasticSearchPage(dbFactory.Es, index, 1, 2000)
+	page := internal.NewElasticSearchPage(dbFactory.Es, "pms", 1, 2000)
 	page.SearchRequest = searchReq
 	err := page.Paginate()
 	if err != nil {
@@ -189,4 +189,12 @@ func TestElasticSearchPage2(t *testing.T) {
 	}
 
 	t.Log(page.List)
+}
+func TestSearchByNameOrSubtitle(t *testing.T) {
+	esProduct := new(es_index.EsProduct)
+	page, err := esProduct.SearchByNameOrSubtitle(dbFactory, "小米", 1, 2, 1, 2000, 1)
+	if err != nil {
+		return
+	}
+	t.Log(page)
 }

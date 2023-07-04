@@ -64,6 +64,7 @@ func (page *ElasticSearchPage) Paginate() error {
 		}
 
 	}
+	log.Println("Paginate.searchRequest-DSL:", page.SearchRequest.Query.QueryString)
 	offset := (page.PageNum - 1) * page.PageSize
 	page.SearchRequest.From = some.Int(offset)
 	page.SearchRequest.Size = some.Int(page.PageSize)
@@ -346,6 +347,7 @@ func BulkDeleteDocument(db *database.DbFactory, ctx context.Context, params ...a
 func SearchDocument(db *database.DbFactory, ctx context.Context, params ...any) (any, error) {
 	index := params[0].(string)
 	body := params[1].(*search.Request)
+	log.Printf("search document DSL: %v", body.Query.QueryString)
 	start := time.Now()
 	res, err := db.Es.TypedCli.Search().Index(index).Request(body).Do(ctx)
 	if err != nil {
