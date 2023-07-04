@@ -168,26 +168,23 @@ func (esProduct *EsProduct) SearchByNameOrSubtitle(db *database.DbFactory, keywo
 	query := types.NewQuery()
 	if brandId != 0 || productCategoryId != 0 {
 		boolQuery := types.NewBoolQuery()
-
 		if brandId != 0 {
-			boolQuery.Filter = []types.Query{
-				{
-					Term: map[string]types.TermQuery{
-						"brandId": {Value: brandId},
-					},
+			boolQuery.Must = append(boolQuery.Must, types.Query{
+				Term: map[string]types.TermQuery{
+					"brandId": {Value: brandId},
 				},
-			}
+			})
 
 		}
 		if productCategoryId != 0 {
-			boolQuery.Filter = []types.Query{
-				{
-					Term: map[string]types.TermQuery{
-						"productCategoryId": {Value: productCategoryId},
-					},
+			boolQuery.Must = append(boolQuery.Must, types.Query{
+				Term: map[string]types.TermQuery{
+					"productCategoryId": {Value: productCategoryId},
 				},
-			}
+			})
 		}
+		boolQuery.Filter = append(boolQuery.Filter, boolQuery.Must...)
+		boolQuery.Must = nil
 		query.Bool = boolQuery
 	}
 	if keyword == "" {
