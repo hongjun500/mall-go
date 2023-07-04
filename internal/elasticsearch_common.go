@@ -20,6 +20,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/some"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/hongjun500/mall-go/internal/database"
+	"github.com/hongjun500/mall-go/pkg"
 	"github.com/hongjun500/mall-go/pkg/convert"
 )
 
@@ -27,15 +28,75 @@ const (
 	EsType     = "es_type"
 	EsAnalyzer = "es_analyzer"
 	Json       = "json"
-	IkMaxWord  = "ik_max_word"
+	// IkMaxWord  = "ik_max_word"
 )
 
-var (
-	ikMaxWord = IkMaxWord
-	// tags map[string]map[string]string
-)
+type ElasticSearchPage struct {
+	*database.Es
+	Index string
+	// 用于构建 searchRequest 例如：searchRequest.Query = &types.Query{MatchAll: &types.MatchAllQuery{}} 用于查询所有
+	SearchRequest *search.Request
+	*pkg.CommonPage
+}
 
 type esTags map[string]map[string]string
+
+func NewElasticSearchPage(es *database.Es, index string, pageNum, pageSize int) *ElasticSearchPage {
+	return &ElasticSearchPage{
+		Es:    es,
+		Index: index,
+		CommonPage: &pkg.CommonPage{
+			PageNum:  pageNum,
+			PageSize: pageSize,
+		},
+	}
+}
+
+func (page *ElasticSearchPage) Paginate() error {
+	typedCli := page.TypedCli
+	index := page.Index
+	if page.SearchRequest == nil {
+		// 重新构建 searchRequest
+		page.SearchRequest = &search.Request{
+			Query: &types.Query{
+				MatchAll: &types.MatchAllQuery{},
+			},
+		}
+
+	}
+	offset := (page.PageNum - 1) * page.PageSize
+	page.SearchRequest.From = some.Int(offset)
+	page.SearchRequest.Size = some.Int(page.PageSize)
+	response, err := typedCli.Search().Index(index).Request(page.SearchRequest).Do(context.Background())
+	if err != nil {
+		return err
+	}
+
+	hits := response.Hits.Hits
+	data := make([]any, 0, len(hits)) // 预分配足够的容量
+	for _, hit := range hits {
+		if hit.Source_ != nil {
+			var result map[string]interface{}
+			err = convert.BytesToAny(hit.Source_, &result)
+			if err != nil {
+				log.Printf("failed to unmarshal search result: %v", err)
+				continue
+			}
+			data = append(data, result)
+		} else {
+			log.Println("empty source in hit")
+		}
+	}
+	page.List = data
+	total := response.Hits.Total.Value
+	totalPage := total / int64(page.PageSize)
+	if total%int64(page.PageSize) > 0 {
+		totalPage++
+	}
+	page.Total = total
+	page.TotalPage = totalPage
+	return nil
+}
 
 // GetStructTag 获取结构体的 elasticsearch 标签
 // Deprecated: 弃用

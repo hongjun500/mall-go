@@ -7,9 +7,10 @@
 package common
 
 import (
-	"github.com/hongjun500/mall-go/internal"
 	"strconv"
 	"testing"
+
+	"github.com/hongjun500/mall-go/internal"
 
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/some"
@@ -118,4 +119,74 @@ func TestSearch(t *testing.T) {
 
 func TestDeleteDocument(t *testing.T) {
 	t.Log("delete document success: ", internal.DeleteDocument(dbFactory, ctx, index, "1"))
+}
+
+func TestElasticSearchPage(t *testing.T) {
+	searchReq := &search.Request{
+		Query: &types.Query{
+			MatchAll: &types.MatchAllQuery{},
+		},
+	}
+	t.Log(searchReq)
+	page := internal.NewElasticSearchPage(dbFactory.Es, index, 2, 500)
+	page.SearchRequest = searchReq
+	err := page.Paginate()
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(page.List)
+}
+
+func TestElasticSearchPage2(t *testing.T) {
+
+	params := map[string]string{
+		"name":     "6",
+		"subTitle": "6",
+		"keyWord":  "6",
+	}
+
+	queries := make([]types.Query, 0, len(params))
+
+	for key, value := range params {
+		query := types.NewQuery()
+		m := map[string]types.MatchQuery{
+			key: {Query: value},
+		}
+		query.Match = m
+		queries = append(queries, *query)
+	}
+
+	searchReq := &search.Request{
+		Query: &types.Query{
+			Bool: &types.BoolQuery{
+				Should: /*[]types.Query{
+					{
+						Match: map[string]types.MatchQuery{
+							"name": {Query: "66"},
+						},
+					},
+					{
+						Match: map[string]types.MatchQuery{
+							"subTitle": {Query: "your_search_term"},
+						},
+					},
+					{
+						Match: map[string]types.MatchQuery{
+							"keyWord": {Query: "your_search_term"},
+						},
+					},
+				},*/
+				queries,
+			},
+		},
+	}
+	t.Log(searchReq)
+	page := internal.NewElasticSearchPage(dbFactory.Es, index, 1, 2000)
+	page.SearchRequest = searchReq
+	err := page.Paginate()
+	if err != nil {
+		t.Error(err)
+	}
+
+	t.Log(page.List)
 }

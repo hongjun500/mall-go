@@ -8,9 +8,9 @@ package es_index
 
 import (
 	"context"
-	"github.com/hongjun500/mall-go/internal"
 
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
+	"github.com/hongjun500/mall-go/internal"
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/models"
 )

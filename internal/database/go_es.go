@@ -7,6 +7,7 @@
 package database
 
 import (
+	"context"
 	"log"
 	"os"
 	"sync"
@@ -50,11 +51,11 @@ func NewEsTypedClient(properties conf.ElasticSearchConfigProperties) (*Es, error
 		if err != nil {
 			log.Fatal("NewEsClient Fail, ERR = ", err)
 		}
-		/*ping := typedClient.Ping()
+		ping := typedClient.Ping()
 		success, err := ping.IsSuccess(context.Background())
 		if !success {
 			log.Fatalln("Elasticsearch Connected Fail, ERR = ", err.Error())
-		}*/
+		}
 	})
 	es.TypedCli = typedClient
 	es.Cli = client
