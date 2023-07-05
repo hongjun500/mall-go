@@ -10,8 +10,10 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/hongjun500/mall-go/internal"
+	"github.com/hongjun500/mall-go/pkg"
 
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/es_index"
@@ -78,8 +80,61 @@ func (p ProductSearchService) Create(id int64) (*es_index.EsProduct, error) {
 	return esProduct, nil
 }
 
-// PageSearchByName 根据关键字搜索名称或者副标题
-func (p ProductSearchService) PageSearchByName(keyword string, pageNum int, pageSize int, sort int) ([]*es_index.EsProduct, int64, error) {
+// SearchByNameOrSubtitleOrKeyword 根据关键字搜索名称或者副标题
+func (p ProductSearchService) SearchByNameOrSubtitleOrKeyword(keyword string, pageNum int, pageSize int) (*pkg.CommonPage, error) {
+	esProduct := new(es_index.EsProduct)
+	esProduct.KeyWord = keyword
+	query, _ := esProduct.SearchByNameOrSubtitleOrKeyword()
+	// 分页
+	page := internal.NewElasticSearchPage(p.DbFactory.Es, esProduct.IndexName(), pageNum, pageSize)
+	page.SearchRequest = &search.Request{
+		Query: query,
+	}
+	err := page.Paginate()
+	if err != nil {
+		return nil, err
+	}
+	return page.CommonPage, nil
+}
 
-	return nil, 0, nil
+// SearchByNameOrSubtitle 根据关键字或者副标题进行复合查询
+func (p ProductSearchService) SearchByNameOrSubtitle(keyword string, brandId int64, productCategoryId int64, pageNum, sort, pageSize int) (*pkg.CommonPage, error) {
+	esProduct := new(es_index.EsProduct)
+	esProduct.KeyWord = keyword
+	esProduct.BrandId = brandId
+	esProduct.ProductCategoryId = productCategoryId
+	query, Sort, err := esProduct.SearchByNameOrSubtitle(sort)
+	if err != nil {
+		return nil, err
+	}
+	// 分页
+	page := internal.NewElasticSearchPage(p.DbFactory.Es, esProduct.IndexName(), pageNum, pageSize)
+	page.SearchRequest = &search.Request{
+		Query: query,
+		Sort:  Sort,
+	}
+	err = page.Paginate()
+	if err != nil {
+		return nil, err
+	}
+	return page.CommonPage, nil
+}
+
+func (p ProductSearchService) SearchById(id int64, pageNum, pageSize int) (*pkg.CommonPage, error) {
+	esProduct := new(es_index.EsProduct)
+	esProduct.Id = id
+	query, err := esProduct.SearchById()
+	if err != nil {
+		return nil, err
+	}
+	// 分页
+	page := internal.NewElasticSearchPage(p.DbFactory.Es, esProduct.IndexName(), pageNum, pageSize)
+	page.SearchRequest = &search.Request{
+		Query: query,
+	}
+	err = page.Paginate()
+	if err != nil {
+		return nil, err
+	}
+	return page.CommonPage, nil
 }

@@ -35,6 +35,8 @@ func (router *ProductSearchRouter) GroupProductRouter(searchGroup *gin.RouterGro
 		searchGroup.POST("/importAll", router.importAll)
 		// 根据id删除商品
 		searchGroup.GET("/delete/:id", router.delete)
+		// 根据商品id推荐商品
+		searchGroup.GET("/recommend/:id", router.recommend)
 	}
 }
 
@@ -47,13 +49,13 @@ func (router *ProductSearchRouter) GroupProductRouter(searchGroup *gin.RouterGro
 // @Security 		GinJWTMiddleware
 // @Success		200	{object}	gin_common.GinCommonResponse
 // @Router			/product/importAll [post]
-func (router *ProductSearchRouter) importAll(c *gin.Context) {
+func (router *ProductSearchRouter) importAll(context *gin.Context) {
 	err := router.ProductSearchService.ImportAll()
 	if err != nil {
-		gin_common.CreateFail(c, err.Error())
+		gin_common.CreateFail(context, err.Error())
 		return
 	}
-	gin_common.Create(c)
+	gin_common.Create(context)
 }
 
 // delete 根据id删除商品
@@ -66,13 +68,36 @@ func (router *ProductSearchRouter) importAll(c *gin.Context) {
 // @Security 	GinJWTMiddleware
 // @Success		200	{object}	gin_common.GinCommonResponse
 // @Router		/product/delete/{id} [get]
-func (router *ProductSearchRouter) delete(c *gin.Context) {
+func (router *ProductSearchRouter) delete(context *gin.Context) {
 	var pathVariableDTO base_dto.PathVariableDTO
-	err := c.BindUri(&pathVariableDTO)
+	err := context.BindUri(&pathVariableDTO)
 	if err != nil {
-		gin_common.CreateFail(c, gin_common.ParameterValidationError)
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return
 	}
 	rows, _ := router.ProductSearchService.Delete(pathVariableDTO.Id)
-	gin_common.CreateSuccess(c, rows)
+	gin_common.CreateSuccess(context, rows)
+}
+
+// recommend 根据商品id推荐商品
+// @Summary		根据商品id推荐商品
+// @Description	根据商品id推荐商品
+// @Tags		搜索商品管理
+// @Accept		application/json
+// @Produce		application/json
+// @Param		id	path	int	true	"id"
+// @Security 	GinJWTMiddleware
+// @Success		200	{object}	gin_common.GinCommonResponse
+// @Router		/product/recommend/{id} [get]
+func (router *ProductSearchRouter) recommend(context *gin.Context) {
+	var pathVariableDTO base_dto.PathVariableDTO
+	var pageDTO base_dto.PageDTO
+	err := context.BindUri(&pathVariableDTO)
+	err = context.BindQuery(&pageDTO)
+	if err != nil {
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
+		return
+	}
+	page, _ := router.ProductSearchService.SearchById(pathVariableDTO.Id, pageDTO.PageNum, pageDTO.PageSize)
+	gin_common.CreateSuccess(context, page)
 }
