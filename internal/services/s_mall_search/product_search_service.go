@@ -8,8 +8,10 @@ package s_mall_search
 
 import (
 	"context"
-	"github.com/hongjun500/mall-go/internal"
 	"strconv"
+
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
+	"github.com/hongjun500/mall-go/internal"
 
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/es_index"
@@ -33,22 +35,33 @@ func (p ProductSearchService) ImportAll() error {
 	}
 	var esProduct es_index.EsProduct
 	esProducts := es_index.ConvertEsProductFromPmsProduct(pmsProducts)
+	// 判断索引是否存在
+	if !internal.HasIndex(p.DbFactory.Es, context.Background(), esProduct.IndexName()) {
+		// 创建索引
+		settings := &types.IndexSettings{NumberOfShards: "1", NumberOfReplicas: "0"}
+		internal.CreateIndex(p.DbFactory.Es, context.Background(), esProduct.IndexName(), settings)
+	}
+	// 创建 mapping
+	internal.PutMappingByStruct(p.DbFactory.Es, context.Background(), esProduct.IndexName(), es_index.EsProduct{})
 
-	// 将 esProducts 导入到 es
-	esProduct.PutEsProductsDocument(p.DbFactory, esProducts)
+	internal.BulkAddDocument(p.DbFactory.Es, context.Background(), esProduct.IndexName(), esProducts)
+
 	return nil
 }
 
 // Delete 根据 id 删除商品
 func (p ProductSearchService) Delete(id int64) (bool, error) {
 	esProduct := new(es_index.EsProduct)
-	return esProduct.DelDocument(p.DbFactory, id), nil
+
+	ok := internal.DeleteDocument(p.DbFactory.Es, context.Background(), esProduct.IndexName(), id)
+	return ok, nil
 }
 
 // DeleteBatch 根据 id 批量删除商品
 func (p ProductSearchService) DeleteBatch(ids []int64) (bool, error) {
 	esProduct := new(es_index.EsProduct)
-	return esProduct.DelDocuments(p.DbFactory, ids), nil
+	ok := internal.BulkDeleteDocument(p.DbFactory.Es, context.Background(), esProduct.IndexName(), ids)
+	return ok, nil
 }
 
 // Create 根据id创建商品
@@ -61,7 +74,7 @@ func (p ProductSearchService) Create(id int64) (*es_index.EsProduct, error) {
 	}
 	esProducts := es_index.ConvertEsProductFromPmsProduct(pmsProducts)
 	esProduct = esProducts[0]
-	internal.CreateDocument(p.DbFactory, context.Background(), esProduct.IndexName(), strconv.Itoa(int(esProduct.Id)), esProduct)
+	internal.CreateDocument(p.DbFactory.Es, context.Background(), esProduct.IndexName(), strconv.Itoa(int(esProduct.Id)), esProduct)
 	return esProduct, nil
 }
 

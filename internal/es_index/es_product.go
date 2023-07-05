@@ -7,17 +7,15 @@
 package es_index
 
 import (
-	"context"
+	"fmt"
+	"strconv"
 
-	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/some"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/functionscoremode"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/sortorder"
-	"github.com/hongjun500/mall-go/internal"
-	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/models"
-	"github.com/hongjun500/mall-go/pkg"
+	"github.com/hongjun500/mall-go/pkg/convert"
 )
 
 type EsProduct struct {
@@ -56,6 +54,7 @@ func (*EsProduct) IndexName() string {
 
 // ConvertEsProductFromPmsProduct 将从数据库中查询的 pmsProduct 结果 转换为 esProduct
 func ConvertEsProductFromPmsProduct(pmsProducts []*models.PmsProduct) []*EsProduct {
+
 	if pmsProducts == nil {
 		return nil
 	}
@@ -96,95 +95,73 @@ func ConvertEsProductFromPmsProduct(pmsProducts []*models.PmsProduct) []*EsProdu
 	return esProducts
 }
 
-// PutEsProductsDocument 将 esProducts 存入 es 文档
-func (esProduct *EsProduct) PutEsProductsDocument(db *database.DbFactory, esProducts []*EsProduct) {
-	// 判断索引是否存在
-	if !internal.HasIndex(db, context.Background(), esProduct.IndexName()) {
-		// 创建索引
-		settings := &types.IndexSettings{NumberOfShards: "1", NumberOfReplicas: "0"}
-		internal.CreateIndex(db, context.Background(), esProduct.IndexName(), settings)
-	}
-	// 创建 mapping
-	internal.PutMappingByStruct(db, context.Background(), esProduct.IndexName(), EsProduct{})
-
-	internal.BulkAddDocument(db, context.Background(), esProduct.IndexName(), esProducts)
-}
-
-func (esProduct *EsProduct) DelDocument(db *database.DbFactory, id int64) bool {
-	ok := internal.DeleteDocument(db, context.Background(), esProduct.IndexName(), id)
-	return ok
-}
-
-func (esProduct *EsProduct) DelDocuments(db *database.DbFactory, ids []int64) bool {
-	ok := internal.BulkDeleteDocument(db, context.Background(), esProduct.IndexName(), ids)
-	return ok
-}
-
-// SearchByNameOrSubtitleOrKeyword 根据名称或副标题或关键字搜索
-func (esProduct *EsProduct) SearchByNameOrSubtitleOrKeyword(db *database.DbFactory, keyword string, pageNum, pageSize int) (*pkg.CommonPage, error) {
+// SearchByNameOrSubtitleOrKeyword 根据名称或副标题或关键字搜索 构建DSL语句
+func (esProduct *EsProduct) SearchByNameOrSubtitleOrKeyword() (*types.Query, error) {
 	// or 用 bool 的 should 来实现
 	query := []types.Query{
 		{
 			Match: map[string]types.MatchQuery{
 				"name": {
-					Query: keyword,
+					Query: esProduct.KeyWord,
 				},
 			},
 		},
 		{
 			Match: map[string]types.MatchQuery{
 				"subTitle": {
-					Query: keyword,
+					Query: esProduct.KeyWord,
 				},
 			},
 		},
 		{
 			Match: map[string]types.MatchQuery{
 				"keyWord": {
-					Query: keyword,
+					Query: esProduct.KeyWord,
 				},
 			},
 		},
 	}
-	searchRequest := &search.Request{
-		Query: &types.Query{
-			Bool: &types.BoolQuery{
-				Should: query,
-			},
+	DSL := &types.Query{
+		Bool: &types.BoolQuery{
+			Should: query,
 		},
 	}
-	page := internal.NewElasticSearchPage(db.Es, esProduct.IndexName(), pageNum, pageSize)
-	page.SearchRequest = searchRequest
-	err := page.Paginate()
-	if err != nil {
-		return nil, err
-	}
-	return page.CommonPage, nil
+	fmt.Println("DSL", DSL)
+	return DSL, nil
+	/*
+
+		page := internal.NewElasticSearchPage(es, esProduct.IndexName(), pageNum, pageSize)
+		page.SearchRequest = searchRequest
+		err := page.Paginate()
+		if err != nil {
+			return nil, err
+		}
+		return page.CommonPage, nil*/
 }
 
-// SearchByNameOrSubtitle 根据关键字搜索名称或者副标题复合查询
-func (esProduct *EsProduct) SearchByNameOrSubtitle(db *database.DbFactory, keyword string, brandId, productCategoryId int64, pageNum, pageSize, sort int) (*pkg.CommonPage, error) {
-	page := internal.NewElasticSearchPage(db.Es, esProduct.IndexName(), pageNum, pageSize)
+// SearchByNameOrSubtitle 根据关键字搜索名称或者副标题复合查询并排序 构建DSL语句
+func (esProduct *EsProduct) SearchByNameOrSubtitle(sort int) (*types.Query, types.Sort, error) {
+	// page := internal.NewElasticSearchPage(es, esProduct.IndexName(), pageNum, pageSize)
 	query := types.Query{}
 	filters := make([]types.Query, 0)
 
-	if brandId != 0 || productCategoryId != 0 {
-		if brandId != 0 {
+	if esProduct.BrandId != 0 || esProduct.ProductCategoryId != 0 {
+		if esProduct.BrandId != 0 {
 			filters = append(filters, types.Query{
 				Term: map[string]types.TermQuery{
-					"brandId": {Value: brandId},
+					"brandId": {Value: esProduct.BrandId},
 				},
 			})
 		}
-		if productCategoryId != 0 {
+		if esProduct.ProductCategoryId != 0 {
 			filters = append(filters, types.Query{
 				Term: map[string]types.TermQuery{
-					"productCategoryId": {Value: productCategoryId},
+					"productCategoryId": {Value: esProduct.ProductCategoryId},
 				},
 			})
 		}
 	}
-	if keyword == "" {
+	if esProduct.KeyWord == "" {
 		// 没有关键字，直接查询
 		query = types.Query{
 			MatchAll: &types.MatchAllQuery{},
@@ -200,7 +177,7 @@ func (esProduct *EsProduct) SearchByNameOrSubtitle(db *database.DbFactory, keywo
 				{
 					Filter: &types.Query{
 						Match: map[string]types.MatchQuery{
-							"name": {Query: keyword},
+							"name": {Query: esProduct.KeyWord},
 						},
 					},
 					Weight: (*types.Float64)(some.Float64(10)),
@@ -208,7 +185,7 @@ func (esProduct *EsProduct) SearchByNameOrSubtitle(db *database.DbFactory, keywo
 				{
 					Filter: &types.Query{
 						Match: map[string]types.MatchQuery{
-							"subTitle": {Query: keyword},
+							"subTitle": {Query: esProduct.KeyWord},
 						},
 					},
 					Weight: (*types.Float64)(some.Float64(5)),
@@ -216,7 +193,7 @@ func (esProduct *EsProduct) SearchByNameOrSubtitle(db *database.DbFactory, keywo
 				{
 					Filter: &types.Query{
 						Match: map[string]types.MatchQuery{
-							"keywords": {Query: keyword},
+							"keywords": {Query: esProduct.KeyWord},
 						},
 					},
 					Weight: (*types.Float64)(some.Float64(2)),
@@ -264,7 +241,7 @@ func (esProduct *EsProduct) SearchByNameOrSubtitle(db *database.DbFactory, keywo
 		}
 	}
 
-	page.SearchRequest = &search.Request{
+	/*page.SearchRequest = &search.Request{
 		Query: &types.Query{
 			Bool: &types.BoolQuery{
 				Must:   append([]types.Query{}, query),
@@ -272,10 +249,172 @@ func (esProduct *EsProduct) SearchByNameOrSubtitle(db *database.DbFactory, keywo
 			},
 		},
 		Sort: options,
+	}*/
+	DSL := &types.Query{
+		Bool: &types.BoolQuery{
+			Must:   append([]types.Query{}, query),
+			Filter: filters,
+		},
 	}
-	err := page.Paginate()
+	Sort := options
+	fmt.Println("DSL", convert.AnyToJson(DSL))
+	return DSL, Sort, nil
+	/*err := page.Paginate()
 	if err != nil {
 		return nil, err
 	}
-	return page.CommonPage, nil
+	return page.CommonPage, nil*/
+}
+
+// SearchById 根据商品id搜索 用于推荐同类商品 构建DSL语句
+func (esProduct *EsProduct) SearchById() (*types.Query, error) {
+	if esProduct.Id == 0 {
+		return nil, nil
+	} else {
+		keyword := esProduct.Name
+		brandId := esProduct.BrandId
+		productCategoryId := esProduct.ProductCategoryId
+		// 根据商品标题、品牌、分类进行搜索
+		scoreQuery := types.FunctionScoreQuery{
+			Query: &types.Query{
+				MatchAll: types.NewMatchAllQuery(),
+			},
+			ScoreMode: &functionscoremode.Sum,
+			MinScore:  (*types.Float64)(some.Float64(2)),
+			Functions: []types.FunctionScore{
+				{
+					Filter: &types.Query{
+						Match: map[string]types.MatchQuery{
+							"name": {Query: keyword},
+						},
+					},
+					Weight: (*types.Float64)(some.Float64(8)),
+				},
+				{
+					Filter: &types.Query{
+						Match: map[string]types.MatchQuery{
+							"subTitle": {Query: keyword},
+						},
+					},
+					Weight: (*types.Float64)(some.Float64(2)),
+				},
+				{
+					Filter: &types.Query{
+						Match: map[string]types.MatchQuery{
+							"keywords": {Query: keyword},
+						},
+					},
+					Weight: (*types.Float64)(some.Float64(2)),
+				},
+				{
+					Filter: &types.Query{
+						Match: map[string]types.MatchQuery{
+							"brandId": {Query: strconv.FormatInt(brandId, 10)},
+						},
+					},
+					Weight: (*types.Float64)(some.Float64(5)),
+				},
+				{
+					Filter: &types.Query{
+						Match: map[string]types.MatchQuery{
+							"productCategoryId": {Query: strconv.FormatInt(productCategoryId, 10)},
+						},
+					},
+					Weight: (*types.Float64)(some.Float64(3)),
+				},
+			},
+		}
+
+		boolQuery := types.NewBoolQuery()
+		boolQuery.MustNot = []types.Query{
+			{
+				Term: map[string]types.TermQuery{
+					"id": {Value: strconv.FormatInt(esProduct.Id, 10)},
+				},
+			},
+		}
+		DSL := &types.Query{
+			Bool: &types.BoolQuery{
+				Filter: []types.Query{
+					{
+						Bool: boolQuery,
+					},
+				},
+				Must: []types.Query{
+					{
+						FunctionScore: &scoreQuery,
+					},
+				},
+			},
+		}
+		fmt.Println("DSL", convert.AnyToJson(DSL))
+		return DSL, nil
+	}
+}
+
+// SearchByKeyword 根据关键字搜索 (聚合搜索品牌、分类、属性)
+func (esProduct *EsProduct) SearchByKeyword() (*types.Query, *types.Aggregations, error) {
+	query := types.NewQuery()
+	if esProduct.KeyWord == "" {
+		query = &types.Query{
+			MatchAll: types.NewMatchAllQuery(),
+		}
+	} else {
+		query = &types.Query{
+			MultiMatch: &types.MultiMatchQuery{
+				Fields: []string{"name", "subTitle", "keywords"},
+			},
+		}
+	}
+	Aggregations := &types.Aggregations{
+		Aggregations: map[string]types.Aggregations{
+			"brandNames": {
+				Terms: &types.TermsAggregation{
+					Field: some.String("brandId"),
+				},
+			},
+			"productCategoryNames": {
+				Terms: &types.TermsAggregation{
+					Field: some.String("productCategoryId"),
+				},
+			},
+
+			"productAttrs": {
+				Nested: &types.NestedAggregation{
+					// 定义的名称
+					Name: some.String("allAttrValues"),
+					Path: some.String("allAttrValues"),
+				},
+				Filter: &types.Query{
+					Term: map[string]types.TermQuery{
+						"type": {Value: "1"},
+					},
+				},
+
+				Aggregations: map[string]types.Aggregations{
+					"attrIds": {
+						Terms: &types.TermsAggregation{
+							Field: some.String("allAttrValues.productAttributeId"),
+						},
+						Aggregations: map[string]types.Aggregations{
+							"attrValues": {
+								Terms: &types.TermsAggregation{
+									Field: some.String("allAttrValues.value"),
+								},
+								Aggregations: map[string]types.Aggregations{
+									"attrName": {
+										Terms: &types.TermsAggregation{
+											Field: some.String("allAttrValues.name"),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	DSL := query
+	return DSL, Aggregations, nil
 }

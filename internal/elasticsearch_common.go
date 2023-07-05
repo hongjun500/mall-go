@@ -118,8 +118,8 @@ func GetStructTag(t any) esTags {
 }
 
 // HasIndex 索引是否存在
-func HasIndex(db *database.DbFactory, ctx context.Context, index string) bool {
-	success, err := db.Es.TypedCli.Indices.Exists(index).IsSuccess(ctx)
+func HasIndex(es *database.Es, ctx context.Context, index string) bool {
+	success, err := es.TypedCli.Indices.Exists(index).IsSuccess(ctx)
 	if err != nil {
 		log.Printf("has index error: %v", err.Error())
 		return false
@@ -128,7 +128,7 @@ func HasIndex(db *database.DbFactory, ctx context.Context, index string) bool {
 }
 
 // CreateIndex 创建索引
-func CreateIndex(db *database.DbFactory, ctx context.Context, params ...any) bool {
+func CreateIndex(es *database.Es, ctx context.Context, params ...any) bool {
 	index := params[0].(string)
 	creq := create.NewRequest()
 	var settings *types.IndexSettings
@@ -142,7 +142,7 @@ func CreateIndex(db *database.DbFactory, ctx context.Context, params ...any) boo
 	}
 	creq.Settings = settings
 	creq.Mappings = mappings
-	res, err := db.Es.TypedCli.Indices.Create(index).Request(creq).Do(ctx)
+	res, err := es.TypedCli.Indices.Create(index).Request(creq).Do(ctx)
 	if err != nil {
 		log.Printf("create index error: %v", err.Error())
 		return false
@@ -208,7 +208,7 @@ func processStructTag(property map[string]types.Property, value any) {
 }
 
 // PutMappingByStruct 根据结构体更新 mapping
-func PutMappingByStruct(db *database.DbFactory, ctx context.Context, params ...any) bool {
+func PutMappingByStruct(es *database.Es, ctx context.Context, params ...any) bool {
 	index := params[0].(string)
 	// mappings := params[1].(*types.TypeMapping)
 	t := params[1]
@@ -219,7 +219,7 @@ func PutMappingByStruct(db *database.DbFactory, ctx context.Context, params ...a
 
 	putreq := putmapping.NewRequest()
 	putreq.Properties = property
-	_, err := db.Es.TypedCli.Indices.PutMapping(index).Request(putreq).Do(ctx)
+	_, err := es.TypedCli.Indices.PutMapping(index).Request(putreq).Do(ctx)
 	if err != nil {
 		log.Printf("put mapping error: %v", err.Error())
 		return false
@@ -228,8 +228,8 @@ func PutMappingByStruct(db *database.DbFactory, ctx context.Context, params ...a
 }
 
 // DeleteIndex 删除索引
-func DeleteIndex(db *database.DbFactory, ctx context.Context, index string) bool {
-	_, err := db.Es.TypedCli.Indices.Delete(index).Do(ctx)
+func DeleteIndex(es *database.Es, ctx context.Context, index string) bool {
+	_, err := es.TypedCli.Indices.Delete(index).Do(ctx)
 	if err != nil {
 		log.Printf("delete index error: %v", err.Error())
 		return false
@@ -238,11 +238,11 @@ func DeleteIndex(db *database.DbFactory, ctx context.Context, index string) bool
 }
 
 // CreateDocument 添加单个文档
-func CreateDocument(db *database.DbFactory, ctx context.Context, params ...any) bool {
+func CreateDocument(es *database.Es, ctx context.Context, params ...any) bool {
 	index := params[0].(string)
 	id := params[1].(string)
 	body := params[2].(any)
-	res, err := db.Es.TypedCli.Index(index).Id(id).Request(body).Do(ctx)
+	res, err := es.TypedCli.Index(index).Id(id).Request(body).Do(ctx)
 	if err != nil {
 		log.Printf("add document error: %v", err.Error())
 		return false
@@ -251,7 +251,7 @@ func CreateDocument(db *database.DbFactory, ctx context.Context, params ...any) 
 }
 
 // BulkAddDocument 批量添加文档
-func BulkAddDocument(db *database.DbFactory, ctx context.Context, params ...any) bool {
+func BulkAddDocument(es *database.Es, ctx context.Context, params ...any) bool {
 	index := params[0].(string)
 	body := params[1].(any)
 
@@ -275,7 +275,7 @@ func BulkAddDocument(db *database.DbFactory, ctx context.Context, params ...any)
 		by = append(by, []byte("\n")...)
 		bodyStr += string(by)
 	}
-	res, err := db.Es.Cli.Bulk(bytes.NewReader([]byte(bodyStr)), db.Es.Cli.Bulk.WithIndex(index))
+	res, err := es.Cli.Bulk(bytes.NewReader([]byte(bodyStr)), es.Cli.Bulk.WithIndex(index))
 	if err != nil {
 		log.Printf("bulk add document error: %v", err.Error())
 		return false
@@ -286,13 +286,13 @@ func BulkAddDocument(db *database.DbFactory, ctx context.Context, params ...any)
 }
 
 // UpdateDocument 根据文档 id 更新文档
-func UpdateDocument(db *database.DbFactory, ctx context.Context, params ...any) bool {
+func UpdateDocument(es *database.Es, ctx context.Context, params ...any) bool {
 	index := params[0].(string)
 	id := params[1].(string)
 	body := params[2].(any)
 
 	toJson := convert.AnyToJson(body)
-	res, err := db.Es.TypedCli.Update(index, id).Raw(bytes.NewReader([]byte(toJson))).Do(ctx)
+	res, err := es.TypedCli.Update(index, id).Raw(bytes.NewReader([]byte(toJson))).Do(ctx)
 	if err != nil {
 		log.Printf("update document error: %v", err.Error())
 		return false
@@ -301,10 +301,10 @@ func UpdateDocument(db *database.DbFactory, ctx context.Context, params ...any) 
 }
 
 // DeleteDocument 根据文档 id 删除文档
-func DeleteDocument(db *database.DbFactory, ctx context.Context, params ...any) bool {
+func DeleteDocument(es *database.Es, ctx context.Context, params ...any) bool {
 	index := params[0].(string)
 	id := params[1].(string)
-	res, err := db.Es.TypedCli.Delete(index, id).Do(ctx)
+	res, err := es.TypedCli.Delete(index, id).Do(ctx)
 	if err != nil {
 		log.Printf("delete document error: %v", err.Error())
 		return false
@@ -313,7 +313,7 @@ func DeleteDocument(db *database.DbFactory, ctx context.Context, params ...any) 
 }
 
 // BulkDeleteDocument 批量删除文档
-func BulkDeleteDocument(db *database.DbFactory, ctx context.Context, params ...any) bool {
+func BulkDeleteDocument(es *database.Es, ctx context.Context, params ...any) bool {
 	index := params[0].(string)
 	body := params[1].(any)
 
@@ -333,7 +333,7 @@ func BulkDeleteDocument(db *database.DbFactory, ctx context.Context, params ...a
 		meta := []byte(fmt.Sprintf(`{ "delete" : { "_id" : "%d" } }%s`, m["id"], "\n"))
 		bodyStr += string(meta)
 	}
-	res, err := db.Es.Cli.Bulk(bytes.NewReader([]byte(bodyStr)), db.Es.Cli.Bulk.WithIndex(index))
+	res, err := es.Cli.Bulk(bytes.NewReader([]byte(bodyStr)), es.Cli.Bulk.WithIndex(index))
 	if err != nil {
 		log.Printf("bulk delete document error: %v", err.Error())
 		return false
@@ -344,12 +344,12 @@ func BulkDeleteDocument(db *database.DbFactory, ctx context.Context, params ...a
 }
 
 // SearchDocument 根据索引名 index 和 search.Request 条件查询文档
-func SearchDocument(db *database.DbFactory, ctx context.Context, params ...any) (any, error) {
+func SearchDocument(es *database.Es, ctx context.Context, params ...any) (any, error) {
 	index := params[0].(string)
 	body := params[1].(*search.Request)
 	log.Printf("search document DSL: %v", body.Query.QueryString)
 	start := time.Now()
-	res, err := db.Es.TypedCli.Search().Index(index).Request(body).Do(ctx)
+	res, err := es.TypedCli.Search().Index(index).Request(body).Do(ctx)
 	if err != nil {
 		log.Printf("search document error: %v", err.Error())
 		return nil, err
