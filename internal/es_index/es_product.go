@@ -165,37 +165,35 @@ func (esProduct *EsProduct) SearchByNameOrSubtitleOrKeyword(db *database.DbFacto
 // SearchByNameOrSubtitle 根据关键字搜索名称或者副标题复合查询
 func (esProduct *EsProduct) SearchByNameOrSubtitle(db *database.DbFactory, keyword string, brandId, productCategoryId int64, pageNum, pageSize, sort int) (*pkg.CommonPage, error) {
 	page := internal.NewElasticSearchPage(db.Es, esProduct.IndexName(), pageNum, pageSize)
-	query := types.NewQuery()
+	query := types.Query{}
+	filters := make([]types.Query, 0)
+
 	if brandId != 0 || productCategoryId != 0 {
-		boolQuery := types.NewBoolQuery()
 		if brandId != 0 {
-			boolQuery.Must = append(boolQuery.Must, types.Query{
+			filters = append(filters, types.Query{
 				Term: map[string]types.TermQuery{
 					"brandId": {Value: brandId},
 				},
 			})
-
 		}
 		if productCategoryId != 0 {
-			boolQuery.Must = append(boolQuery.Must, types.Query{
+			filters = append(filters, types.Query{
 				Term: map[string]types.TermQuery{
 					"productCategoryId": {Value: productCategoryId},
 				},
 			})
 		}
-		boolQuery.Filter = append(boolQuery.Filter, boolQuery.Must...)
-		boolQuery.Must = nil
-		query.Bool = boolQuery
 	}
 	if keyword == "" {
 		// 没有关键字，直接查询
-		page.SearchRequest = &search.Request{
-			Query: &types.Query{
-				MatchAll: &types.MatchAllQuery{},
-			},
+		query = types.Query{
+			MatchAll: &types.MatchAllQuery{},
 		}
 	} else {
-		scoreQuery := &types.FunctionScoreQuery{
+		scoreQuery := types.FunctionScoreQuery{
+			Query: &types.Query{
+				MatchAll: types.NewMatchAllQuery(),
+			},
 			ScoreMode: &functionscoremode.Sum,
 			MinScore:  (*types.Float64)(some.Float64(2)),
 			Functions: []types.FunctionScore{
@@ -225,11 +223,10 @@ func (esProduct *EsProduct) SearchByNameOrSubtitle(db *database.DbFactory, keywo
 				},
 			},
 		}
-		query.Bool.Must = []types.Query{
-			{
-				FunctionScore: scoreQuery,
-			},
+		queryScore := types.Query{
+			FunctionScore: &scoreQuery,
 		}
+		query = queryScore
 	}
 	// 相关度排序
 	var options []types.SortCombinations
@@ -266,9 +263,15 @@ func (esProduct *EsProduct) SearchByNameOrSubtitle(db *database.DbFactory, keywo
 			types.SortOptions{Score_: &types.ScoreSort{Order: &sortorder.Desc}},
 		}
 	}
+
 	page.SearchRequest = &search.Request{
-		Query: query,
-		Sort:  options,
+		Query: &types.Query{
+			Bool: &types.BoolQuery{
+				Must:   append([]types.Query{}, query),
+				Filter: filters,
+			},
+		},
+		Sort: options,
 	}
 	err := page.Paginate()
 	if err != nil {

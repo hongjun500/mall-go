@@ -192,7 +192,7 @@ func TestElasticSearchPage2(t *testing.T) {
 }
 func TestSearchByNameOrSubtitle(t *testing.T) {
 	esProduct := new(es_index.EsProduct)
-	page, err := esProduct.SearchByNameOrSubtitle(dbFactory, "小米", 1, 2, 1, 2000, 1)
+	page, err := esProduct.SearchByNameOrSubtitle(dbFactory, "小米", 0, 0, 1, 5, 1)
 	if err != nil {
 		return
 	}

@@ -64,7 +64,7 @@ func (page *ElasticSearchPage) Paginate() error {
 		}
 
 	}
-	log.Println("Paginate.searchRequest-DSL:", page.SearchRequest.Query.QueryString)
+	log.Println("Paginate.searchRequest-DSL:", page.SearchRequest.Query)
 	offset := (page.PageNum - 1) * page.PageSize
 	page.SearchRequest.From = some.Int(offset)
 	page.SearchRequest.Size = some.Int(page.PageSize)
