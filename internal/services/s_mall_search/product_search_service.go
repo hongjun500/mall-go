@@ -11,6 +11,7 @@ import (
 	"strconv"
 
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/some"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/hongjun500/mall-go/internal"
 	"github.com/hongjun500/mall-go/pkg"
@@ -31,7 +32,7 @@ func NewProductSearchService(dbFactory *database.DbFactory) ProductSearchService
 // ImportAll 将所有商品导入到 es
 func (p ProductSearchService) ImportAll() error {
 	var product models.PmsProduct
-	pmsProducts, err := product.GetProductInfoById(p.DbFactory, 0)
+	pmsProducts, err := product.SelectProductInfoById(p.DbFactory, 0)
 	if err != nil {
 		return err
 	}
@@ -70,7 +71,7 @@ func (p ProductSearchService) DeleteBatch(ids []int64) (bool, error) {
 func (p ProductSearchService) Create(id int64) (*es_index.EsProduct, error) {
 	esProduct := new(es_index.EsProduct)
 	var product models.PmsProduct
-	pmsProducts, err := product.GetProductInfoById(p.DbFactory, id)
+	pmsProducts, err := product.SelectProductInfoById(p.DbFactory, id)
 	if err != nil {
 		return esProduct, err
 	}
@@ -98,7 +99,7 @@ func (p ProductSearchService) SearchByNameOrSubtitleOrKeyword(keyword string, pa
 }
 
 // SearchByNameOrSubtitle 根据关键字或者副标题进行复合查询
-func (p ProductSearchService) SearchByNameOrSubtitle(keyword string, brandId int64, productCategoryId int64, pageNum, sort, pageSize int) (*pkg.CommonPage, error) {
+func (p ProductSearchService) SearchByNameOrSubtitle(keyword string, brandId int64, productCategoryId int64, sort, pageNum, pageSize int) (*pkg.CommonPage, error) {
 	esProduct := new(es_index.EsProduct)
 	esProduct.KeyWord = keyword
 	esProduct.BrandId = brandId
@@ -120,8 +121,16 @@ func (p ProductSearchService) SearchByNameOrSubtitle(keyword string, brandId int
 	return page.CommonPage, nil
 }
 
+// SearchById 根据商品id推荐商品
 func (p ProductSearchService) SearchById(id int64, pageNum, pageSize int) (*pkg.CommonPage, error) {
+	product := new(models.PmsProduct)
+	products, err := product.SelectProductInfoById(p.DbFactory, id)
+	if err != nil {
+		return nil, err
+	}
 	esProduct := new(es_index.EsProduct)
+	esProducts := es_index.ConvertEsProductFromPmsProduct(products)
+	esProduct = esProducts[0]
 	esProduct.Id = id
 	query, err := esProduct.SearchById()
 	if err != nil {
@@ -137,4 +146,28 @@ func (p ProductSearchService) SearchById(id int64, pageNum, pageSize int) (*pkg.
 		return nil, err
 	}
 	return page.CommonPage, nil
+}
+
+// SearchRelate 获取搜索的相关品牌、分类及筛选属性
+func (p ProductSearchService) SearchRelate(keyword string) (any, error) {
+	esProduct := new(es_index.EsProduct)
+	esProduct.KeyWord = keyword
+	query, aggregations, err := esProduct.SearchRelatedInfo()
+	if err != nil {
+		return nil, err
+	}
+	searchRequest := &search.Request{
+		Aggregations: aggregations,
+		Query:        query,
+		Size:         some.Int(0),
+	}
+	searchAggregations, err := internal.SearchAggregations(p.DbFactory.Es, context.Background(), esProduct.IndexName(), searchRequest)
+	if err != nil {
+		return nil, err
+	}
+	esProductRelatedInfo, err := es_index.ConvertProductRelatedInfo(searchAggregations)
+	if err != nil {
+		return nil, err
+	}
+	return esProductRelatedInfo, nil
 }

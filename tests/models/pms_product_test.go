@@ -12,12 +12,12 @@ import (
 	"github.com/hongjun500/mall-go/internal/models"
 )
 
-func TestGetProductInfoById(t *testing.T) {
+func TestSelectProductInfoById(t *testing.T) {
 	var product models.PmsProduct
-	pmsProducts, err := product.GetProductInfoById(TestModelDbFactory, 0)
+	pmsProducts, err := product.SelectProductInfoById(TestModelDbFactory, 0)
 	if err != nil {
-		t.Errorf("GetProductInfoById() error = %v", err)
+		t.Errorf("SelectProductInfoById() error = %v", err)
 		return
 	}
-	t.Logf("GetProductInfoById() got = %v", pmsProducts)
+	t.Logf("SelectProductInfoById() got = %v", pmsProducts)
 }

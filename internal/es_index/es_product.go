@@ -8,6 +8,7 @@ package es_index
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/elastic/go-elasticsearch/v8/typedapi/some"
@@ -18,6 +19,7 @@ import (
 	"github.com/hongjun500/mall-go/pkg/convert"
 )
 
+// EsProduct 商品 索引
 type EsProduct struct {
 	Id                  int64                     `json:"id" es_type:"long"`
 	ProductSn           string                    `json:"productSn" es_type:"keyword"`
@@ -36,15 +38,29 @@ type EsProduct struct {
 	Stock               int                       `json:"stock" es_type:"integer"`
 	PromotionType       int                       `json:"promotionType" es_type:"integer"`
 	Sort                int                       `json:"sort" es_type:"integer"`
-	AttrValues          []EsProductAttributeValue `json:"attrValueList" es_type:"nested"`
+	AttrValues          []EsProductAttributeValue `json:"attrValues" es_type:"nested"`
 }
 
+// EsProductAttributeValue 商品属性值 索引
 type EsProductAttributeValue struct {
 	Id                 int64  `json:"id" es_type:"long"`
-	ProductAttributeId int64  `json:"productId" es_type:"long"`
+	ProductAttributeId int64  `json:"productAttributeId" es_type:"long"`
 	Value              string `json:"value" es_type:"keyword"`
 	Type               int    `json:"type" es_type:"integer"`
 	Name               string `json:"name" es_type:"keyword"`
+}
+
+// EsProductRelatedInfo 商品属性相关，用于 Aggregation 查询之后的结果
+type EsProductRelatedInfo struct {
+	BrandNames           []string      `json:"brandNames"`
+	ProductCategoryNames []string      `json:"productCategoryNames"`
+	ProductAttrs         []ProductAttr `json:"productAttrs"`
+}
+
+type ProductAttr struct {
+	AttrId     int64    `json:"attrId"`
+	AttrName   string   `json:"attrName"`
+	AttrValues []string `json:"attrValues"`
 }
 
 // IndexName 索引名称
@@ -352,8 +368,8 @@ func (esProduct *EsProduct) SearchById() (*types.Query, error) {
 	}
 }
 
-// SearchByKeyword 根据关键字搜索 (聚合搜索品牌、分类、属性)
-func (esProduct *EsProduct) SearchByKeyword() (*types.Query, *types.Aggregations, error) {
+// SearchRelatedInfo 根据关键字搜索 (聚合搜索品牌、分类、属性)
+func (esProduct *EsProduct) SearchRelatedInfo() (*types.Query, map[string]types.Aggregations, error) {
 	query := types.NewQuery()
 	if esProduct.KeyWord == "" {
 		query = &types.Query{
@@ -363,49 +379,55 @@ func (esProduct *EsProduct) SearchByKeyword() (*types.Query, *types.Aggregations
 		query = &types.Query{
 			MultiMatch: &types.MultiMatchQuery{
 				Fields: []string{"name", "subTitle", "keywords"},
+				Query:  esProduct.KeyWord,
 			},
 		}
 	}
-	Aggregations := &types.Aggregations{
-		Aggregations: map[string]types.Aggregations{
-			"brandNames": {
-				Terms: &types.TermsAggregation{
-					Field: some.String("brandId"),
-				},
-			},
-			"productCategoryNames": {
-				Terms: &types.TermsAggregation{
-					Field: some.String("productCategoryId"),
-				},
-			},
 
-			"productAttrs": {
-				Nested: &types.NestedAggregation{
-					// 定义的名称
-					Name: some.String("allAttrValues"),
-					Path: some.String("allAttrValues"),
-				},
-				Filter: &types.Query{
-					Term: map[string]types.TermQuery{
-						"type": {Value: "1"},
-					},
-				},
+	// 聚合搜索品牌、分类、属性
 
-				Aggregations: map[string]types.Aggregations{
-					"attrIds": {
-						Terms: &types.TermsAggregation{
-							Field: some.String("allAttrValues.productAttributeId"),
-						},
-						Aggregations: map[string]types.Aggregations{
-							"attrValues": {
-								Terms: &types.TermsAggregation{
-									Field: some.String("allAttrValues.value"),
+	Aggregations := map[string]types.Aggregations{
+		"brandNames": {
+			Terms: &types.TermsAggregation{
+				Field: some.String("brandName"),
+			},
+		},
+		"productCategoryNames": {
+			Terms: &types.TermsAggregation{
+				Field: some.String("productCategoryName"),
+			},
+		},
+		"allAttrValues": {
+			Nested: &types.NestedAggregation{
+				Path: some.String("attrValues"),
+			},
+			Aggregations: map[string]types.Aggregations{
+				"productAttrs": {
+					Filter: &types.Query{
+						Bool: &types.BoolQuery{
+							Filter: []types.Query{
+								{
+									Term: map[string]types.TermQuery{
+										"attrValues.type": {Value: 1},
+									},
 								},
-								Aggregations: map[string]types.Aggregations{
-									"attrName": {
-										Terms: &types.TermsAggregation{
-											Field: some.String("allAttrValues.name"),
-										},
+							},
+						},
+					},
+					Aggregations: map[string]types.Aggregations{
+						"attrIds": {
+							Terms: &types.TermsAggregation{
+								Field: some.String("attrValues.productAttributeId"),
+							},
+							Aggregations: map[string]types.Aggregations{
+								"dds": {
+									Terms: &types.TermsAggregation{
+										Field: some.String("attrValues.value"),
+									},
+								},
+								"attrNames": {
+									Terms: &types.TermsAggregation{
+										Field: some.String("attrValues.name"),
 									},
 								},
 							},
@@ -417,4 +439,30 @@ func (esProduct *EsProduct) SearchByKeyword() (*types.Query, *types.Aggregations
 	}
 	DSL := query
 	return DSL, Aggregations, nil
+}
+
+func ConvertProductRelatedInfo(aggregations map[string]types.Aggregate) (*EsProductRelatedInfo, error) {
+	esProductRelatedInfo := new(EsProductRelatedInfo)
+
+	handleBucket := func(bucket []types.StringTermsBucket) []string {
+		names := make([]string, 0, len(bucket))
+		for _, termsBucket := range bucket {
+			names = append(names, termsBucket.Key.(string))
+		}
+		return names
+	}
+	brandNames := aggregations["brandNames"].(*types.StringTermsAggregate)
+	productCategoryNames := aggregations["productCategoryNames"].(*types.StringTermsAggregate)
+	esProductRelatedInfo.BrandNames = handleBucket(brandNames.Buckets.([]types.StringTermsBucket))
+	esProductRelatedInfo.ProductCategoryNames = handleBucket(productCategoryNames.Buckets.([]types.StringTermsBucket))
+
+	allAttrValues := aggregations["allAttrValues"].(*types.NestedAggregate)
+
+	log.Printf("aggregations: %v", brandNames)
+	log.Printf("productCategoryNames: %v", productCategoryNames)
+	log.Printf("allAttrValues: %v", allAttrValues)
+	data := make([]any, 0, len(aggregations)) // 预分配足够的容量
+	fmt.Println(len(data))
+	fmt.Println(aggregations)
+	return esProductRelatedInfo, nil
 }

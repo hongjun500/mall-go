@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/request/base_dto"
+	"github.com/hongjun500/mall-go/internal/request/es_index_dto"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_search"
 )
 
@@ -35,8 +36,18 @@ func (router *ProductSearchRouter) GroupProductRouter(searchGroup *gin.RouterGro
 		searchGroup.POST("/importAll", router.importAll)
 		// 根据id删除商品
 		searchGroup.GET("/delete/:id", router.delete)
+		// 根据id批量删除商品
+		searchGroup.POST("/delete/batch", router.deleteBatch)
+		// 根据id创建商品
+		searchGroup.POST("/create/:id", router.create)
+		// 简单搜索
+		searchGroup.GET("/search/simple", router.searchSimple)
+		// 综合搜索、筛选、排序
+		searchGroup.GET("/search", router.search)
 		// 根据商品id推荐商品
 		searchGroup.GET("/recommend/:id", router.recommend)
+		// 获取搜索的相关品牌、分类及筛选属性
+		searchGroup.GET("/search/relate", router.searchRelate)
 	}
 }
 
@@ -79,6 +90,104 @@ func (router *ProductSearchRouter) delete(context *gin.Context) {
 	gin_common.CreateSuccess(context, rows)
 }
 
+// deleteBatch 根据id批量删除商品
+// @Summary		根据id批量删除商品
+// @Description	根据id批量删除商品
+// @Tags		搜索商品管理
+// @Accept		application/json
+// @Produce		application/json
+// @Param		ids	body	[]int	true	"ids"
+// @Security 	GinJWTMiddleware
+// @Success		200	{object}	gin_common.GinCommonResponse
+// @Router		/product/delete/batch [post]
+func (router *ProductSearchRouter) deleteBatch(context *gin.Context) {
+	var idsDTO base_dto.IdsDTO
+	err := context.BindJSON(&idsDTO)
+	if err != nil {
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
+		return
+	}
+	rows, _ := router.ProductSearchService.DeleteBatch(idsDTO.Ids)
+	gin_common.CreateSuccess(context, rows)
+}
+
+// create 根据id创建商品
+// @Summary		根据id创建商品
+// @Description	根据id创建商品
+// @Tags		搜索商品管理
+// @Accept		application/json
+// @Produce		application/json
+// @Param		id	path	int	true	"id"
+// @Security 	GinJWTMiddleware
+// @Success		200	{object}	gin_common.GinCommonResponse
+// @Router		/product/create/{id} [post]
+func (router *ProductSearchRouter) create(context *gin.Context) {
+	var pathVariableDTO base_dto.PathVariableDTO
+	err := context.BindUri(&pathVariableDTO)
+	if err != nil {
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
+		return
+	}
+	rows, _ := router.ProductSearchService.Create(pathVariableDTO.Id)
+	gin_common.CreateSuccess(context, rows)
+}
+
+// searchSimple 简单搜索
+// @Summary		简单搜索
+// @Description	简单搜索
+// @Tags		搜索商品管理
+// @Accept		application/json
+// @Produce		application/json
+// @Param		keyword	query	string	false	"keyword"
+// @Param		pageNum	query	int	false	"pageNum"
+// @Param		pageSize	query	int	false	"pageSize"
+// @Security 	GinJWTMiddleware
+// @Success		200	{object}	gin_common.GinCommonResponse
+// @Router		/product/search/simple [get]
+func (router *ProductSearchRouter) searchSimple(context *gin.Context) {
+	var searchDTO es_index_dto.ProductSearchDTO
+	err := context.BindQuery(&searchDTO)
+	if err != nil {
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
+		return
+	}
+	result, err := router.ProductSearchService.SearchByNameOrSubtitleOrKeyword(searchDTO.Keyword, searchDTO.PageNum, searchDTO.PageSize)
+	if err != nil {
+		gin_common.CreateFail(context, err.Error())
+		return
+	}
+	gin_common.CreateSuccess(context, result)
+}
+
+// search 综合搜索、筛选、排序
+// @Summary		综合搜索、筛选、排序
+// @Description	综合搜索、筛选、排序
+// @Tags		搜索商品管理
+// @Accept		application/json
+// @Produce		application/json
+// @Param		keyword	query	string	false	"keyword"
+// @Param		pageNum	query	int	false	"pageNum"
+// @Param		pageSize query	int	false	"pageSize"
+// @Param		sort	query	string	false	"sort"
+// @Param 		brandId query int false "brandId"
+// @Param 		productCategoryId query int false "productCategoryId"
+// @Success		200	{object}	gin_common.GinCommonResponse
+// @Router		/product/search [get]
+func (router *ProductSearchRouter) search(context *gin.Context) {
+	var searchDTO es_index_dto.ProductSearchDTO
+	err := context.BindQuery(&searchDTO)
+	if err != nil {
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
+		return
+	}
+	result, err := router.ProductSearchService.SearchByNameOrSubtitle(searchDTO.Keyword, searchDTO.BrandId, searchDTO.ProductCategoryId, searchDTO.Sort, searchDTO.PageNum, searchDTO.PageSize)
+	if err != nil {
+		gin_common.CreateFail(context, err.Error())
+		return
+	}
+	gin_common.CreateSuccess(context, result)
+}
+
 // recommend 根据商品id推荐商品
 // @Summary		根据商品id推荐商品
 // @Description	根据商品id推荐商品
@@ -100,4 +209,27 @@ func (router *ProductSearchRouter) recommend(context *gin.Context) {
 	}
 	page, _ := router.ProductSearchService.SearchById(pathVariableDTO.Id, pageDTO.PageNum, pageDTO.PageSize)
 	gin_common.CreateSuccess(context, page)
+}
+
+// searchRelate 获取搜索的相关品牌、分类及筛选属性
+// @Summary		获取搜索的相关品牌、分类及筛选属性
+// @Description	获取搜索的相关品牌、分类及筛选属性
+// @Tags		搜索商品管理
+// @Accept		application/json
+// @Produce		application/json
+// @Param		keyword	query	string	false	"keyword"
+// @Success		200	{object}	gin_common.GinCommonResponse
+// @Router		/product/search/relate [get]
+func (router *ProductSearchRouter) searchRelate(context *gin.Context) {
+	keyword := context.Query("keyword")
+	if keyword == "" {
+		gin_common.CreateFail(context, gin_common.ParameterValidationError)
+		return
+	}
+	result, err := router.ProductSearchService.SearchRelate(keyword)
+	if err != nil {
+		gin_common.CreateFail(context, err.Error())
+		return
+	}
+	gin_common.CreateSuccess(context, result)
 }

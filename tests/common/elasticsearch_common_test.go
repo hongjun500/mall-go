@@ -32,23 +32,23 @@ type Product struct {
 }
 
 func TestDeleteIndex(t *testing.T) {
-	t.Log("delete index success: ", internal.DeleteIndex(dbFactory, ctx, "pms"))
+	t.Log("delete index success: ", internal.DeleteIndex(dbFactory.Es, ctx, "pms"))
 }
 
 func TestHasIndex(t *testing.T) {
-	t.Log("index is exist: ", internal.HasIndex(dbFactory, ctx, index))
+	t.Log("index is exist: ", internal.HasIndex(dbFactory.Es, ctx, index))
 }
 
 func TestCreateIndex(t *testing.T) {
 	settings := &types.IndexSettings{NumberOfShards: "1", NumberOfReplicas: "0"}
 
-	t.Log("create index success: ", internal.CreateIndex(dbFactory, ctx, index, settings))
+	t.Log("create index success: ", internal.CreateIndex(dbFactory.Es, ctx, index, settings))
 }
 
 func TestPutMapping(t *testing.T) {
 	_ = internal.GetStructTag(es_index.EsProduct{})
 	esProduct := es_index.EsProduct{}
-	t.Log("put mapping success: ", internal.PutMappingByStruct(dbFactory, ctx, index, esProduct))
+	t.Log("put mapping success: ", internal.PutMappingByStruct(dbFactory.Es, ctx, index, esProduct))
 }
 
 func TestBulkIndex(t *testing.T) {
@@ -76,7 +76,7 @@ func TestBulkIndex(t *testing.T) {
 	}
 	// products := []Product{product1, product2}
 	// t.Log("bulk index success: ", elasticsearch.BulkAddDocument(dbFactory, ctx, index, products))
-	t.Log("bulk index success: ", internal.BulkAddDocument(dbFactory, ctx, index, ps))
+	t.Log("bulk index success: ", internal.BulkAddDocument(dbFactory.Es, ctx, index, ps))
 }
 
 func TestSearchAll(t *testing.T) {
@@ -87,7 +87,7 @@ func TestSearchAll(t *testing.T) {
 		Size: some.Int(1001),
 	}
 	t.Logf("search all: %+v", convert.AnyToJson(searchAllReq))
-	res, err := internal.SearchDocument(dbFactory, ctx, "pms", searchAllReq)
+	res, err := internal.SearchDocument(dbFactory.Es, ctx, "pms", searchAllReq)
 	if err != nil {
 		t.Error(err)
 	}
@@ -104,13 +104,23 @@ func TestSearch(t *testing.T) {
 			},
 		},
 	}
-	t.Log(searchReq)
+	t.Log(convert.AnyToJson(searchReq))
 	searchAllReq := &search.Request{
 		Query: &types.Query{
 			MatchAll: &types.MatchAllQuery{},
 		},
 	}
-	document, err := internal.SearchDocument(dbFactory, ctx, index, searchAllReq)
+	t.Log(convert.AnyToJson(searchAllReq))
+	searchMultiMatchReq := &search.Request{
+		Query: &types.Query{
+			MultiMatch: &types.MultiMatchQuery{
+				Query:  "小米",
+				Fields: []string{"name", "subTitle", "keywords"},
+			},
+		},
+	}
+	t.Log(convert.AnyToJson(searchMultiMatchReq))
+	document, err := internal.SearchDocument(dbFactory.Es, ctx, "pms", searchMultiMatchReq)
 	if err != nil {
 		t.Error(err)
 	}
@@ -118,7 +128,7 @@ func TestSearch(t *testing.T) {
 }
 
 func TestDeleteDocument(t *testing.T) {
-	t.Log("delete document success: ", internal.DeleteDocument(dbFactory, ctx, index, "1"))
+	t.Log("delete document success: ", internal.DeleteDocument(dbFactory.Es, ctx, index, "1"))
 }
 
 func TestElasticSearchPage(t *testing.T) {
@@ -192,9 +202,10 @@ func TestElasticSearchPage2(t *testing.T) {
 }
 func TestSearchByNameOrSubtitle(t *testing.T) {
 	esProduct := new(es_index.EsProduct)
-	page, err := esProduct.SearchByNameOrSubtitle(dbFactory, "小米", 0, 0, 1, 5, 1)
+	dsl, sort, err := esProduct.SearchByNameOrSubtitle(1)
 	if err != nil {
 		return
 	}
-	t.Log(page)
+	t.Log(dsl)
+	t.Log(sort)
 }

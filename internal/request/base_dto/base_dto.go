@@ -10,9 +10,9 @@ type (
 	// PageDTO 分页请求的数据传输对象
 	PageDTO struct {
 		// 页码
-		PageNum int `json:"pageNum" form:"pageNum" binding:"required" default:"1"`
+		PageNum int `json:"pageNum" form:"pageNum" query:"pageNum" binding:"required" default:"1"`
 		// 每页数量
-		PageSize int `json:"pageSize" form:"pageSize" binding:"required" default:"10"`
+		PageSize int `json:"pageSize" form:"pageSize" query:"pageSize" binding:"required" default:"10"`
 	}
 	// IdsDTO 批量操作的数据传输对象
 	IdsDTO struct {

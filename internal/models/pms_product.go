@@ -35,8 +35,8 @@ func (*PmsProduct) TableName() string {
 	return "pms_product"
 }
 
-// GetProductInfoById 根据商品 id 获取商品相关信息
-func (pmsProduct *PmsProduct) GetProductInfoById(db *database.DbFactory, id int64) ([]*PmsProduct, error) {
+// SelectProductInfoById 根据商品 id 获取商品相关信息
+func (pmsProduct *PmsProduct) SelectProductInfoById(db *database.DbFactory, id int64) ([]*PmsProduct, error) {
 	var pmsProducts []*PmsProduct
 	query := db.GormMySQL.Preload("ProductAttributeValueList").
 		Preload("ProductAttributeValueList.ProductAttribute").

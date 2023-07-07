@@ -52,6 +52,7 @@ func NewElasticSearchPage(es *database.Es, index string, pageNum, pageSize int) 
 	}
 }
 
+// Paginate 普通数据数据分页
 func (page *ElasticSearchPage) Paginate() error {
 	typedCli := page.TypedCli
 	index := page.Index
@@ -64,7 +65,6 @@ func (page *ElasticSearchPage) Paginate() error {
 		}
 
 	}
-	log.Println("Paginate.searchRequest-DSL:", page.SearchRequest.Query)
 	offset := (page.PageNum - 1) * page.PageSize
 	page.SearchRequest.From = some.Int(offset)
 	page.SearchRequest.Size = some.Int(page.PageSize)
@@ -98,6 +98,8 @@ func (page *ElasticSearchPage) Paginate() error {
 	page.TotalPage = totalPage
 	return nil
 }
+
+// PaginateFromAggregations 聚合数据分页
 
 // GetStructTag 获取结构体的 elasticsearch 标签
 // Deprecated: 弃用
@@ -171,6 +173,7 @@ func processStructTag(property map[string]types.Property, value any) {
 			st := sliceType.Type()
 			if st.Elem().Kind() == reflect.Struct {
 				nestedProperty := types.NewNestedProperty()
+
 				processStructTag(nestedProperty.Properties, reflect.Zero(st.Elem()).Interface())
 				newProperty[fieldName] = nestedProperty
 			}
@@ -347,7 +350,7 @@ func BulkDeleteDocument(es *database.Es, ctx context.Context, params ...any) boo
 func SearchDocument(es *database.Es, ctx context.Context, params ...any) (any, error) {
 	index := params[0].(string)
 	body := params[1].(*search.Request)
-	log.Printf("search document DSL: %v", body.Query.QueryString)
+	// log.Printf("search document DSL: %v", convert.AnyToJson(body.Query))
 	start := time.Now()
 	res, err := es.TypedCli.Search().Index(index).Request(body).Do(ctx)
 	if err != nil {
@@ -373,4 +376,21 @@ func SearchDocument(es *database.Es, ctx context.Context, params ...any) (any, e
 	elapsed := time.Since(start) // 计算耗时
 	fmt.Printf("耗时：%s\n", elapsed)
 	return data, nil
+}
+
+// SearchAggregations 聚合数据查询
+func SearchAggregations(es *database.Es, ctx context.Context, params ...any) (map[string]types.Aggregate, error) {
+	index := params[0].(string)
+	body := params[1].(*search.Request)
+	log.Printf("search document DSL: %v", body.Query.QueryString)
+	start := time.Now()
+	res, err := es.TypedCli.Search().Index(index).Request(body).Do(ctx)
+	elapsed := time.Since(start) // 计算耗时
+	fmt.Printf("耗时：%s\n", elapsed)
+	if err != nil {
+		log.Printf("search aggreagation error: %v", err.Error())
+		return nil, err
+	}
+	return res.Aggregations, nil
+
 }
