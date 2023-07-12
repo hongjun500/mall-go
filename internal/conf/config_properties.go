@@ -18,7 +18,6 @@ type ServerConfigProperties struct {
 	Enable bool
 	// release, debug, test
 	GinRunMode      string
-	Host            string
 	Port            string
 	ApplicationName string
 	ReadTimeout     int

@@ -2,13 +2,26 @@ package conf
 
 import (
 	"log"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/spf13/viper"
 )
 
+var (
+	MYSQL_HOST            string
+	REDIS_HOST            string
+	ELASTICSEARCH_ADDRESS string
+)
+
 // init 初始化所有配置属性
 func init() {
+
+	MYSQL_HOST = os.Getenv("MYSQL_HOST")
+	REDIS_HOST = os.Getenv("REDIS_HOST")
+	ELASTICSEARCH_ADDRESS = os.Getenv("ELASTICSEARCH_ADDRESS")
+
 	InitAdminConfigProperties()
 	InitPortalConfigProperties()
 	InitSearchConfigProperties()
@@ -26,7 +39,8 @@ func InitAdminConfigProperties() {
 	// viper.AddConfigPath("../../../../configs/")
 	err := viper.ReadInConfig()
 	if err != nil {
-		// panic(err)
+		// viper.BindEnv("server.port", "SERVER_PORT")
+
 		log.Println("读取配置文件失败", err)
 
 		// 使用默认配置
@@ -43,6 +57,12 @@ func InitAdminConfigProperties() {
 		_ = viper.UnmarshalKey("jwt", &GlobalJwtConfigProperties)
 		_ = viper.UnmarshalKey("database.gorm_mysql", &gorMysqlConfigProperties)
 		_ = viper.UnmarshalKey("database.redis", &redisConfigProperties)
+		if strings.HasPrefix(gorMysqlConfigProperties.Host, "$") {
+			gorMysqlConfigProperties.Host = MYSQL_HOST
+		}
+		if strings.HasPrefix(redisConfigProperties.Host, "$") {
+			redisConfigProperties.Host = REDIS_HOST
+		}
 		GlobalDatabaseConfigProperties = DatabaseConfigProperties{
 			GormMysqlConfigProperties: gorMysqlConfigProperties,
 			RedisConfigProperties:     redisConfigProperties,
@@ -115,10 +135,24 @@ func InitSearchConfigProperties() {
 		// _ = viper.UnmarshalKey("database.gorm_mysql", &gorMysqlConfigProperties)
 		// _ = viper.UnmarshalKey("database.redis", &redisConfigProperties)
 		_ = viper.UnmarshalKey("database.elasticsearch", &esConfigProperties)
+		if strings.HasPrefix(esConfigProperties.Addresses[0], "$") {
+			esConfigProperties.Addresses = strings.Split(ELASTICSEARCH_ADDRESS, ",")
+		}
 		GlobalDatabaseConfigProperties.ElasticSearchConfigProperties = esConfigProperties
 		log.Println("配置项初始化完成")
 	}
 
+}
+
+func setDBEnv(str string) {
+	if strings.HasPrefix(str, "$") {
+		str = MYSQL_HOST
+	}
+
+	// 设置环境变量
+	_ = os.Setenv("SERVER_PORT", "8080")
+	_ = os.Setenv("MYSQL_HOST", "32")
+	_ = os.Setenv("MYSQL_PORT", "3306")
 }
 
 // 使用默认配置项
@@ -126,21 +160,18 @@ func initDefaultConfigProperties() {
 	GlobalAdminServerConfigProperties = ServerConfigProperties{
 		ApplicationName: "mall_admin",
 		GinRunMode:      "debug",
-		Host:            "localhost",
 		Port:            "8080",
 		ReadTimeout:     60,
 	}
 	GlobalPortalServerConfigProperties = ServerConfigProperties{
 		ApplicationName: "mall-portal",
 		GinRunMode:      "debug",
-		Host:            "localhost",
 		Port:            "8081",
 		ReadTimeout:     60,
 	}
 	GlobalSearchServerConfigProperties = ServerConfigProperties{
 		ApplicationName: "mall_search",
 		GinRunMode:      "debug",
-		Host:            "localhost",
 		Port:            "8082",
 		ReadTimeout:     60,
 	}

@@ -2,7 +2,6 @@ server:
   ApplicationName: mall_admin
   Enable: true
   GinRunMode: debug
-  Host: localhost
   Port: 8080
   ReadTimeout: 60
 
@@ -14,7 +13,7 @@ jwt:
 
 database:
   gorm_mysql:
-    Host: localhost
+    Host: 10.1.26.175
     Port: 3306
     Database: mall_go
     Username: root
@@ -34,7 +33,7 @@ database:
     GormLogLevel: 4
 
   redis:
-    Host: localhost
+    Host: 10.1.26.175
     Port: 6379
     Password:
     Database: 0

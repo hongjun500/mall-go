@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -34,7 +35,7 @@ func main() {
 	// 修改于 2021.6.15 13:30 将上面的函数名修改为 init , 以便于在 main 函数之前执行并无需手动调用
 
 	adminServer := &http.Server{
-		Addr:        conf.GlobalAdminServerConfigProperties.Host + ":" + conf.GlobalAdminServerConfigProperties.Port,
+		Addr:        fmt.Sprintf(":%s", conf.GlobalAdminServerConfigProperties.Port),
 		Handler:     admin.HandlerAdmin(),
 		ReadTimeout: time.Duration(conf.GlobalAdminServerConfigProperties.ReadTimeout) * time.Second,
 		// WriteTimeout: 10 * time.Second,
@@ -49,7 +50,7 @@ func main() {
 
 	if conf.GlobalPortalServerConfigProperties.Enable {
 		portalServer := &http.Server{
-			Addr:        conf.GlobalPortalServerConfigProperties.Host + ":" + conf.GlobalPortalServerConfigProperties.Port,
+			Addr:        fmt.Sprintf(":%s", conf.GlobalAdminServerConfigProperties.Port),
 			Handler:     portal.HandlerPortal(),
 			ReadTimeout: time.Duration(conf.GlobalPortalServerConfigProperties.ReadTimeout) * time.Second,
 			// WriteTimeout: 10 * time.Second,
@@ -66,7 +67,7 @@ func main() {
 
 	if conf.GlobalSearchServerConfigProperties.Enable {
 		searchServer := &http.Server{
-			Addr:        conf.GlobalSearchServerConfigProperties.Host + ":" + conf.GlobalSearchServerConfigProperties.Port,
+			Addr:        ":" + conf.GlobalSearchServerConfigProperties.Port,
 			Handler:     search.HandlerSearch(),
 			ReadTimeout: time.Duration(conf.GlobalSearchServerConfigProperties.ReadTimeout) * time.Second,
 			// WriteTimeout: 10 * time.Second,

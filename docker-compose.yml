@@ -1,0 +1,35 @@
+version: "3.7"
+
+networks:
+  mall:
+    driver: bridge
+#    ipam:
+#      config:
+#        - subnet: 172.10.0.0/16
+
+
+services:
+  mall-go:
+    image: hongjun500/mall-go:latest
+    container_name: mall-go
+    restart: always
+
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+      - "8082:8082"
+    environment:
+      - MYSQL_HOST=${MYSQL_HOST}
+      - REDIS_HOST=${REDIS_HOST}
+      - ELASTICSEARCH_ADDRESS=${ELASTICSEARCH_ADDRESS}
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+
+    volumes:
+      - ./configs:/configs
+      - ./logs:/app/logs
+    networks:
+      - mall
