@@ -21,6 +21,78 @@ info:
   title: mall-go API
   version: v1
 paths:
+  /product/create/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 根据id创建商品
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 根据id创建商品
+      tags:
+      - 搜索商品管理
+  /product/delete/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 将数据库中的商品信息导入到 es
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 将数据库中的商品信息导入到 es
+      tags:
+      - 搜索商品管理
+  /product/delete/batch:
+    post:
+      consumes:
+      - application/json
+      description: 根据id批量删除商品
+      parameters:
+      - description: ids
+        in: body
+        name: ids
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 根据id批量删除商品
+      tags:
+      - 搜索商品管理
   /product/importAll:
     post:
       consumes:
@@ -36,6 +108,119 @@ paths:
       security:
       - GinJWTMiddleware: []
       summary: 将数据库中的商品信息导入到 es
+      tags:
+      - 搜索商品管理
+  /product/recommend/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 根据商品id推荐商品
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 根据商品id推荐商品
+      tags:
+      - 搜索商品管理
+  /product/search:
+    get:
+      consumes:
+      - application/json
+      description: 综合搜索、筛选、排序
+      parameters:
+      - description: keyword
+        in: query
+        name: keyword
+        type: string
+      - description: pageNum
+        in: query
+        name: pageNum
+        type: integer
+      - description: pageSize
+        in: query
+        name: pageSize
+        type: integer
+      - description: sort
+        in: query
+        name: sort
+        type: string
+      - description: brandId
+        in: query
+        name: brandId
+        type: integer
+      - description: productCategoryId
+        in: query
+        name: productCategoryId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      summary: 综合搜索、筛选、排序
+      tags:
+      - 搜索商品管理
+  /product/search/relate:
+    get:
+      consumes:
+      - application/json
+      description: 获取搜索的相关品牌、分类及筛选属性
+      parameters:
+      - description: keyword
+        in: query
+        name: keyword
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      summary: 获取搜索的相关品牌、分类及筛选属性
+      tags:
+      - 搜索商品管理
+  /product/search/simple:
+    get:
+      consumes:
+      - application/json
+      description: 简单搜索
+      parameters:
+      - description: keyword
+        in: query
+        name: keyword
+        type: string
+      - description: pageNum
+        in: query
+        name: pageNum
+        type: integer
+      - description: pageSize
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 简单搜索
       tags:
       - 搜索商品管理
 schemes:

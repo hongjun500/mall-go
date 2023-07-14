@@ -17,6 +17,7 @@ type CoreAdminService struct {
 	UmsResourceService
 	UmsRoleService
 	UmsMemberLevelService
+	PmsProductCategoryService
 }
 
 func NewCoreAdminService(dbFactory *database.DbFactory) *CoreAdminService {
@@ -27,5 +28,6 @@ func NewCoreAdminService(dbFactory *database.DbFactory) *CoreAdminService {
 		UmsResourceService:         NewUmsResourceService(dbFactory),
 		UmsRoleService:             NewUmsRoleService(dbFactory),
 		UmsMemberLevelService:      NewUmsMemberLevelService(dbFactory),
+		PmsProductCategoryService:  NewPmsProductCategoryService(dbFactory),
 	}
 }
