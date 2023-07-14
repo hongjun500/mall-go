@@ -23,6 +23,7 @@ type CoreAdminRouter struct {
 	*UmsResourceRouter
 	*UmsRoleRouter
 	*UmsMemberLevelRouter
+	*PmsProductCategoryRouter
 }
 
 func NewCoreAdminRouter(service *s_mall_admin.CoreAdminService) *CoreAdminRouter {
@@ -33,6 +34,7 @@ func NewCoreAdminRouter(service *s_mall_admin.CoreAdminService) *CoreAdminRouter
 		UmsResourceRouter:         NewUmsResourceRouter(service.UmsResourceService),
 		UmsRoleRouter:             NewUmsRoleRouter(service.UmsRoleService),
 		UmsMemberLevelRouter:      NewUmsMemberLevelRouter(service.UmsMemberLevelService),
+		PmsProductCategoryRouter:  NewPmsProductCategoryRouter(service.PmsProductCategoryService),
 	}
 }
 
