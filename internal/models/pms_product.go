@@ -47,3 +47,9 @@ func (pmsProduct *PmsProduct) SelectProductInfoById(db *database.DbFactory, id i
 	query.Find(&pmsProducts)
 	return pmsProducts, nil
 }
+
+// UpdateProductNameById 根据商品 id 更新商品名称
+func (pmsProduct *PmsProduct) UpdateProductNameById(db *database.DbFactory, id int64, name string) (int64, error) {
+	tx := db.GormMySQL.Model(pmsProduct).Where("id = ?", id).Update("name", name)
+	return tx.RowsAffected, tx.Error
+}

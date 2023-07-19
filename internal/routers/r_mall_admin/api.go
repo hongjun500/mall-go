@@ -64,4 +64,5 @@ func InitAdminGroupRouter(coreRouter *CoreAdminRouter, ginEngine *gin.Engine) {
 	coreRouter.GroupUmsResourceRouter(ginEngine.Group("/resource"))
 	coreRouter.GroupUmsRoleRouter(ginEngine.Group("/role"))
 	coreRouter.GroupUmsMemberLevelRouter(ginEngine.Group("/memberLevel"))
+	coreRouter.GroupPmsProductCategoryRouter(ginEngine.Group("/productCategory"))
 }

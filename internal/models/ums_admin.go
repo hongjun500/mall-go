@@ -1,9 +1,10 @@
 package models
 
 import (
+	"time"
+
 	"github.com/hongjun500/mall-go/internal"
 	"github.com/hongjun500/mall-go/pkg"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -86,8 +87,7 @@ func (umsAdmin *UmsAdmin) SelectUmsAdminPage(db *gorm.DB, keyword string, pageNu
 	if err != nil {
 		return page.CommonPage, err
 	}
-
-	return page.CommonPage, err
+	return page.CommonPage, nil
 }
 
 // UpdateUmsAdminByUserId 更新用户信息
