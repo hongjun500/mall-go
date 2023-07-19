@@ -102,7 +102,7 @@ func (role *UmsRole) SelectPage(db *gorm.DB, keyword string, pageNum, pageSize i
 	if err != nil {
 		return page.CommonPage, err
 	}
-	return page.CommonPage, err
+	return page.CommonPage, nil
 }
 
 // SelectMenu 根据管理员 ID 获取角色的菜单
