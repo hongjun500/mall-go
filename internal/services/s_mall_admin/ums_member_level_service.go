@@ -9,7 +9,7 @@ package s_mall_admin
 import (
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/models"
-	"github.com/hongjun500/mall-go/internal/request/ums_member_dto"
+	"github.com/hongjun500/mall-go/internal/request/admin_dto"
 )
 
 type UmsMemberLevelService struct {
@@ -21,7 +21,7 @@ func NewUmsMemberLevelService(dbFactory *database.DbFactory) UmsMemberLevelServi
 }
 
 // UmsMemberLevelList 查看所有会员等级
-func (s UmsMemberLevelService) UmsMemberLevelList(dto ums_member_dto.UmsMemberLevelListDTO) ([]*models.UmsMemberLevel, error) {
+func (s UmsMemberLevelService) UmsMemberLevelList(dto admin_dto.UmsMemberLevelListDTO) ([]*models.UmsMemberLevel, error) {
 	var umsMemberLevel models.UmsMemberLevel
 	list, err := umsMemberLevel.SelectByDefaultStatus(s.DbFactory.GormMySQL, dto.DefaultStatus)
 	if err != nil {

@@ -9,7 +9,7 @@ package s_mall_admin
 import (
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/models"
-	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
+	"github.com/hongjun500/mall-go/internal/request/admin_dto"
 	"github.com/hongjun500/mall-go/internal/services"
 	"github.com/hongjun500/mall-go/pkg"
 )
@@ -23,7 +23,7 @@ func NewUmsRoleService(dbFactory *database.DbFactory) UmsRoleService {
 }
 
 // UmsRoleUpdate 修改角色
-func (s UmsRoleService) UmsRoleUpdate(id int64, dto ums_admin_dto.UmsRoleCreateDTO) (int64, error) {
+func (s UmsRoleService) UmsRoleUpdate(id int64, dto admin_dto.UmsRoleCreateDTO) (int64, error) {
 	m := new(models.UmsRole)
 	m.Name = dto.Name
 	m.Description = dto.Description
@@ -38,7 +38,7 @@ func (s UmsRoleService) UmsRoleUpdate(id int64, dto ums_admin_dto.UmsRoleCreateD
 }
 
 // UmsRoleDelete 批量删除角色
-func (s UmsRoleService) UmsRoleDelete(dto ums_admin_dto.IdsDTO) (int64, error) {
+func (s UmsRoleService) UmsRoleDelete(dto admin_dto.IdsDTO) (int64, error) {
 	m := new(models.UmsRole)
 	rows, err := m.Delete(s.DbFactory.GormMySQL, dto.Ids)
 	if err != nil {
@@ -49,7 +49,7 @@ func (s UmsRoleService) UmsRoleDelete(dto ums_admin_dto.IdsDTO) (int64, error) {
 }
 
 // UmsRoleList 根据角色名称分页获取角色列表
-func (s UmsRoleService) UmsRoleList(dto ums_admin_dto.UmsRoleListPageDTO) (*pkg.CommonPage, error) {
+func (s UmsRoleService) UmsRoleList(dto admin_dto.UmsRoleListPageDTO) (*pkg.CommonPage, error) {
 	m := new(models.UmsRole)
 	page, err := m.SelectPage(s.DbFactory.GormMySQL, dto.Keyword, dto.PageNum, dto.PageSize)
 	if err != nil {
@@ -59,7 +59,7 @@ func (s UmsRoleService) UmsRoleList(dto ums_admin_dto.UmsRoleListPageDTO) (*pkg.
 }
 
 // UmsRoleUpdateStatus 修改角色状态
-func (s UmsRoleService) UmsRoleUpdateStatus(id int64, dto ums_admin_dto.UmsRoleStatusDTO) (int64, error) {
+func (s UmsRoleService) UmsRoleUpdateStatus(id int64, dto admin_dto.UmsRoleStatusDTO) (int64, error) {
 	var m models.UmsRole
 	rows, err := m.UpdateStatus(s.DbFactory.GormMySQL, id, dto.Status)
 	if err != nil {
@@ -69,7 +69,7 @@ func (s UmsRoleService) UmsRoleUpdateStatus(id int64, dto ums_admin_dto.UmsRoleS
 }
 
 // UmsRoleListMenu 获取角色相关菜单
-func (s UmsRoleService) UmsRoleListMenu(dto ums_admin_dto.UmsRolePathVariableDTO) ([]*models.UmsMenu, error) {
+func (s UmsRoleService) UmsRoleListMenu(dto admin_dto.UmsRolePathVariableDTO) ([]*models.UmsMenu, error) {
 	var m models.UmsRole
 	list, err := m.SelectMenu(s.DbFactory.GormMySQL, dto.RoleId)
 	if err != nil {
@@ -79,7 +79,7 @@ func (s UmsRoleService) UmsRoleListMenu(dto ums_admin_dto.UmsRolePathVariableDTO
 }
 
 // UmsRoleListResource 获取角色相关资源
-func (s UmsRoleService) UmsRoleListResource(dto ums_admin_dto.UmsRolePathVariableDTO) ([]*models.UmsResource, error) {
+func (s UmsRoleService) UmsRoleListResource(dto admin_dto.UmsRolePathVariableDTO) ([]*models.UmsResource, error) {
 	var m models.UmsRole
 	list, err := m.SelectResourceByRoleId(s.DbFactory.GormMySQL, dto.RoleId)
 	if err != nil {
@@ -89,7 +89,7 @@ func (s UmsRoleService) UmsRoleListResource(dto ums_admin_dto.UmsRolePathVariabl
 }
 
 // UmsRoleAllocMenu 修改角色菜单
-func (s UmsRoleService) UmsRoleAllocMenu(dto ums_admin_dto.UmsRoleAllocMenuDTO) (int64, error) {
+func (s UmsRoleService) UmsRoleAllocMenu(dto admin_dto.UmsRoleAllocMenuDTO) (int64, error) {
 	var m models.UmsRole
 	rows, err := m.UpdateRoleFromAllocMenu(s.DbFactory.GormMySQL, dto.RoleId, dto.MenuIds)
 	if err != nil {
@@ -99,7 +99,7 @@ func (s UmsRoleService) UmsRoleAllocMenu(dto ums_admin_dto.UmsRoleAllocMenuDTO) 
 }
 
 // UmsRoleAllocResource 给角色分配资源
-func (s UmsRoleService) UmsRoleAllocResource(dto ums_admin_dto.UmsRoleAllocResourceDTO) (int64, error) {
+func (s UmsRoleService) UmsRoleAllocResource(dto admin_dto.UmsRoleAllocResourceDTO) (int64, error) {
 	var m models.UmsRole
 	rows, err := m.UpdateRoleFromAllocResource(s.DbFactory.GormMySQL, dto.RoleId, dto.ResourceIds)
 	if err != nil {

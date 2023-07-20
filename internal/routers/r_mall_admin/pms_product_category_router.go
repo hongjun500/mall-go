@@ -12,8 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/models"
+	"github.com/hongjun500/mall-go/internal/request/admin_dto"
 	"github.com/hongjun500/mall-go/internal/request/base_dto"
-	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_admin"
 )
 
@@ -57,11 +57,11 @@ func (router *PmsProductCategoryRouter) GroupPmsProductCategoryRouter(productCat
 //	@Tags			商品分类
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body		ums_admin_dto.PmsProductCategoryDTO true "添加商品分类"
+//	@Param			request	body		admin_dto.PmsProductCategoryDTO true "添加商品分类"
 //	@Success		200		{object}	gin_common.GinCommonResponse
 //	@Router			/productCategory/create [post]
 func (router *PmsProductCategoryRouter) CreateProductCategory(context *gin.Context) {
-	var dto ums_admin_dto.PmsProductCategoryDTO
+	var dto admin_dto.PmsProductCategoryDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -83,11 +83,11 @@ func (router *PmsProductCategoryRouter) CreateProductCategory(context *gin.Conte
 //	@Accept			json
 //	@Produce		json
 //	@Param			id		path		int		true	"商品分类id"
-//	@Param			request	body		ums_admin_dto.PmsProductCategoryDTO
+//	@Param			request	body		admin_dto.PmsProductCategoryDTO
 //	@Success		200		{object}	gin_common.GinCommonResponse
 //	@Router			/productCategory/update/{id} [post]
 func (router *PmsProductCategoryRouter) UpdateProductCategory(context *gin.Context) {
-	var dto ums_admin_dto.PmsProductCategoryDTO
+	var dto admin_dto.PmsProductCategoryDTO
 	var path base_dto.PathVariableDTO
 	err := context.ShouldBind(&dto)
 	err = context.ShouldBindUri(&path)

@@ -4,7 +4,7 @@
 // Created with GoLand 2022.2
 // Description:
 
-package ums_admin_dto
+package admin_dto
 
 import "github.com/hongjun500/mall-go/internal/request/base_dto"
 

@@ -9,7 +9,7 @@ package r_mall_admin
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/gin_common"
-	"github.com/hongjun500/mall-go/internal/request/ums_member_dto"
+	"github.com/hongjun500/mall-go/internal/request/admin_dto"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_admin"
 )
 
@@ -41,7 +41,7 @@ func (router *UmsMemberLevelRouter) GroupUmsMemberLevelRouter(umsMemberLevelGrou
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/memberLevel/list [get]
 func (router *UmsMemberLevelRouter) list(context *gin.Context) {
-	var dto ums_member_dto.UmsMemberLevelListDTO
+	var dto admin_dto.UmsMemberLevelListDTO
 	if err := context.ShouldBind(&dto); err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
 		return

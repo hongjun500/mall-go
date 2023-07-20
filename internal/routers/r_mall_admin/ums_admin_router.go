@@ -13,8 +13,8 @@ import (
 	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/gin_common/mid"
+	"github.com/hongjun500/mall-go/internal/request/admin_dto"
 	"github.com/hongjun500/mall-go/internal/request/base_dto"
-	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_admin"
 	"github.com/hongjun500/mall-go/pkg/security"
 )
@@ -77,11 +77,11 @@ func (router *UmsAdminRouter) UnauthorizedGroupRouter(routerEngine *gin.Engine) 
 //	@Tags			后台用户管理
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body		ums_admin_dto.UmsAdminRegisterDTO	true	"用户注册"
+//	@Param			request	body		admin_dto.UmsAdminRegisterDTO	true	"用户注册"
 //	@Success		200		{object}	gin_common.GinCommonResponse
 //	@Router			/admin/register [post]
 func (router *UmsAdminRouter) register(context *gin.Context) {
-	var request ums_admin_dto.UmsAdminRegisterDTO
+	var request admin_dto.UmsAdminRegisterDTO
 	err := context.ShouldBind(&request)
 	if err != nil {
 		gin_common.CreateFail(context, err.Error())
@@ -103,11 +103,11 @@ func (router *UmsAdminRouter) register(context *gin.Context) {
 //	@Tags			后台用户管理
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body		ums_admin_dto.UmsAdminLoginDTO	true	"用户登录"
+//	@Param			request	body		admin_dto.UmsAdminLoginDTO	true	"用户登录"
 //	@Success		200		{object}	gin_common.GinCommonResponse
 //	@Router			/admin/login [post]
 func (router *UmsAdminRouter) login(context *gin.Context) {
-	var umsAdminLogin ums_admin_dto.UmsAdminLoginDTO
+	var umsAdminLogin admin_dto.UmsAdminLoginDTO
 	err := context.ShouldBind(&umsAdminLogin)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -208,7 +208,7 @@ func (router *UmsAdminRouter) info(context *gin.Context) {
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/admin/list [get]
 func (router *UmsAdminRouter) list(context *gin.Context) {
-	var request ums_admin_dto.UmsAdminPageDTO
+	var request admin_dto.UmsAdminPageDTO
 	err := context.ShouldBind(&request)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -257,12 +257,12 @@ func (router *UmsAdminRouter) detail(context *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			user_id	path	int							true	"用户 ID"
-//	@Param			request	body	ums_admin_dto.UmsAdminUpdateDTO	true	"修改指定用户信息"
+//	@Param			request	body	admin_dto.UmsAdminUpdateDTO	true	"修改指定用户信息"
 //	@Security		GinJWTMiddleware
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/admin/update/{id} [post]
 func (router *UmsAdminRouter) update(context *gin.Context) {
-	var umsAdminUpdate ums_admin_dto.UmsAdminUpdateDTO
+	var umsAdminUpdate admin_dto.UmsAdminUpdateDTO
 	var userDTO base_dto.UserDTO
 	err := context.ShouldBindUri(&userDTO)
 	if err != nil {
@@ -349,7 +349,7 @@ func (router *UmsAdminRouter) updateStatus(context *gin.Context) {
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/admin/role/update [post]
 func (router *UmsAdminRouter) roleUpdate(context *gin.Context) {
-	var umsAdminRoleDTO ums_admin_dto.UmsAdminRoleDTO
+	var umsAdminRoleDTO admin_dto.UmsAdminRoleDTO
 	var err error
 	err = context.ShouldBind(&umsAdminRoleDTO)
 	if err != nil {
@@ -375,7 +375,7 @@ func (router *UmsAdminRouter) roleUpdate(context *gin.Context) {
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/admin/role/{adminId} [get]
 func (router *UmsAdminRouter) role(context *gin.Context) {
-	var umsAdminRoleDTO ums_admin_dto.UmsAdminRoleDTO
+	var umsAdminRoleDTO admin_dto.UmsAdminRoleDTO
 	err := context.ShouldBindUri(&umsAdminRoleDTO)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -396,12 +396,12 @@ func (router *UmsAdminRouter) role(context *gin.Context) {
 //	@Tags			后台用户管理
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body	ums_admin_dto.UmsAdminUpdatePasswordDTO	true	"修改指定用户密码"
+//	@Param			request	body	admin_dto.UmsAdminUpdatePasswordDTO	true	"修改指定用户密码"
 //	@Security		GinJWTMiddleware
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/admin/updatePassword [post]
 func (router *UmsAdminRouter) updatePassword(context *gin.Context) {
-	var umsAdminUpdatePasswordDTO ums_admin_dto.UmsAdminUpdatePasswordDTO
+	var umsAdminUpdatePasswordDTO admin_dto.UmsAdminUpdatePasswordDTO
 	err := context.ShouldBind(&umsAdminUpdatePasswordDTO)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)

@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/request/base_dto"
-	"github.com/hongjun500/mall-go/internal/request/es_index_dto"
+	"github.com/hongjun500/mall-go/internal/request/search_dto"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_search"
 )
 
@@ -145,7 +145,7 @@ func (router *ProductSearchRouter) create(context *gin.Context) {
 // @Success		200	{object}	gin_common.GinCommonResponse
 // @Router		/product/search/simple [get]
 func (router *ProductSearchRouter) searchSimple(context *gin.Context) {
-	var searchDTO es_index_dto.ProductSearchDTO
+	var searchDTO search_dto.ProductSearchDTO
 	err := context.BindQuery(&searchDTO)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -174,7 +174,7 @@ func (router *ProductSearchRouter) searchSimple(context *gin.Context) {
 // @Success		200	{object}	gin_common.GinCommonResponse
 // @Router		/product/search [get]
 func (router *ProductSearchRouter) search(context *gin.Context) {
-	var searchDTO es_index_dto.ProductSearchDTO
+	var searchDTO search_dto.ProductSearchDTO
 	err := context.BindQuery(&searchDTO)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)

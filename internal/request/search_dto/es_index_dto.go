@@ -4,7 +4,7 @@
 // Created with 2022.2.2.IntelliJ IDEA
 // Description:
 
-package es_index_dto
+package search_dto
 
 import "github.com/hongjun500/mall-go/internal/request/base_dto"
 

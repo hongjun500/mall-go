@@ -9,8 +9,8 @@ package r_mall_admin
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/gin_common"
+	"github.com/hongjun500/mall-go/internal/request/admin_dto"
 	"github.com/hongjun500/mall-go/internal/request/base_dto"
-	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_admin"
 )
 
@@ -49,12 +49,12 @@ func (router *UmsMenuRouter) GroupUmsMenuRouter(umsMenuGroup *gin.RouterGroup) {
 //	@Tags			后台菜单管理
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body	ums_admin_dto.UmsMenuCreateDTO	true	"添加后台菜单"
+//	@Param			request	body	admin_dto.UmsMenuCreateDTO	true	"添加后台菜单"
 //	@Security		GinJWTMiddleware
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/menu/create [post]
 func (router *UmsMenuRouter) create(context *gin.Context) {
-	var umsMenuCreateDTO ums_admin_dto.UmsMenuCreateDTO
+	var umsMenuCreateDTO admin_dto.UmsMenuCreateDTO
 	err := context.ShouldBind(&umsMenuCreateDTO)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -76,12 +76,12 @@ func (router *UmsMenuRouter) create(context *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id		path	int64						true	"菜单ID"
-//	@Param			request	body	ums_admin_dto.UmsMenuCreateDTO	true	"修改后台菜单"
+//	@Param			request	body	admin_dto.UmsMenuCreateDTO	true	"修改后台菜单"
 //	@Security		GinJWTMiddleware
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/menu/update/{id} [post]
 func (router *UmsMenuRouter) update(context *gin.Context) {
-	var umsMenuCreateDTO ums_admin_dto.UmsMenuCreateDTO
+	var umsMenuCreateDTO admin_dto.UmsMenuCreateDTO
 	err := context.ShouldBind(&umsMenuCreateDTO)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -107,7 +107,7 @@ func (router *UmsMenuRouter) update(context *gin.Context) {
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/menu/delete/{id} [post]
 func (router *UmsMenuRouter) delete(context *gin.Context) {
-	var dto ums_admin_dto.UmsMenuCreateDTO
+	var dto admin_dto.UmsMenuCreateDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -133,7 +133,7 @@ func (router *UmsMenuRouter) delete(context *gin.Context) {
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/menu/{id} [get]
 func (router *UmsMenuRouter) detail(context *gin.Context) {
-	var dto ums_admin_dto.UmsMenuCreateDTO
+	var dto admin_dto.UmsMenuCreateDTO
 	err := context.ShouldBindUri(&dto)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -165,7 +165,7 @@ func (router *UmsMenuRouter) listPage(context *gin.Context) {
 	//	@Param	pageSize	formData	int64	true	"每页数量"
 	// 这会导致swagger文档中的参数不正确
 	var pageDTO base_dto.PageDTO
-	var parentIdDTO ums_admin_dto.UmsMenuListDTO
+	var parentIdDTO admin_dto.UmsMenuListDTO
 	err := context.ShouldBind(&pageDTO)
 	err = context.ShouldBindUri(&parentIdDTO)
 	if err != nil {
@@ -193,7 +193,7 @@ func (router *UmsMenuRouter) listPage(context *gin.Context) {
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/menu/updateHidden/{id} [post]
 func (router *UmsMenuRouter) updateHidden(context *gin.Context) {
-	var dto ums_admin_dto.UmsMenuHiddenDTO
+	var dto admin_dto.UmsMenuHiddenDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)

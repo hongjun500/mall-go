@@ -2,6 +2,7 @@ package services
 
 import (
 	"bytes"
+	"crypto/rand"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -9,20 +10,38 @@ import (
 
 	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/gin_common"
-	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
+	"github.com/hongjun500/mall-go/internal/request/admin_dto"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_admin"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/bcrypt"
 )
 
+func hashPassword(password string) (string, error) {
+	// 生成随机盐值
+	salt := make([]byte, 16)
+	if _, err := rand.Read(salt); err != nil {
+		return "", err
+	}
+
+	// 将密码与盐值进行哈希
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+
+	// 返回加密后的密码字符串
+	return string(hash), nil
+}
+
 func TestHashPassword(t *testing.T) {
-	password, err := s_mall_admin.HashPassword("123456")
+	password, err := hashPassword("123456")
 	assert.NoError(t, err, "HashPassword should not return an error")
 	assert.NotEmpty(t, password, "Hashed password should not be empty")
 }
 
 func TestVerifyPassword(t *testing.T) {
 	password := "123456"
-	hashPassword, _ := s_mall_admin.HashPassword(password)
+	hashPassword, _ := hashPassword(password)
 	verify := s_mall_admin.VerifyPassword(password, hashPassword)
 	_ = "$2a$10$cDLM3NGJJgfBfQsfpjNSGeK5xImWfs8W5SrS709L.eZYV6qZRAy1e"
 	assert.Equal(t, true, verify, "verify success")
@@ -30,7 +49,7 @@ func TestVerifyPassword(t *testing.T) {
 
 func TestUmsAdminRegister(t *testing.T) {
 
-	var umsAdminRequest ums_admin_dto.UmsAdminRegisterDTO
+	var umsAdminRequest admin_dto.UmsAdminRegisterDTO
 	umsAdminRequest.Username = "hongjun"
 	umsAdminRequest.Password = "123456"
 	umsAdminRequest.Icon = "http://www.baidu.com"
@@ -53,7 +72,7 @@ func TestUmsAdminRegister(t *testing.T) {
 }
 
 func TestUmsAdminLogin(t *testing.T) {
-	var umsAdminLogin ums_admin_dto.UmsAdminLoginDTO
+	var umsAdminLogin admin_dto.UmsAdminLoginDTO
 	umsAdminLogin.Username = "hongjun500"
 	umsAdminLogin.Password = "123456"
 	body, err := json.Marshal(umsAdminLogin)

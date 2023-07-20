@@ -9,8 +9,8 @@ package s_mall_admin
 import (
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/models"
+	"github.com/hongjun500/mall-go/internal/request/admin_dto"
 	"github.com/hongjun500/mall-go/internal/request/base_dto"
-	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
 )
 
 type UmsResourceCategoryService struct {
@@ -32,7 +32,7 @@ func (s UmsResourceCategoryService) UmsResourceCategoryList() ([]*models.UmsReso
 }
 
 // UmsResourceCategoryCreate 添加后台资源分类
-func (s UmsResourceCategoryService) UmsResourceCategoryCreate(dto ums_admin_dto.UmsResourceCategoryCreateDTO) (int64, error) {
+func (s UmsResourceCategoryService) UmsResourceCategoryCreate(dto admin_dto.UmsResourceCategoryCreateDTO) (int64, error) {
 	umsResourceCategory := new(models.UmsResourceCategory)
 	umsResourceCategory.Name = dto.Name
 	umsResourceCategory.Sort = dto.Sort
@@ -44,7 +44,7 @@ func (s UmsResourceCategoryService) UmsResourceCategoryCreate(dto ums_admin_dto.
 }
 
 // UmsResourceCategoryUpdate 修改后台资源分类
-func (s UmsResourceCategoryService) UmsResourceCategoryUpdate(pathVariableDTO base_dto.PathVariableDTO, dto ums_admin_dto.UmsResourceCategoryCreateDTO) (int64, error) {
+func (s UmsResourceCategoryService) UmsResourceCategoryUpdate(pathVariableDTO base_dto.PathVariableDTO, dto admin_dto.UmsResourceCategoryCreateDTO) (int64, error) {
 	umsResourceCategory := new(models.UmsResourceCategory)
 	umsResourceCategory.Name = dto.Name
 	umsResourceCategory.Sort = dto.Sort

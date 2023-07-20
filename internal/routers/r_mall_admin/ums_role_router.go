@@ -10,8 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/models"
+	"github.com/hongjun500/mall-go/internal/request/admin_dto"
 	"github.com/hongjun500/mall-go/internal/request/base_dto"
-	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_admin"
 )
 
@@ -57,12 +57,12 @@ func (router *UmsRoleRouter) GroupUmsRoleRouter(umsRoleGroup *gin.RouterGroup) {
 //	@Tags			后台角色管理
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body	ums_admin_dto.UmsRoleCreateDTO	true	"添加角色"
+//	@Param			request	body	admin_dto.UmsRoleCreateDTO	true	"添加角色"
 //	@Security		GinJWTMiddleware
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/role/create [post]
 func (router *UmsRoleRouter) create(context *gin.Context) {
-	var dto ums_admin_dto.UmsRoleCreateDTO
+	var dto admin_dto.UmsRoleCreateDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -90,12 +90,12 @@ func (router *UmsRoleRouter) create(context *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path	int							true	"id"
-//	@Param			request	body	ums_admin_dto.UmsRoleCreateDTO	true	"修改角色"
+//	@Param			request	body	admin_dto.UmsRoleCreateDTO	true	"修改角色"
 //	@Security		GinJWTMiddleware
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/role/update/{id} [post]
 func (router *UmsRoleRouter) update(context *gin.Context) {
-	var dto ums_admin_dto.UmsRoleCreateDTO
+	var dto admin_dto.UmsRoleCreateDTO
 	var pathVariable base_dto.PathVariableDTO
 	err := context.ShouldBind(&dto)
 	err = context.ShouldBindUri(&pathVariable)
@@ -123,7 +123,7 @@ func (router *UmsRoleRouter) update(context *gin.Context) {
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/role/delete [post]
 func (router *UmsRoleRouter) delete(context *gin.Context) {
-	var dto ums_admin_dto.IdsDTO
+	var dto admin_dto.IdsDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -171,7 +171,7 @@ func (router *UmsRoleRouter) listAll(context *gin.Context) {
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/role/list [get]
 func (router *UmsRoleRouter) listPage(context *gin.Context) {
-	var dto ums_admin_dto.UmsRoleListPageDTO
+	var dto admin_dto.UmsRoleListPageDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -199,7 +199,7 @@ func (router *UmsRoleRouter) listPage(context *gin.Context) {
 //	@Router			/role/updateStatus/{id} [post]
 func (router *UmsRoleRouter) updateStatus(context *gin.Context) {
 	var pathVariableDTO base_dto.PathVariableDTO
-	var dto ums_admin_dto.UmsRoleStatusDTO
+	var dto admin_dto.UmsRoleStatusDTO
 	err := context.ShouldBindUri(&pathVariableDTO)
 	err = context.ShouldBind(&dto)
 	if err != nil {
@@ -226,7 +226,7 @@ func (router *UmsRoleRouter) updateStatus(context *gin.Context) {
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/role/listMenu/{roleId} [get]
 func (router *UmsRoleRouter) listMenu(context *gin.Context) {
-	var dto ums_admin_dto.UmsRolePathVariableDTO
+	var dto admin_dto.UmsRolePathVariableDTO
 	err := context.ShouldBindUri(&dto)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -252,7 +252,7 @@ func (router *UmsRoleRouter) listMenu(context *gin.Context) {
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/role/listResource/{roleId} [get]
 func (router *UmsRoleRouter) listResource(context *gin.Context) {
-	var dto ums_admin_dto.UmsRolePathVariableDTO
+	var dto admin_dto.UmsRolePathVariableDTO
 	err := context.ShouldBindUri(&dto)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -279,7 +279,7 @@ func (router *UmsRoleRouter) listResource(context *gin.Context) {
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/role/allocMenu/{roleId} [post]
 func (router *UmsRoleRouter) allocMenu(context *gin.Context) {
-	var dto ums_admin_dto.UmsRoleAllocMenuDTO
+	var dto admin_dto.UmsRoleAllocMenuDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -306,7 +306,7 @@ func (router *UmsRoleRouter) allocMenu(context *gin.Context) {
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/role/allocResource/{roleId} [post]
 func (router *UmsRoleRouter) allocResource(context *gin.Context) {
-	var dto ums_admin_dto.UmsRoleAllocResourceDTO
+	var dto admin_dto.UmsRoleAllocResourceDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
