@@ -14,7 +14,7 @@ var TestModelDbFactory *database.DbFactory
 func TestMain(m *testing.M) {
 	// 通过 gorm 拿到 MySQL 数据库连接
 	conf.InitAdminConfigProperties()
-	TestModelGormMySQL, _ = database.NewGormMySQL(conf.GlobalDatabaseConfigProperties)
+	TestModelGormMySQL, _ = database.NewGormMySQL(conf.GlobalDatabaseConfigProperties.GormMysqlConfigProperties)
 	TestModelDbFactory = database.NewDbFactory(TestModelGormMySQL)
 
 	m.Run()

@@ -14,12 +14,6 @@ type PmsProductAttributeValue struct {
 	Value string `json:"value" gorm:"value"`
 
 	ProductAttribute *PmsProductAttribute `json:"productAttribute" gorm:"foreignKey:ProductAttributeId"`
-
-	/*
-		// PmsProductAttribute 的 type 属性
-		Type int `json:"type" gorm:"-"`
-		// PmsProductAttribute 的 name 属性
-		Name string `json:"name" gorm:"-"`*/
 }
 
 func (*PmsProductAttributeValue) TableName() string {
