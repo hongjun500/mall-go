@@ -9,7 +9,7 @@ package s_mall_admin
 import (
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/models"
-	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
+	"github.com/hongjun500/mall-go/internal/request/admin_dto"
 	"github.com/hongjun500/mall-go/internal/services"
 	"github.com/hongjun500/mall-go/pkg"
 )
@@ -23,7 +23,7 @@ func NewUmsResourceService(dbFactory *database.DbFactory) UmsResourceService {
 }
 
 // UmsResourceCreate 添加后台资源
-func (s UmsResourceService) UmsResourceCreate(dto ums_admin_dto.UmsResourceCreateDTO) (int64, error) {
+func (s UmsResourceService) UmsResourceCreate(dto admin_dto.UmsResourceCreateDTO) (int64, error) {
 	// var umsResource *models.UmsResource
 	// 上面这种直接赋值有问题，空指针, 如果是以 umsResource := &models.UmsResource{} 的方式就不会有问题, 或者使用 new() 函数
 	umsResource := new(models.UmsResource)
@@ -39,7 +39,7 @@ func (s UmsResourceService) UmsResourceCreate(dto ums_admin_dto.UmsResourceCreat
 }
 
 // UmsResourceUpdate 修改后台资源
-func (s UmsResourceService) UmsResourceUpdate(id int64, dto ums_admin_dto.UmsResourceCreateDTO) (int64, error) {
+func (s UmsResourceService) UmsResourceUpdate(id int64, dto admin_dto.UmsResourceCreateDTO) (int64, error) {
 	m := new(models.UmsResource)
 	m.Name = dto.Name
 	m.Url = dto.Url
@@ -77,7 +77,7 @@ func (s UmsResourceService) UmsResourceDelete(id int64) (int64, error) {
 }
 
 // UmsResourcePageList 分页模糊查询后台资源
-func (s UmsResourceService) UmsResourcePageList(dto ums_admin_dto.UmsResourcePageListDTO) (*pkg.CommonPage, error) {
+func (s UmsResourceService) UmsResourcePageList(dto admin_dto.UmsResourcePageListDTO) (*pkg.CommonPage, error) {
 	m := new(models.UmsResource)
 	page, err := m.SelectPage(s.DbFactory.GormMySQL, dto.CategoryId, dto.NameKeyword, dto.UrlKeyword, dto.PageNum, dto.PageSize)
 	if err != nil {

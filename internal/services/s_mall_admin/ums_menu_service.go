@@ -12,8 +12,8 @@ import (
 
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/models"
+	"github.com/hongjun500/mall-go/internal/request/admin_dto"
 	"github.com/hongjun500/mall-go/internal/request/base_dto"
-	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
 )
 
 type UmsMenuService struct {
@@ -25,7 +25,7 @@ func NewUmsMenuService(dbFactory *database.DbFactory) UmsMenuService {
 }
 
 // UmsMenuCreate 添加后台菜单
-func (s UmsMenuService) UmsMenuCreate(umsMenuCreateDTO ums_admin_dto.UmsMenuCreateDTO) (int64, error) {
+func (s UmsMenuService) UmsMenuCreate(umsMenuCreateDTO admin_dto.UmsMenuCreateDTO) (int64, error) {
 	umsMenu := new(models.UmsMenu)
 	umsMenu.ParentID = umsMenuCreateDTO.ParentId
 	now := time.Now()
@@ -61,7 +61,7 @@ func updateLevel(umsMenu *models.UmsMenu, s UmsMenuService) {
 }
 
 // UmsMenuUpdate 修改后台菜单
-func (s UmsMenuService) UmsMenuUpdate(umsMenuCreateDTO ums_admin_dto.UmsMenuCreateDTO) (int64, error) {
+func (s UmsMenuService) UmsMenuUpdate(umsMenuCreateDTO admin_dto.UmsMenuCreateDTO) (int64, error) {
 	umsMenu := new(models.UmsMenu)
 	umsMenu.Id = umsMenuCreateDTO.Id
 	umsMenu.ParentID = umsMenuCreateDTO.ParentId
@@ -83,7 +83,7 @@ func (s UmsMenuService) UmsMenuUpdate(umsMenuCreateDTO ums_admin_dto.UmsMenuCrea
 }
 
 // UmsMenuDelete 删除后台菜单
-func (s UmsMenuService) UmsMenuDelete(dto ums_admin_dto.UmsMenuCreateDTO) (int64, error) {
+func (s UmsMenuService) UmsMenuDelete(dto admin_dto.UmsMenuCreateDTO) (int64, error) {
 	umsMenu := new(models.UmsMenu)
 	rows, err := umsMenu.Delete(s.DbFactory.GormMySQL, dto.Id)
 	if err != nil {
@@ -93,7 +93,7 @@ func (s UmsMenuService) UmsMenuDelete(dto ums_admin_dto.UmsMenuCreateDTO) (int64
 }
 
 // UmsMenuItem 根据ID获取菜单详情
-func (s UmsMenuService) UmsMenuItem(dto ums_admin_dto.UmsMenuCreateDTO) (*models.UmsMenu, error) {
+func (s UmsMenuService) UmsMenuItem(dto admin_dto.UmsMenuCreateDTO) (*models.UmsMenu, error) {
 	umsMenu := new(models.UmsMenu)
 	result, err := umsMenu.SelectById(s.DbFactory.GormMySQL, dto.Id)
 	if err != nil {
@@ -103,7 +103,7 @@ func (s UmsMenuService) UmsMenuItem(dto ums_admin_dto.UmsMenuCreateDTO) (*models
 }
 
 // UmsMenuPageList 分页查询后台菜单
-func (s UmsMenuService) UmsMenuPageList(pageDTO base_dto.PageDTO, parentIdDTO ums_admin_dto.UmsMenuListDTO) (*pkg.CommonPage, error) {
+func (s UmsMenuService) UmsMenuPageList(pageDTO base_dto.PageDTO, parentIdDTO admin_dto.UmsMenuListDTO) (*pkg.CommonPage, error) {
 	umsMenu := new(models.UmsMenu)
 	page, err := umsMenu.SelectPage(s.DbFactory.GormMySQL, pageDTO.PageNum, pageDTO.PageSize, parentIdDTO.ParentId)
 	if err != nil {
@@ -113,7 +113,7 @@ func (s UmsMenuService) UmsMenuPageList(pageDTO base_dto.PageDTO, parentIdDTO um
 }
 
 // UmsMenuUpdateHidden 修改菜单显示状态
-func (s UmsMenuService) UmsMenuUpdateHidden(dto ums_admin_dto.UmsMenuHiddenDTO) (int64, error) {
+func (s UmsMenuService) UmsMenuUpdateHidden(dto admin_dto.UmsMenuHiddenDTO) (int64, error) {
 	umsMenu := new(models.UmsMenu)
 	rows, err := umsMenu.UpdateHidden(s.DbFactory.GormMySQL, dto.Id, dto.Hidden)
 	if err != nil {

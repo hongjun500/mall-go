@@ -4,7 +4,7 @@
 // Created with GoLand 2022.2
 // Description:
 
-package ums_admin_dto
+package admin_dto
 
 // UmsMenuCreateDTO 添加后台菜单
 type UmsMenuCreateDTO struct {

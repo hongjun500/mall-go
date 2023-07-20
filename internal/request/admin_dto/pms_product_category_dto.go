@@ -4,7 +4,7 @@
 // Created with 2022.2.2.IntelliJ IDEA
 // Description:
 
-package ums_admin_dto
+package admin_dto
 
 type PmsProductCategoryDTO struct {
 	// 父分类的编号

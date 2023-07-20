@@ -4,7 +4,7 @@
 // Created with GoLand 2022.2
 // Description:
 
-package ums_admin_dto
+package admin_dto
 
 type UmsResourceCategoryCreateDTO struct {
 	// 资源分类名称

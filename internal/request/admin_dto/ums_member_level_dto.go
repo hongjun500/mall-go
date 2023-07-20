@@ -4,7 +4,7 @@
 // Created with GoLand 2022.2
 // Description:
 
-package ums_member_dto
+package admin_dto
 
 type (
 	UmsMemberLevelListDTO struct {

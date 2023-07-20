@@ -10,8 +10,8 @@ import (
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/models"
+	"github.com/hongjun500/mall-go/internal/request/admin_dto"
 	"github.com/hongjun500/mall-go/internal/request/base_dto"
-	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
 	"github.com/hongjun500/mall-go/pkg"
 	"gorm.io/gorm"
 )
@@ -25,7 +25,7 @@ func NewPmsProductCategoryService(dbFactory *database.DbFactory) PmsProductCateg
 }
 
 // CreateProductCategory 添加商品分类
-func (s PmsProductCategoryService) CreateProductCategory(dto ums_admin_dto.PmsProductCategoryDTO) (int64, error) {
+func (s PmsProductCategoryService) CreateProductCategory(dto admin_dto.PmsProductCategoryDTO) (int64, error) {
 	pmsProductCategory := new(models.PmsProductCategory)
 	pmsProductCategory.ProductCount = 0
 	pmsProductCategory.Name = dto.Name
@@ -72,7 +72,7 @@ func setCategoryLevel(db *gorm.DB, category *models.PmsProductCategory) {
 }
 
 // UpdateProductCategory 更新商品分类
-func (s PmsProductCategoryService) UpdateProductCategory(id int64, dto ums_admin_dto.PmsProductCategoryDTO) (int64, error) {
+func (s PmsProductCategoryService) UpdateProductCategory(id int64, dto admin_dto.PmsProductCategoryDTO) (int64, error) {
 	pmsProductCategory := new(models.PmsProductCategory)
 	pmsProductCategory.Id = id
 	pmsProductCategory.ProductCount = 0

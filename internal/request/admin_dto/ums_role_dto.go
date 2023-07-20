@@ -4,7 +4,7 @@
 // Created with GoLand 2022.2
 // Description: 角色请求传输数据对象
 
-package ums_admin_dto
+package admin_dto
 
 import "github.com/hongjun500/mall-go/internal/request/base_dto"
 

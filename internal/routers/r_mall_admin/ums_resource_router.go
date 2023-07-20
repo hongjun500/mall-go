@@ -10,8 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/models"
+	"github.com/hongjun500/mall-go/internal/request/admin_dto"
 	"github.com/hongjun500/mall-go/internal/request/base_dto"
-	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_admin"
 )
 
@@ -50,12 +50,12 @@ func (router *UmsResourceRouter) GroupUmsResourceRouter(umsResourceGroup *gin.Ro
 //	@Tags			后台资源管理
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body	ums_admin_dto.UmsResourceCreateDTO	true	"添加后台资源"
+//	@Param			request	body	admin_dto.UmsResourceCreateDTO	true	"添加后台资源"
 //	@Security		GinJWTMiddleware
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/resource/create [post]
 func (router *UmsResourceRouter) create(context *gin.Context) {
-	var dto ums_admin_dto.UmsResourceCreateDTO
+	var dto admin_dto.UmsResourceCreateDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)
@@ -77,12 +77,12 @@ func (router *UmsResourceRouter) create(context *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id		path	int								true	"资源id"
-//	@Param			request	body	ums_admin_dto.UmsResourceCreateDTO	true	"修改后台资源"
+//	@Param			request	body	admin_dto.UmsResourceCreateDTO	true	"修改后台资源"
 //	@Security		GinJWTMiddleware
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/resource/update/{id} [post]
 func (router *UmsResourceRouter) update(context *gin.Context) {
-	var dto ums_admin_dto.UmsResourceCreateDTO
+	var dto admin_dto.UmsResourceCreateDTO
 	var pathVariableDTO base_dto.PathVariableDTO
 	err := context.ShouldBind(&dto)
 	err = context.ShouldBindUri(&pathVariableDTO)
@@ -166,7 +166,7 @@ func (router *UmsResourceRouter) delete(context *gin.Context) {
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/resource/list [get]
 func (router *UmsResourceRouter) listPage(context *gin.Context) {
-	var dto ums_admin_dto.UmsResourcePageListDTO
+	var dto admin_dto.UmsResourcePageListDTO
 	err := context.ShouldBind(&dto)
 	if err != nil {
 		gin_common.CreateFail(context, gin_common.ParameterValidationError)

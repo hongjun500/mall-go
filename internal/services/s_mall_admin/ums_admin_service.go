@@ -2,15 +2,16 @@ package s_mall_admin
 
 import (
 	"crypto/rand"
-	"github.com/hongjun500/mall-go/pkg"
 	"time"
+
+	"github.com/hongjun500/mall-go/pkg"
 
 	"github.com/hongjun500/mall-go/internal/conf"
 	"github.com/hongjun500/mall-go/internal/database"
 	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/models"
+	"github.com/hongjun500/mall-go/internal/request/admin_dto"
 	"github.com/hongjun500/mall-go/internal/request/base_dto"
-	"github.com/hongjun500/mall-go/internal/request/ums_admin_dto"
 	"github.com/hongjun500/mall-go/internal/services"
 	"github.com/hongjun500/mall-go/pkg/security"
 	"golang.org/x/crypto/bcrypt"
@@ -86,7 +87,7 @@ func VerifyPassword(password, hashedPassword string) bool {
 	return err == nil
 }
 
-func (s UmsAdminService) UmsAdminRegister(request ums_admin_dto.UmsAdminRegisterDTO) error {
+func (s UmsAdminService) UmsAdminRegister(request admin_dto.UmsAdminRegisterDTO) error {
 	// 检查用户名是否重复了
 	var umsAdmin *models.UmsAdmin
 	umsAdmins, err := umsAdmin.SelectUmsAdminByUsername(s.DbFactory.GormMySQL, request.Username)
@@ -115,7 +116,7 @@ func (s UmsAdminService) UmsAdminRegister(request ums_admin_dto.UmsAdminRegister
 	return nil
 }
 
-func (s UmsAdminService) UmsAdminLogin(umsAdminLogin ums_admin_dto.UmsAdminLoginDTO, others ...string) (map[string]string, error) {
+func (s UmsAdminService) UmsAdminLogin(umsAdminLogin admin_dto.UmsAdminLoginDTO, others ...string) (map[string]string, error) {
 
 	umsAdmin, err := s.getAdminByUsername(umsAdminLogin.Username)
 	if err != nil {
@@ -201,7 +202,7 @@ func (s UmsAdminService) UmsAdminInfo(username string) (map[string]any, error) {
 }
 
 // UmsAdminListPage 分页查询用户
-func (s UmsAdminService) UmsAdminListPage(request ums_admin_dto.UmsAdminPageDTO) (*pkg.CommonPage, error) {
+func (s UmsAdminService) UmsAdminListPage(request admin_dto.UmsAdminPageDTO) (*pkg.CommonPage, error) {
 	var umsAdmin *models.UmsAdmin
 	page, err := umsAdmin.SelectUmsAdminPage(s.DbFactory.GormMySQL, request.Username, request.PageNum, request.PageSize)
 	if err != nil {
@@ -220,7 +221,7 @@ func (s UmsAdminService) UmsAdminItem(userDTO base_dto.UserDTO) (*models.UmsAdmi
 }
 
 // UmsAdminUpdate 修改指定用户信息
-func (s UmsAdminService) UmsAdminUpdate(userDTO base_dto.UserDTO, umsAdminUpdate ums_admin_dto.UmsAdminUpdateDTO) (int64, error) {
+func (s UmsAdminService) UmsAdminUpdate(userDTO base_dto.UserDTO, umsAdminUpdate admin_dto.UmsAdminUpdateDTO) (int64, error) {
 	var umsAdmin models.UmsAdmin
 	umsAdmin.Username = umsAdminUpdate.Username
 	umsAdmin.Nickname = umsAdminUpdate.Nickname
@@ -261,7 +262,7 @@ func (s UmsAdminService) UmsAdminUpdateStatus(id, status int64) (int64, error) {
 }
 
 // UmsAdminUpdatePassword 修改指定用户密码
-func (s UmsAdminService) UmsAdminUpdatePassword(umsAdminUpdatePasswordDTO ums_admin_dto.UmsAdminUpdatePasswordDTO) (int64, error) {
+func (s UmsAdminService) UmsAdminUpdatePassword(umsAdminUpdatePasswordDTO admin_dto.UmsAdminUpdatePasswordDTO) (int64, error) {
 	var umsAdmin models.UmsAdmin
 	umsAdmins, err := umsAdmin.SelectUmsAdminByUsername(s.DbFactory.GormMySQL, umsAdminUpdatePasswordDTO.Username)
 	if err != nil {
@@ -289,7 +290,7 @@ func (s UmsAdminService) UmsAdminUpdatePassword(umsAdminUpdatePasswordDTO ums_ad
 }
 
 // UmsAdminRoleUpdate 修改指定用户角色
-func (s UmsAdminService) UmsAdminRoleUpdate(umsAdminRoleDTO ums_admin_dto.UmsAdminRoleDTO) (int64, error) {
+func (s UmsAdminService) UmsAdminRoleUpdate(umsAdminRoleDTO admin_dto.UmsAdminRoleDTO) (int64, error) {
 	adminId := umsAdminRoleDTO.AdminId
 	roleIds := umsAdminRoleDTO.RoleIds
 	var count int64
@@ -318,7 +319,7 @@ func (s UmsAdminService) UmsAdminRoleUpdate(umsAdminRoleDTO ums_admin_dto.UmsAdm
 }
 
 // UmsAdminRoleItem 获取指定用户的角色
-func (s UmsAdminService) UmsAdminRoleItem(umsAdminRoleDTO ums_admin_dto.UmsAdminRoleDTO) ([]*models.UmsRole, error) {
+func (s UmsAdminService) UmsAdminRoleItem(umsAdminRoleDTO admin_dto.UmsAdminRoleDTO) ([]*models.UmsRole, error) {
 	var umsAdminRoleRelation models.UmsAdminRoleRelation
 	umsAdminRoleRelations, err := umsAdminRoleRelation.SelectRoleList(s.DbFactory.GormMySQL, umsAdminRoleDTO.AdminId)
 	if err != nil {
