@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/hongjun500/mall-go/internal/models"
 	"testing"
+
+	"github.com/hongjun500/mall-go/internal/models"
 )
 
 func TestCreateMenu(t *testing.T) {
@@ -60,7 +61,7 @@ func TestListPageMenu(t *testing.T) {
 	if err != nil {
 		return
 	}
-	t.Log("list all success, len = ", page.GetTotal())
+	t.Log("list all success, len = ", page.Total)
 }
 
 func TestUpdateHidden(t *testing.T) {

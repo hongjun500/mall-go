@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/hongjun500/mall-go/internal/models"
 	"testing"
+
+	"github.com/hongjun500/mall-go/internal/models"
 )
 
 func TestResourceListAll(t *testing.T) {
@@ -20,5 +21,5 @@ func TestResourceListPage(t *testing.T) {
 	if err != nil {
 		return
 	}
-	t.Log("list page success, len = ", page.GetTotal())
+	t.Log("list page success, len = ", page.Total)
 }

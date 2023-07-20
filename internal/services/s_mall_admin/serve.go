@@ -18,16 +18,18 @@ type CoreAdminService struct {
 	UmsRoleService
 	UmsMemberLevelService
 	PmsProductCategoryService
+	PmsProductAttributeCategoryService
 }
 
 func NewCoreAdminService(dbFactory *database.DbFactory) *CoreAdminService {
 	return &CoreAdminService{
-		UmsAdminService:            NewUmsAdminService(dbFactory),
-		UmsMenuService:             NewUmsMenuService(dbFactory),
-		UmsResourceCategoryService: NewUmsResourceCategoryService(dbFactory),
-		UmsResourceService:         NewUmsResourceService(dbFactory),
-		UmsRoleService:             NewUmsRoleService(dbFactory),
-		UmsMemberLevelService:      NewUmsMemberLevelService(dbFactory),
-		PmsProductCategoryService:  NewPmsProductCategoryService(dbFactory),
+		UmsAdminService:                    NewUmsAdminService(dbFactory),
+		UmsMenuService:                     NewUmsMenuService(dbFactory),
+		UmsResourceCategoryService:         NewUmsResourceCategoryService(dbFactory),
+		UmsResourceService:                 NewUmsResourceService(dbFactory),
+		UmsRoleService:                     NewUmsRoleService(dbFactory),
+		UmsMemberLevelService:              NewUmsMemberLevelService(dbFactory),
+		PmsProductCategoryService:          NewPmsProductCategoryService(dbFactory),
+		PmsProductAttributeCategoryService: NewPmsProductAttributeCategoryService(dbFactory),
 	}
 }

@@ -58,6 +58,7 @@ func (router *PmsProductCategoryRouter) GroupPmsProductCategoryRouter(productCat
 //	@Accept			json
 //	@Produce		json
 //	@Param			request	body		admin_dto.PmsProductCategoryDTO true "添加商品分类"
+//	@Security		GinJWTMiddleware
 //	@Success		200		{object}	gin_common.GinCommonResponse
 //	@Router			/productCategory/create [post]
 func (router *PmsProductCategoryRouter) CreateProductCategory(context *gin.Context) {
@@ -84,6 +85,7 @@ func (router *PmsProductCategoryRouter) CreateProductCategory(context *gin.Conte
 //	@Produce		json
 //	@Param			id		path		int		true	"商品分类id"
 //	@Param			request	body		admin_dto.PmsProductCategoryDTO
+//	@Security		GinJWTMiddleware
 //	@Success		200		{object}	gin_common.GinCommonResponse
 //	@Router			/productCategory/update/{id} [post]
 func (router *PmsProductCategoryRouter) UpdateProductCategory(context *gin.Context) {
@@ -113,6 +115,7 @@ func (router *PmsProductCategoryRouter) UpdateProductCategory(context *gin.Conte
 //	@Param			parentId		path		int		true	"父分类的编号"
 //	@Param			pageNum			query	int		false	"页码"
 //	@Param			pageSize		query	int		false	"每页数量"
+//	@Security		GinJWTMiddleware
 //	@Success		200		{object}	gin_common.GinCommonResponse
 //	@Router			/productCategory/list/{parentId} [get]
 func (router *PmsProductCategoryRouter) ListProductCategory(context *gin.Context) {
@@ -144,6 +147,7 @@ func (router *PmsProductCategoryRouter) ListProductCategory(context *gin.Context
 //	@Accept			json
 //	@Produce		json
 //	@Param			id		path		int		true	"商品分类id"
+//	@Security		GinJWTMiddleware
 //	@Success		200		{object}	gin_common.GinCommonResponse
 //	@Router			/productCategory/{id} [get]
 func (router *PmsProductCategoryRouter) GetProductCategory(context *gin.Context) {
@@ -170,6 +174,7 @@ func (router *PmsProductCategoryRouter) GetProductCategory(context *gin.Context)
 //	@Accept			json
 //	@Produce		json
 //	@Param			id		path		int		true	"商品分类id"
+//	@Security		GinJWTMiddleware
 //	@Success		200		{object}	gin_common.GinCommonResponse
 //	@Router			/productCategory/delete/{id} [post]
 func (router *PmsProductCategoryRouter) DeleteProductCategory(context *gin.Context) {
@@ -196,6 +201,7 @@ func (router *PmsProductCategoryRouter) DeleteProductCategory(context *gin.Conte
 //	@Produce		json
 //	@Param			ids		query	[]int		true	"商品分类id集合"
 //	@Param			navStatus	query	int		true	"导航状态"
+//	@Security		GinJWTMiddleware
 //	@Success		200		{object}	gin_common.GinCommonResponse
 //	@Router			/productCategory/update/navStatus [post]
 func (router *PmsProductCategoryRouter) UpdateNavStatus(context *gin.Context) {
@@ -227,6 +233,7 @@ func (router *PmsProductCategoryRouter) UpdateNavStatus(context *gin.Context) {
 //	@Produce		json
 //	@Param			ids		query	[]int		true	"商品分类id集合"
 //	@Param			showStatus	query	int		true	"显示状态"
+//	@Security		GinJWTMiddleware
 //	@Success		200		{object}	gin_common.GinCommonResponse
 //	@Router			/productCategory/update/showStatus [post]
 func (router *PmsProductCategoryRouter) UpdateShowStatus(context *gin.Context) {
@@ -257,6 +264,7 @@ func (router *PmsProductCategoryRouter) UpdateShowStatus(context *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Success		200		{object}	[]*models.PmsProductCategory
+//	@Security		GinJWTMiddleware
 //	@Router			/productCategory/list/withChildren [get]
 func (router *PmsProductCategoryRouter) ListWithChildren(context *gin.Context) {
 	list, err := router.PmsProductCategoryService.ListWithChildren()

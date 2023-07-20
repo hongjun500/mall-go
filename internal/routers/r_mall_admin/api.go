@@ -24,17 +24,19 @@ type CoreAdminRouter struct {
 	*UmsRoleRouter
 	*UmsMemberLevelRouter
 	*PmsProductCategoryRouter
+	*PmsProductAttributeCategoryRouter
 }
 
 func NewCoreAdminRouter(service *s_mall_admin.CoreAdminService) *CoreAdminRouter {
 	return &CoreAdminRouter{
-		UmsAdminRouter:            NewUmsAdminRouter(service.UmsAdminService),
-		UmsMenuRouter:             NewUmsMenuRouter(service.UmsMenuService),
-		UmsResourceCategoryRouter: NewUmsResourceCategoryRouter(service.UmsResourceCategoryService),
-		UmsResourceRouter:         NewUmsResourceRouter(service.UmsResourceService),
-		UmsRoleRouter:             NewUmsRoleRouter(service.UmsRoleService),
-		UmsMemberLevelRouter:      NewUmsMemberLevelRouter(service.UmsMemberLevelService),
-		PmsProductCategoryRouter:  NewPmsProductCategoryRouter(service.PmsProductCategoryService),
+		UmsAdminRouter:                    NewUmsAdminRouter(service.UmsAdminService),
+		UmsMenuRouter:                     NewUmsMenuRouter(service.UmsMenuService),
+		UmsResourceCategoryRouter:         NewUmsResourceCategoryRouter(service.UmsResourceCategoryService),
+		UmsResourceRouter:                 NewUmsResourceRouter(service.UmsResourceService),
+		UmsRoleRouter:                     NewUmsRoleRouter(service.UmsRoleService),
+		UmsMemberLevelRouter:              NewUmsMemberLevelRouter(service.UmsMemberLevelService),
+		PmsProductCategoryRouter:          NewPmsProductCategoryRouter(service.PmsProductCategoryService),
+		PmsProductAttributeCategoryRouter: NewPmsProductAttributeCategoryRouter(service.PmsProductAttributeCategoryService),
 	}
 }
 
@@ -65,4 +67,5 @@ func InitAdminGroupRouter(coreRouter *CoreAdminRouter, ginEngine *gin.Engine) {
 	coreRouter.GroupUmsRoleRouter(ginEngine.Group("/role"))
 	coreRouter.GroupUmsMemberLevelRouter(ginEngine.Group("/memberLevel"))
 	coreRouter.GroupPmsProductCategoryRouter(ginEngine.Group("/productCategory"))
+	coreRouter.GroupPmsProductAttributeCategoryRouter(ginEngine.Group("/productAttribute/category"))
 }
