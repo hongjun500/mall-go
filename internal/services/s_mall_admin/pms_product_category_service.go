@@ -145,7 +145,7 @@ func (s PmsProductCategoryService) UpdateShowStatus(ids []int64, showStatus int)
 }
 
 // ListWithChildren 查询所有一级分类及子分类
-func (s PmsProductCategoryService) ListWithChildren() ([]*models.PmsProductCategory, error) {
+func (s PmsProductCategoryService) ListWithChildren() ([]*models.PmsProductCategoryWithChildrenItem, error) {
 	pmsProductCategory := new(models.PmsProductCategory)
 	list, err := pmsProductCategory.SelectList(s.DbFactory.GormMySQL)
 	if err != nil {

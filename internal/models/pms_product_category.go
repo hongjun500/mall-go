@@ -45,13 +45,11 @@ type PmsProductCategory struct {
 	Keywords string `json:"keywords" gorm:"column:keywords"`
 	// 描述
 	Description string `json:"description" gorm:"column:description"`
-
-	Children []*PmsProductCategory `json:"children" gorm:"-"`
 }
 
 type PmsProductCategoryWithChildrenItem struct {
 	PmsProductCategory
-	Children []*PmsProductCategory `json:"children"`
+	Children []*PmsProductCategory `json:"children" gorm:"foreignKey:ParentId"`
 }
 
 func (*PmsProductCategory) TableName() string {
@@ -100,11 +98,10 @@ func (p *PmsProductCategory) UpdateShowStatusByIds(db *gorm.DB, ids []int64, sho
 	return tx.RowsAffected, tx.Error
 }
 
-func (p *PmsProductCategory) SelectList(db *gorm.DB) ([]*PmsProductCategory, error) {
-	var pmsProductCategories []*PmsProductCategory
+func (p *PmsProductCategory) SelectList(db *gorm.DB) ([]*PmsProductCategoryWithChildrenItem, error) {
+	var pmsProductCategoryWithChildrenItem []*PmsProductCategoryWithChildrenItem
 	tx := db.Preload("Children").
-		Joins("left join pms_product_category as p2 on p2.parent_id = pms_product_category.id").
-		Where("pms_product_category.parent_id = 0").Find(&pmsProductCategories).
-		Find(&pmsProductCategories)
-	return pmsProductCategories, tx.Error
+		Where("parent_id = 0").
+		Find(&pmsProductCategoryWithChildrenItem)
+	return pmsProductCategoryWithChildrenItem, tx.Error
 }

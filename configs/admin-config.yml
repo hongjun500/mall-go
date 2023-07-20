@@ -13,7 +13,7 @@ jwt:
 
 database:
   gorm_mysql:
-    Host: 10.1.26.175
+    Host: localhost
     Port: 3306
     Database: mall_go
     Username: root
@@ -33,7 +33,7 @@ database:
     GormLogLevel: 4
 
   redis:
-    Host: 10.1.26.175
+    Host: localhost
     Port: 6379
     Password:
     Database: 0
