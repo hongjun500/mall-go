@@ -47,9 +47,9 @@ func (router *PmsProductAttributeCategoryRouter) GroupPmsProductAttributeCategor
 //	@Tags			商品属性分类
 //	@Accept			json
 //	@Produce		json
-//	@Param			name		form		string		true		"属性分类名称"
+//	@Param			name	formData	string	true	"属性分类名称"
 //	@Security		GinJWTMiddleware
-//	@Success		200		{object}	gin_common.GinCommonResponse
+//	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router /productAttribute/category/create [post]
 func (router *PmsProductAttributeCategoryRouter) create(context *gin.Context) {
 	var name string
@@ -72,9 +72,9 @@ func (router *PmsProductAttributeCategoryRouter) create(context *gin.Context) {
 //	@Tags			商品属性分类
 //	@Accept			json
 //	@Produce		json
-//	@Param			name		form		string		true		"属性分类名称"
+//	@Param			name	formData	string	true	"属性分类名称"
 //	@Security		GinJWTMiddleware
-//	@Success		200		{object}	gin_common.GinCommonResponse
+//	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router /productAttribute/category/update/{id} [post]
 func (router *PmsProductAttributeCategoryRouter) update(context *gin.Context) {
 	var pathId base_dto.PathVariableDTO
@@ -98,9 +98,9 @@ func (router *PmsProductAttributeCategoryRouter) update(context *gin.Context) {
 //	@Tags			商品属性分类
 //	@Accept			json
 //	@Produce		json
-//	@Param			id		path		int		true		"属性分类id"
+//	@Param			id	path	int	true	"属性分类id"
 //	@Security		GinJWTMiddleware
-//	@Success		200		{object}	gin_common.GinCommonResponse
+//	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router /productAttribute/category/delete/{id} [post]
 func (router *PmsProductAttributeCategoryRouter) delete(context *gin.Context) {
 	var pathId base_dto.PathVariableDTO
@@ -123,9 +123,9 @@ func (router *PmsProductAttributeCategoryRouter) delete(context *gin.Context) {
 //	@Tags			商品属性分类
 //	@Accept			json
 //	@Produce		json
-//	@Param			id		path		int		true		"属性分类id"
+//	@Param			id	path	int	true	"属性分类id"
 //	@Security		GinJWTMiddleware
-//	@Success		200		{object}	ProductAttributeCategoryItemResponse
+//	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router /productAttribute/category/{id} [get]
 func (router *PmsProductAttributeCategoryRouter) getItem(context *gin.Context) {
 	var pathId base_dto.PathVariableDTO
@@ -148,10 +148,10 @@ func (router *PmsProductAttributeCategoryRouter) getItem(context *gin.Context) {
 //	@Tags			商品属性分类
 //	@Accept			json
 //	@Produce		json
-//	@Param			pageNum		query		int		false		"页码"
-//	@Param			pageSize	query		int		false		"每页数量"
+//	@Param			pageSize	query	int		true	"pageSize"
+//	@Param			pageNum		query	int		true	"pageNum"
 //	@Security		GinJWTMiddleware
-//	@Success		200		{object}	ProductAttributeCategoryListResponse
+//	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router /productAttribute/category/list [get]
 func (router *PmsProductAttributeCategoryRouter) list(context *gin.Context) {
 	var pageDto base_dto.PageDTO
@@ -174,7 +174,7 @@ func (router *PmsProductAttributeCategoryRouter) list(context *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		GinJWTMiddleware
-//	@Success		200		{object}	ProductAttributeCategoryListWithAttrResponse
+//	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router /productAttribute/category/list/withAttr [get]
 func (router *PmsProductAttributeCategoryRouter) listWithAttr(context *gin.Context) {
 	list, err := router.PmsProductAttributeCategoryService.ListWithAttr()

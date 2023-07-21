@@ -19,6 +19,7 @@ type CoreAdminService struct {
 	UmsMemberLevelService
 	PmsProductCategoryService
 	PmsProductAttributeCategoryService
+	PmsProductAttributeService
 }
 
 func NewCoreAdminService(dbFactory *database.DbFactory) *CoreAdminService {
@@ -31,5 +32,6 @@ func NewCoreAdminService(dbFactory *database.DbFactory) *CoreAdminService {
 		UmsMemberLevelService:              NewUmsMemberLevelService(dbFactory),
 		PmsProductCategoryService:          NewPmsProductCategoryService(dbFactory),
 		PmsProductAttributeCategoryService: NewPmsProductAttributeCategoryService(dbFactory),
+		PmsProductAttributeService:         NewPmsProductAttributeService(dbFactory),
 	}
 }

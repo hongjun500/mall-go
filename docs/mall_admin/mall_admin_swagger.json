@@ -170,7 +170,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsAdminLoginDTO"
+                            "$ref": "#/definitions/admin_dto.UmsAdminLoginDTO"
                         }
                     }
                 ],
@@ -232,7 +232,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsAdminRegisterDTO"
+                            "$ref": "#/definitions/admin_dto.UmsAdminRegisterDTO"
                         }
                     }
                 ],
@@ -360,7 +360,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsAdminUpdateDTO"
+                            "$ref": "#/definitions/admin_dto.UmsAdminUpdateDTO"
                         }
                     }
                 ],
@@ -399,7 +399,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsAdminUpdatePasswordDTO"
+                            "$ref": "#/definitions/admin_dto.UmsAdminUpdatePasswordDTO"
                         }
                     }
                 ],
@@ -537,7 +537,7 @@
                         "GinJWTMiddleware": []
                     }
                 ],
-                "description": "添加后台菜单\n添加后台菜单",
+                "description": "添加后台菜单",
                 "consumes": [
                     "application/json"
                 ],
@@ -555,7 +555,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsMenuCreateDTO"
+                            "$ref": "#/definitions/admin_dto.UmsMenuCreateDTO"
                         }
                     }
                 ],
@@ -576,7 +576,7 @@
                         "GinJWTMiddleware": []
                     }
                 ],
-                "description": "删除后台菜单\n删除后台菜单",
+                "description": "删除后台菜单",
                 "consumes": [
                     "application/json"
                 ],
@@ -692,7 +692,7 @@
                         "GinJWTMiddleware": []
                     }
                 ],
-                "description": "修改后台菜单\n修改后台菜单",
+                "description": "修改后台菜单",
                 "consumes": [
                     "application/json"
                 ],
@@ -717,7 +717,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsMenuCreateDTO"
+                            "$ref": "#/definitions/admin_dto.UmsMenuCreateDTO"
                         }
                     }
                 ],
@@ -738,7 +738,7 @@
                         "GinJWTMiddleware": []
                     }
                 ],
-                "description": "修改菜单显示状态\n修改菜单显示状态",
+                "description": "修改菜单显示状态",
                 "consumes": [
                     "application/json"
                 ],
@@ -782,7 +782,7 @@
                         "GinJWTMiddleware": []
                     }
                 ],
-                "description": "根据ID获取菜单详情\n根据ID获取菜单详情",
+                "description": "根据ID获取菜单详情",
                 "consumes": [
                     "application/json"
                 ],
@@ -797,6 +797,818 @@
                     {
                         "type": "integer",
                         "description": "菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productAttribute/attrInfo/{productCategoryId}": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "根据分类查询属性列表或参数列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品属性管理"
+                ],
+                "summary": "根据分类查询属性列表或参数列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "分类id",
+                        "name": "productCategoryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/admin_dto.PmsProductAttributeInfoDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/productAttribute/category/create": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "添加商品属性分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品属性分类"
+                ],
+                "summary": "添加商品属性分类",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "属性分类名称",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productAttribute/category/delete/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "删除商品属性分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品属性分类"
+                ],
+                "summary": "删除商品属性分类",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "属性分类id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productAttribute/category/list": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "分页获取所有商品属性分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品属性分类"
+                ],
+                "summary": "分页获取所有商品属性分类",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageNum",
+                        "name": "pageNum",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productAttribute/category/list/withAttr": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "获取所有商品属性分类及其下属性",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品属性分类"
+                ],
+                "summary": "获取所有商品属性分类及其下属性",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productAttribute/category/update/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "修改商品属性分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品属性分类"
+                ],
+                "summary": "修改商品属性分类",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "属性分类名称",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productAttribute/category/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "获取单个商品属性分类信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品属性分类"
+                ],
+                "summary": "获取单个商品属性分类信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "属性分类id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productAttribute/create": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "添加商品属性信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品属性管理"
+                ],
+                "summary": "添加商品属性信息",
+                "parameters": [
+                    {
+                        "description": "修改指定商品属性",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin_dto.PmsProductAttributeDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productAttribute/delete": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "批量删除商品属性",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品属性管理"
+                ],
+                "summary": "批量删除商品属性",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "商品属性id集合",
+                        "name": "ids",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productAttribute/list/{cid}": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "根据分类查询属性列表或参数列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品属性管理"
+                ],
+                "summary": "根据分类查询属性列表或参数列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "0表示属性，1表示参数",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分类id",
+                        "name": "cid",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "pageNum",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productAttribute/update/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "修改商品属性信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品属性管理"
+                ],
+                "summary": "修改商品属性信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "商品属性id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改指定商品属性",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin_dto.PmsProductAttributeDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productAttribute/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "查询单个商品属性",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品属性管理"
+                ],
+                "summary": "查询单个商品属性",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "商品属性id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productCategory/create": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "添加商品分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品分类"
+                ],
+                "summary": "添加商品分类",
+                "parameters": [
+                    {
+                        "description": "添加商品分类",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin_dto.PmsProductCategoryDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productCategory/delete/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "根据id删除商品分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品分类"
+                ],
+                "summary": "根据id删除商品分类",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "商品分类id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productCategory/list/withChildren": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "查询所有一级分类及子分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品分类"
+                ],
+                "summary": "查询所有一级分类及子分类",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productCategory/list/{parentId}": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "分页查询商品分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品分类"
+                ],
+                "summary": "分页查询商品分类",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "父分类的编号",
+                        "name": "parentId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "pageNum",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productCategory/update/navStatus": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "批量修改导航状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品分类"
+                ],
+                "summary": "批量修改导航状态",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "商品分类id集合",
+                        "name": "ids",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "导航状态",
+                        "name": "navStatus",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productCategory/update/showStatus": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "批量修改导航状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品分类"
+                ],
+                "summary": "批量修改导航状态",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "商品分类id集合",
+                        "name": "ids",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "显示状态",
+                        "name": "showStatus",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productCategory/update/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "修改商品分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品分类"
+                ],
+                "summary": "修改商品分类",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "商品分类id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改商品分类",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin_dto.PmsProductCategoryDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin_common.GinCommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/productCategory/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "GinJWTMiddleware": []
+                    }
+                ],
+                "description": "根据id获取商品分类",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品分类"
+                ],
+                "summary": "根据id获取商品分类",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "商品分类id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -837,7 +1649,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsResourceCreateDTO"
+                            "$ref": "#/definitions/admin_dto.UmsResourceCreateDTO"
                         }
                     }
                 ],
@@ -888,7 +1700,7 @@
                 }
             }
         },
-        "/resource/list/resource": {
+        "/resource/list": {
             "get": {
                 "security": [
                     {
@@ -1010,7 +1822,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsResourceCreateDTO"
+                            "$ref": "#/definitions/admin_dto.UmsResourceCreateDTO"
                         }
                     }
                 ],
@@ -1086,7 +1898,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsResourceCategoryCreateDTO"
+                            "$ref": "#/definitions/admin_dto.UmsResourceCategoryCreateDTO"
                         }
                     }
                 ],
@@ -1197,7 +2009,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsResourceCategoryCreateDTO"
+                            "$ref": "#/definitions/admin_dto.UmsResourceCategoryCreateDTO"
                         }
                     }
                 ],
@@ -1332,7 +2144,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsRoleCreateDTO"
+                            "$ref": "#/definitions/admin_dto.UmsRoleCreateDTO"
                         }
                     }
                 ],
@@ -1571,7 +2383,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ums_admin.UmsRoleCreateDTO"
+                            "$ref": "#/definitions/admin_dto.UmsRoleCreateDTO"
                         }
                     }
                 ],
@@ -1631,27 +2443,119 @@
         }
     },
     "definitions": {
-        "gin_common.GinCommonResponse": {
+        "admin_dto.PmsProductAttributeDTO": {
             "type": "object",
             "properties": {
-                "code": {
-                    "description": "http 状态码",
+                "filterType": {
+                    "description": "分类筛选样式：1-\u003e普通；1-\u003e颜色",
                     "type": "integer"
                 },
-                "data": {
-                    "description": "返回的数据是任意类型\t如果有错误，则把错误信息也封装在此\n\n\t\t{\n\t\t\t\"err_code\": 300000,\n\t\t\t\"err_msg\": \"用户名已存在\"\n\t\t}"
+                "handAddStatus": {
+                    "description": "是否支持手动新增；0-\u003e不支持；1-\u003e支持",
+                    "type": "integer"
                 },
-                "message": {
-                    "description": "返回的信息 例如: 操作成功或者操作失败",
+                "inputList": {
+                    "description": "可选值列表，以逗号隔开",
                     "type": "string"
                 },
-                "status": {
-                    "description": "success or fail",
+                "inputType": {
+                    "description": "属性录入方式：0-\u003e手工录入；1-\u003e从列表中选取",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "属性名称",
                     "type": "string"
+                },
+                "productAttributeCategoryId": {
+                    "description": "属性分类ID",
+                    "type": "integer"
+                },
+                "relatedStatus": {
+                    "description": "相同属性产品是否关联；0-\u003e不关联；1-\u003e关联",
+                    "type": "integer"
+                },
+                "searchType": {
+                    "description": "检索类型；0-\u003e不需要进行检索；1-\u003e关键字检索；2-\u003e范围检索",
+                    "type": "integer"
+                },
+                "selectType": {
+                    "description": "属性选择类型：0-\u003e唯一；1-\u003e单选；2-\u003e多选",
+                    "type": "integer"
+                },
+                "sort": {
+                    "description": "排序字段",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "属性的类型；0-\u003e规格；1-\u003e参数",
+                    "type": "integer"
                 }
             }
         },
-        "ums_admin.UmsAdminLoginDTO": {
+        "admin_dto.PmsProductAttributeInfoDTO": {
+            "type": "object",
+            "required": [
+                "categoryId"
+            ],
+            "properties": {
+                "categoryId": {
+                    "description": "属性ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "admin_dto.PmsProductCategoryDTO": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "icon": {
+                    "description": "图标",
+                    "type": "string"
+                },
+                "keywords": {
+                    "description": "关键字",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "分类名称",
+                    "type": "string"
+                },
+                "navStatus": {
+                    "description": "是否显示在导航栏：0-\u003e不显示；1-\u003e显示",
+                    "type": "integer"
+                },
+                "parentId": {
+                    "description": "父分类的编号",
+                    "type": "integer"
+                },
+                "productAttributeIdList": {
+                    "description": "产品相关筛选属性集合",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "productUnit": {
+                    "description": "分类单位",
+                    "type": "string"
+                },
+                "showStatus": {
+                    "description": "显示状态：0-\u003e不显示；1-\u003e显示",
+                    "type": "integer"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "admin_dto.UmsAdminLoginDTO": {
             "type": "object",
             "required": [
                 "password",
@@ -1668,7 +2572,7 @@
                 }
             }
         },
-        "ums_admin.UmsAdminRegisterDTO": {
+        "admin_dto.UmsAdminRegisterDTO": {
             "type": "object",
             "required": [
                 "password",
@@ -1701,7 +2605,7 @@
                 }
             }
         },
-        "ums_admin.UmsAdminUpdateDTO": {
+        "admin_dto.UmsAdminUpdateDTO": {
             "type": "object",
             "required": [
                 "password",
@@ -1734,7 +2638,7 @@
                 }
             }
         },
-        "ums_admin.UmsAdminUpdatePasswordDTO": {
+        "admin_dto.UmsAdminUpdatePasswordDTO": {
             "type": "object",
             "required": [
                 "newPassword",
@@ -1756,7 +2660,7 @@
                 }
             }
         },
-        "ums_admin.UmsMenuCreateDTO": {
+        "admin_dto.UmsMenuCreateDTO": {
             "type": "object",
             "properties": {
                 "hidden": {
@@ -1792,7 +2696,7 @@
                 }
             }
         },
-        "ums_admin.UmsResourceCategoryCreateDTO": {
+        "admin_dto.UmsResourceCategoryCreateDTO": {
             "type": "object",
             "properties": {
                 "name": {
@@ -1805,7 +2709,7 @@
                 }
             }
         },
-        "ums_admin.UmsResourceCreateDTO": {
+        "admin_dto.UmsResourceCreateDTO": {
             "type": "object",
             "properties": {
                 "categoryId": {
@@ -1826,7 +2730,7 @@
                 }
             }
         },
-        "ums_admin.UmsRoleCreateDTO": {
+        "admin_dto.UmsRoleCreateDTO": {
             "type": "object",
             "required": [
                 "name"
@@ -1851,6 +2755,26 @@
                 "status": {
                     "description": "启用状态：0-\u003e禁用；1-\u003e启用",
                     "type": "integer"
+                }
+            }
+        },
+        "gin_common.GinCommonResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "http 状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "返回的数据是任意类型\t如果有错误，则把错误信息也封装在此\n\n\t\t{\n\t\t\t\"err_code\": 300000,\n\t\t\t\"err_msg\": \"用户名已存在\"\n\t\t}"
+                },
+                "message": {
+                    "description": "返回的信息 例如: 操作成功或者操作失败",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "success or fail",
+                    "type": "string"
                 }
             }
         }
