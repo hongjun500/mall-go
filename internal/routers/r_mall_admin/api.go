@@ -26,6 +26,7 @@ type CoreAdminRouter struct {
 	*PmsProductCategoryRouter
 	*PmsProductAttributeCategoryRouter
 	*PmsProductAttributeRouter
+	*PmsBrandRouter
 }
 
 func NewCoreAdminRouter(service *s_mall_admin.CoreAdminService) *CoreAdminRouter {
@@ -39,6 +40,7 @@ func NewCoreAdminRouter(service *s_mall_admin.CoreAdminService) *CoreAdminRouter
 		PmsProductCategoryRouter:          NewPmsProductCategoryRouter(service.PmsProductCategoryService),
 		PmsProductAttributeCategoryRouter: NewPmsProductAttributeCategoryRouter(service.PmsProductAttributeCategoryService),
 		PmsProductAttributeRouter:         NewPmsProductAttributeRouter(service.PmsProductAttributeService),
+		PmsBrandRouter:                    NewPmsBrandRouter(service.PmsBrandService),
 	}
 }
 
@@ -71,4 +73,5 @@ func InitAdminGroupRouter(coreRouter *CoreAdminRouter, ginEngine *gin.Engine) {
 	coreRouter.GroupPmsProductCategoryRouter(ginEngine.Group("/productCategory"))
 	coreRouter.GroupPmsProductAttributeCategoryRouter(ginEngine.Group("/productAttribute/category"))
 	coreRouter.GroupPmsProductAttributeRouter(ginEngine.Group("/productAttribute"))
+	coreRouter.GroupPmsBrandRouter(ginEngine.Group("/brand"))
 }

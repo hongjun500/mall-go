@@ -8,6 +8,7 @@ package models
 
 import (
 	"github.com/hongjun500/mall-go/internal/database"
+	"gorm.io/gorm"
 )
 
 type PmsProduct struct {
@@ -51,5 +52,11 @@ func (pmsProduct *PmsProduct) SelectProductInfoById(db *database.DbFactory, id i
 // UpdateProductNameById 根据商品 id 更新商品名称
 func (pmsProduct *PmsProduct) UpdateProductNameById(db *database.DbFactory, id int64, name string) (int64, error) {
 	tx := db.GormMySQL.Model(pmsProduct).Where("id = ?", id).Update("name", name)
+	return tx.RowsAffected, tx.Error
+}
+
+// UpdateBrandNameByBrandId 根据品牌 id 更改品牌名称
+func (pmsProduct *PmsProduct) UpdateBrandNameByBrandId(db *gorm.DB, brandId int64, name string) (int64, error) {
+	tx := db.Model(pmsProduct).Where("brand_id = ?", brandId).Update("brand_name", name)
 	return tx.RowsAffected, tx.Error
 }

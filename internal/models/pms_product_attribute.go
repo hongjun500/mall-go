@@ -101,14 +101,14 @@ func (productAttribute *PmsProductAttribute) SelectListByPage(db *gorm.DB, cid i
 	var productAttributes []*PmsProductAttribute
 	page := internal.NewGormPage(db, pageNum, pageSize, "sort", "desc")
 	page.List = &productAttributes
-	page.QueryFunc = func(db *gorm.DB) *gorm.DB {
+	page.QueryFunc = func(query *gorm.DB) *gorm.DB {
 		if cid != 0 {
-			db = db.Where("product_attribute_category_id = ?", cid)
+			query = query.Where("product_attribute_category_id = ?", cid)
 		}
 		if ctype != 0 {
-			db = db.Where("type = ?", ctype)
+			query = query.Where("type = ?", ctype)
 		}
-		return db
+		return query
 	}
 	err := page.Paginate()
 	if err != nil {
