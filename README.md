@@ -11,7 +11,8 @@ mall-go
 │   ├───admin
 │   ├───portal
 │   └───search
-├───configs               // 配置文件
+├───configs               // 项目配置文件
+├───configs.docker        // 适用于 docker 环境的项目配置文件
 ├───docs                  // swag 文档
 │   ├───mall-search
 │   ├───mall_admin
@@ -50,3 +51,6 @@ mall-go
     ├───models
     └───services
 ```
+### 用到的技术点
+[Go](https://go.dev/)、[Gin](https://gin-gonic.com/)、[Gorm](https://gorm.io/)、[GinSwagger](https://github.com/swaggo/swag)、[Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/go-api/index.html)
+、[Redis](https://redis.uptrace.dev/zh/)、[Casbin](https://casbin.org/)、[Jwt](https://jwt.io/)、[Docker Compose](https://docs.docker.com/compose/)...
