@@ -19,14 +19,14 @@ var (
 	g errgroup.Group
 )
 
-// @title						mall-go API
+// @title					mall-go API
 // @description				mall-go API
 // @version					v1
-// @BasePath					/
+// @BasePath				/
 // @schemes					http https
 // @securityDefinitions.apikey	GinJWTMiddleware
-// @in							header
-// @name						Authorization
+// @in						header
+// @name					Authorization
 // @description				Description for what is this security definition being used
 func main() {
 

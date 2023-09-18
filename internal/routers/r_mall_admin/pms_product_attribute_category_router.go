@@ -113,7 +113,7 @@ func (router *PmsProductAttributeCategoryRouter) delete(context *gin.Context) {
 		gin_common.CreateFail(context, err)
 		return
 	}
-	gin_common.CreateSuccess(context, delete)
+	gin_common.CreateSuccess(context, rows)
 }
 
 // getItem 获取单个商品属性分类信息
