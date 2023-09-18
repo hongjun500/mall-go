@@ -10,14 +10,10 @@ import "gorm.io/gorm"
 
 type UmsAdminLoginLog struct {
 	Model
-	// 用户id
-	AdminId int64 `gorm:"column:admin_id;not null;" json:"adminId"`
-	// 登录 ip
-	Ip string `gorm:"column:ip;type:varchar(64);not null;" json:"ip"`
-	// 地址
-	Address string `gorm:"column:address;type:varchar(255);not null;" json:"address"`
-	// 浏览器登录类型
-	UserAgent string `gorm:"column:user_agent;type:varchar(255);not null;" json:"userAgent"`
+	AdminId   int64  `json:"adminId" gorm:"column:admin_id;not null;"`                       // 用户 id
+	Ip        string `json:"ip" gorm:"column:ip;type:varchar(64);not null;"`                 // 登录 ip
+	Address   string `json:"address" gorm:"column:address;type:varchar(255);not null;"`      // 地址
+	UserAgent string `json:"userAgent" gorm:"column:user_agent;type:varchar(255);not null;"` // 浏览器登录类型
 }
 
 // TableName 自定义表名

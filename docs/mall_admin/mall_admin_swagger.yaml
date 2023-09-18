@@ -1,21 +1,87 @@
 basePath: /
 definitions:
-  gin_common.GinCommonResponse:
+  admin_dto.PmsProductAttributeDTO:
     properties:
-      code:
-        description: http 状态码
+      filterType:
+        description: 分类筛选样式：1->普通；1->颜色
         type: integer
-      data:
-        description: "返回的数据是任意类型\t如果有错误，则把错误信息也封装在此\n\n\t\t{\n\t\t\t\"err_code\":
-          300000,\n\t\t\t\"err_msg\": \"用户名已存在\"\n\t\t}"
-      message:
-        description: '返回的信息 例如: 操作成功或者操作失败'
+      handAddStatus:
+        description: 是否支持手动新增；0->不支持；1->支持
+        type: integer
+      inputList:
+        description: 可选值列表，以逗号隔开
         type: string
-      status:
-        description: success or fail
+      inputType:
+        description: 属性录入方式：0->手工录入；1->从列表中选取
+        type: integer
+      name:
+        description: 属性名称
         type: string
+      productAttributeCategoryId:
+        description: 属性分类ID
+        type: integer
+      relatedStatus:
+        description: 相同属性产品是否关联；0->不关联；1->关联
+        type: integer
+      searchType:
+        description: 检索类型；0->不需要进行检索；1->关键字检索；2->范围检索
+        type: integer
+      selectType:
+        description: 属性选择类型：0->唯一；1->单选；2->多选
+        type: integer
+      sort:
+        description: 排序字段
+        type: integer
+      type:
+        description: 属性的类型；0->规格；1->参数
+        type: integer
     type: object
-  ums_admin.UmsAdminLoginDTO:
+  admin_dto.PmsProductAttributeInfoDTO:
+    properties:
+      categoryId:
+        description: 属性ID
+        type: integer
+    required:
+    - categoryId
+    type: object
+  admin_dto.PmsProductCategoryDTO:
+    properties:
+      description:
+        description: 描述
+        type: string
+      icon:
+        description: 图标
+        type: string
+      keywords:
+        description: 关键字
+        type: string
+      name:
+        description: 分类名称
+        type: string
+      navStatus:
+        description: 是否显示在导航栏：0->不显示；1->显示
+        type: integer
+      parentId:
+        description: 父分类的编号
+        type: integer
+      productAttributeIdList:
+        description: 产品相关筛选属性集合
+        items:
+          type: integer
+        type: array
+      productUnit:
+        description: 分类单位
+        type: string
+      showStatus:
+        description: 显示状态：0->不显示；1->显示
+        type: integer
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - name
+    type: object
+  admin_dto.UmsAdminLoginDTO:
     properties:
       password:
         description: 密文密码
@@ -27,7 +93,7 @@ definitions:
     - password
     - username
     type: object
-  ums_admin.UmsAdminRegisterDTO:
+  admin_dto.UmsAdminRegisterDTO:
     properties:
       email:
         description: 邮箱
@@ -51,7 +117,7 @@ definitions:
     - password
     - username
     type: object
-  ums_admin.UmsAdminUpdateDTO:
+  admin_dto.UmsAdminUpdateDTO:
     properties:
       email:
         description: 邮箱
@@ -75,7 +141,7 @@ definitions:
     - password
     - username
     type: object
-  ums_admin.UmsAdminUpdatePasswordDTO:
+  admin_dto.UmsAdminUpdatePasswordDTO:
     properties:
       newPassword:
         description: 新密码
@@ -91,7 +157,7 @@ definitions:
     - oldPassword
     - username
     type: object
-  ums_admin.UmsMenuCreateDTO:
+  admin_dto.UmsMenuCreateDTO:
     properties:
       hidden:
         description: 前端隐藏
@@ -117,7 +183,7 @@ definitions:
         description: 菜单名称
         type: string
     type: object
-  ums_admin.UmsResourceCategoryCreateDTO:
+  admin_dto.UmsResourceCategoryCreateDTO:
     properties:
       name:
         description: 资源分类名称
@@ -126,7 +192,7 @@ definitions:
         description: 排序
         type: integer
     type: object
-  ums_admin.UmsResourceCreateDTO:
+  admin_dto.UmsResourceCreateDTO:
     properties:
       categoryId:
         description: 资源分类ID
@@ -141,7 +207,7 @@ definitions:
         description: 资源URL
         type: string
     type: object
-  ums_admin.UmsRoleCreateDTO:
+  admin_dto.UmsRoleCreateDTO:
     properties:
       adminCount:
         description: 后台用户数量
@@ -160,6 +226,21 @@ definitions:
         type: integer
     required:
     - name
+    type: object
+  gin_common.GinCommonResponse:
+    properties:
+      code:
+        description: http 状态码
+        type: integer
+      data:
+        description: "返回的数据是任意类型\t如果有错误，则把错误信息也封装在此\n\n\t\t{\n\t\t\t\"err_code\":
+          300000,\n\t\t\t\"err_msg\": \"用户名已存在\"\n\t\t}"
+      message:
+        description: '返回的信息 例如: 操作成功或者操作失败'
+        type: string
+      status:
+        description: success or fail
+        type: string
     type: object
 info:
   contact: {}
@@ -497,9 +578,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: |-
-        根据ID获取菜单详情
-        根据ID获取菜单详情
+      description: 根据ID获取菜单详情
       parameters:
       - description: 菜单ID
         in: path
@@ -522,9 +601,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: |-
-        添加后台菜单
-        添加后台菜单
+      description: 添加后台菜单
       parameters:
       - description: 添加后台菜单
         in: body
@@ -548,9 +625,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: |-
-        删除后台菜单
-        删除后台菜单
+      description: 删除后台菜单
       parameters:
       - description: 菜单ID
         in: path
@@ -623,9 +698,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: |-
-        修改后台菜单
-        修改后台菜单
+      description: 修改后台菜单
       parameters:
       - description: 菜单ID
         in: path
@@ -654,9 +727,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: |-
-        修改菜单显示状态
-        修改菜单显示状态
+      description: 修改菜单显示状态
       parameters:
       - description: 菜单ID
         in: path
@@ -680,6 +751,517 @@ paths:
       summary: 修改菜单显示状态
       tags:
       - 后台菜单管理
+  /productAttribute/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 查询单个商品属性
+      parameters:
+      - description: 商品属性id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 查询单个商品属性
+      tags:
+      - 商品属性管理
+  /productAttribute/attrInfo/{productCategoryId}:
+    get:
+      consumes:
+      - application/json
+      description: 根据分类查询属性列表或参数列表
+      parameters:
+      - description: 分类id
+        in: path
+        name: productCategoryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin_dto.PmsProductAttributeInfoDTO'
+      security:
+      - GinJWTMiddleware: []
+      summary: 根据分类查询属性列表或参数列表
+      tags:
+      - 商品属性管理
+  /productAttribute/category/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取单个商品属性分类信息
+      parameters:
+      - description: 属性分类id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 获取单个商品属性分类信息
+      tags:
+      - 商品属性分类
+  /productAttribute/category/create:
+    post:
+      consumes:
+      - application/json
+      description: 添加商品属性分类
+      parameters:
+      - description: 属性分类名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 添加商品属性分类
+      tags:
+      - 商品属性分类
+  /productAttribute/category/delete/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 删除商品属性分类
+      parameters:
+      - description: 属性分类id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 删除商品属性分类
+      tags:
+      - 商品属性分类
+  /productAttribute/category/list:
+    get:
+      consumes:
+      - application/json
+      description: 分页获取所有商品属性分类
+      parameters:
+      - description: pageSize
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: pageNum
+        in: query
+        name: pageNum
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 分页获取所有商品属性分类
+      tags:
+      - 商品属性分类
+  /productAttribute/category/list/withAttr:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有商品属性分类及其下属性
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 获取所有商品属性分类及其下属性
+      tags:
+      - 商品属性分类
+  /productAttribute/category/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 修改商品属性分类
+      parameters:
+      - description: 属性分类名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改商品属性分类
+      tags:
+      - 商品属性分类
+  /productAttribute/create:
+    post:
+      consumes:
+      - application/json
+      description: 添加商品属性信息
+      parameters:
+      - description: 修改指定商品属性
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/admin_dto.PmsProductAttributeDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 添加商品属性信息
+      tags:
+      - 商品属性管理
+  /productAttribute/delete:
+    post:
+      consumes:
+      - application/json
+      description: 批量删除商品属性
+      parameters:
+      - collectionFormat: csv
+        description: 商品属性id集合
+        in: formData
+        items:
+          type: integer
+        name: ids
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 批量删除商品属性
+      tags:
+      - 商品属性管理
+  /productAttribute/list/{cid}:
+    get:
+      consumes:
+      - application/json
+      description: 根据分类查询属性列表或参数列表
+      parameters:
+      - description: 0表示属性，1表示参数
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: 分类id
+        in: query
+        name: cid
+        required: true
+        type: integer
+      - description: 页码
+        in: query
+        name: pageNum
+        required: true
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 根据分类查询属性列表或参数列表
+      tags:
+      - 商品属性管理
+  /productAttribute/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 修改商品属性信息
+      parameters:
+      - description: 商品属性id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改指定商品属性
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/admin_dto.PmsProductAttributeDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改商品属性信息
+      tags:
+      - 商品属性管理
+  /productCategory/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 根据id获取商品分类
+      parameters:
+      - description: 商品分类id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 根据id获取商品分类
+      tags:
+      - 商品分类
+  /productCategory/create:
+    post:
+      consumes:
+      - application/json
+      description: 添加商品分类
+      parameters:
+      - description: 添加商品分类
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/admin_dto.PmsProductCategoryDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 添加商品分类
+      tags:
+      - 商品分类
+  /productCategory/delete/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 根据id删除商品分类
+      parameters:
+      - description: 商品分类id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 根据id删除商品分类
+      tags:
+      - 商品分类
+  /productCategory/list/{parentId}:
+    get:
+      consumes:
+      - application/json
+      description: 分页查询商品分类
+      parameters:
+      - description: 父分类的编号
+        in: path
+        name: parentId
+        required: true
+        type: integer
+      - description: 页码
+        in: query
+        name: pageNum
+        required: true
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 分页查询商品分类
+      tags:
+      - 商品分类
+  /productCategory/list/withChildren:
+    get:
+      consumes:
+      - application/json
+      description: 查询所有一级分类及子分类
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 查询所有一级分类及子分类
+      tags:
+      - 商品分类
+  /productCategory/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: 修改商品分类
+      parameters:
+      - description: 商品分类id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改商品分类
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/admin_dto.PmsProductCategoryDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 修改商品分类
+      tags:
+      - 商品分类
+  /productCategory/update/navStatus:
+    post:
+      consumes:
+      - application/json
+      description: 批量修改导航状态
+      parameters:
+      - collectionFormat: csv
+        description: 商品分类id集合
+        in: formData
+        items:
+          type: integer
+        name: ids
+        required: true
+        type: array
+      - description: 导航状态
+        in: formData
+        name: navStatus
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 批量修改导航状态
+      tags:
+      - 商品分类
+  /productCategory/update/showStatus:
+    post:
+      consumes:
+      - application/json
+      description: 批量修改导航状态
+      parameters:
+      - collectionFormat: csv
+        description: 商品分类id集合
+        in: formData
+        items:
+          type: integer
+        name: ids
+        required: true
+        type: array
+      - description: 显示状态
+        in: formData
+        name: showStatus
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin_common.GinCommonResponse'
+      security:
+      - GinJWTMiddleware: []
+      summary: 批量修改导航状态
+      tags:
+      - 商品分类
   /resource/{id}:
     get:
       consumes:
@@ -750,7 +1332,7 @@ paths:
       summary: 根据ID删除后台资源
       tags:
       - 后台资源管理
-  /resource/list/resource:
+  /resource/list:
     get:
       consumes:
       - multipart/form-data

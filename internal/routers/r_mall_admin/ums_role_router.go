@@ -118,7 +118,7 @@ func (router *UmsRoleRouter) update(context *gin.Context) {
 //	@Tags			后台角色管理
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			ids	query	[]int64	true	"ids"
+//	@Param			ids	formData	[]int64	true	"ids"
 //	@Security		GinJWTMiddleware
 //	@Success		200	{object}	gin_common.GinCommonResponse
 //	@Router			/role/delete [post]

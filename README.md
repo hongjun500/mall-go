@@ -1,3 +1,8 @@
+# 声明
+**这个项目是按照 [大佬 macrozheng ](https://github.com/macrozheng) 开源项目 [mall](https://github.com/macrozheng/mall) 使用 Go 来实现的**
+
+任何事物 **从零到一** 才是最难能可贵的，如果你某天有幸看到这个项目并得到了一些帮助，请给 原作者 [macrozheng](https://github.com/macrozheng) 点个 star 吧
+
 ## 项目布局
 
 ```
@@ -6,7 +11,8 @@ mall-go
 │   ├───admin
 │   ├───portal
 │   └───search
-├───configs               // 配置文件
+├───configs               // 项目配置文件
+├───configs.docker        // 适用于 docker 环境的项目配置文件
 ├───docs                  // swag 文档
 │   ├───mall-search
 │   ├───mall_admin
@@ -45,3 +51,6 @@ mall-go
     ├───models
     └───services
 ```
+### 用到的技术点
+[Go](https://go.dev/)、[Gin](https://gin-gonic.com/)、[Gorm](https://gorm.io/)、[GinSwagger](https://github.com/swaggo/swag)、[Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/go-api/index.html)
+、[Redis](https://redis.uptrace.dev/zh/)、[Casbin](https://casbin.org/)、[Jwt](https://jwt.io/)、[Docker Compose](https://docs.docker.com/compose/)...

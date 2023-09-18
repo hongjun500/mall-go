@@ -7,11 +7,12 @@
 package common
 
 import (
+	"testing"
+
 	"github.com/hongjun500/mall-go/internal"
 	"github.com/hongjun500/mall-go/internal/models"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
-	"testing"
 )
 
 func TestExecutePagedQuery(t *testing.T) {
@@ -19,11 +20,11 @@ func TestExecutePagedQuery(t *testing.T) {
 	var admins []*models.UmsAdmin
 	page.List = &admins
 	keywords := "hongjun500"
-	page.QueryFunc = func(db *gorm.DB) *gorm.DB {
+	page.QueryFunc = func(query *gorm.DB) *gorm.DB {
 		if keywords != "" {
-			return db.Where("username LIKE ? OR nick_name LIKE ?", "%"+keywords+"%", "%"+keywords+"%")
+			return query.Where("username LIKE ? OR nick_name LIKE ?", "%"+keywords+"%", "%"+keywords+"%")
 		}
-		return db
+		return query
 	}
 	err := page.Paginate()
 	if err != nil {

@@ -1,6 +1,6 @@
 server:
   ApplicationName: mall_search
-  Enable: true
+  Enable: false
   GinRunMode: debug
   Port: 8082
   ReadTimeout: 60
