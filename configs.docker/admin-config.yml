@@ -2,7 +2,7 @@ server:
   ApplicationName: mall_admin
   Enable: true
   GinRunMode: debug
-  Port: 8080
+  Port: 8085
   ReadTimeout: 60
 
 jwt:

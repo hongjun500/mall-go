@@ -1,5 +1,10 @@
 FROM golang:1.19.9-alpine3.18 AS builder
 
+# 作者信息
+LABEL maintainer="hongjun500 <"
+LABEL version="1.0"
+LABEL description="This is a docker image for golang project."
+
 # 设置工作目录
 WORKDIR /mall-go
 
@@ -11,13 +16,14 @@ ENV GOPROXY=https://goproxy.cn,direct
 # 下载依赖并整理
 RUN go mod download && go mod tidy
 
+RUN rm -f /docs && rm -f /logs && rm -f /scripts
 # 构建项目
 RUN go build -o /mall-go/app /mall-go/cmd/main.go
 
 
 
 
-# 使用alpine镜像作为基础镜像
+# 使用 alpine 镜像作为基础镜像
 FROM golang:1.19.9-alpine3.18 AS runner
 
 # 设置工作目录
@@ -38,18 +44,9 @@ RUN echo "https://mirrors.aliyun.com/alpine/v3.8/main/" > /etc/apk/repositories 
     && apk del tzdata \
     && echo "Asia/Shanghai" > /etc/timezone \
 
-
 # 暴露三个端口
 EXPOSE 8080 8081 8082
 
+
 # 启动项目
 ENTRYPOINT ["./app"]
-
-ARG IMAGE_NAME=mall-go
-
-LABEL name=$IMAGE_NAME \
-      description="mall-go项目镜像" \
-      version="1.0.0" \
-      author="hongjun500" \
-      email="" \
-# Path: Dockerfile

@@ -1,8 +1,8 @@
 server:
-  Enable: false
+  Enable: true
   GinRunMode: debug
   Host: localhost
-  Port: 8081
+  Port: 8086
   ReadTimeout: 60
 
 jwt:

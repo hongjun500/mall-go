@@ -50,7 +50,7 @@ func main() {
 
 	if conf.GlobalPortalServerConfigProperties.Enable {
 		portalServer := &http.Server{
-			Addr:        fmt.Sprintf(":%s", conf.GlobalAdminServerConfigProperties.Port),
+			Addr:        fmt.Sprintf(":%s", conf.GlobalPortalServerConfigProperties.Port),
 			Handler:     portal.HandlerPortal(),
 			ReadTimeout: time.Duration(conf.GlobalPortalServerConfigProperties.ReadTimeout) * time.Second,
 			// WriteTimeout: 10 * time.Second,
