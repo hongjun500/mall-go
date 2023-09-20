@@ -28,8 +28,8 @@ services:
 #      timeout: 10s
 #      retries: 3
 
-    volumes:
-      - ./configs:/configs
-      - ./logs:/app/logs
+#    volumes:
+#      - ./configs:/configs
+#      - ./logs:/app/logs
     networks:
       - mall
