@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	docs "github.com/hongjun500/mall-go/docs/mall_admin"
 	"github.com/hongjun500/mall-go/internal/conf"
+	"github.com/hongjun500/mall-go/internal/gin_common"
 	"github.com/hongjun500/mall-go/internal/gin_common/mid"
 	"github.com/hongjun500/mall-go/internal/services/s_mall_admin"
 	swaggerFiles "github.com/swaggo/files"
@@ -59,7 +60,7 @@ func InitAdminGroupRouter(coreRouter *CoreAdminRouter, ginEngine *gin.Engine) {
 				"/swagger/"+conf.GlobalAdminServerConfigProperties.ApplicationName+"/doc.json"),
 			ginSwagger.PersistAuthorization(true)))
 	docs.SwaggerInfomall_admin.Title = conf.GlobalAdminServerConfigProperties.ApplicationName
-
+	initHealthCheckRouter(ginEngine)
 	// 注册无需认证的路由
 	coreRouter.UnauthorizedGroupRouter(ginEngine)
 	ginEngine.Use(mid.GinJWTMiddleware()).Use(mid.GinCasbinMiddleware())
@@ -74,4 +75,12 @@ func InitAdminGroupRouter(coreRouter *CoreAdminRouter, ginEngine *gin.Engine) {
 	coreRouter.GroupPmsProductAttributeCategoryRouter(ginEngine.Group("/productAttribute/category"))
 	coreRouter.GroupPmsProductAttributeRouter(ginEngine.Group("/productAttribute"))
 	coreRouter.GroupPmsBrandRouter(ginEngine.Group("/brand"))
+
+}
+
+// InitHealthCheckRouter 健康检查的路由
+func initHealthCheckRouter(ginEngine *gin.Engine) {
+	ginEngine.GET("/health", func(context *gin.Context) {
+		gin_common.Create(context)
+	})
 }

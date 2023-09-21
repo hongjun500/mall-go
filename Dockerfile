@@ -16,7 +16,7 @@ ENV GOPROXY=https://goproxy.cn,direct
 # 下载依赖、整理模块、构建项目以及清理构建缓存
 RUN go mod download && \
     go mod tidy && \
-    rm -f /docs && rm -f /logs && rm -f /scripts && \
+#    rm -f /docs && rm -f /logs && rm -f /scripts && \
     go build -o /mall-go/app /mall-go/cmd/main.go && \
     go clean -cache
 
@@ -37,13 +37,24 @@ COPY --from=builder ./mall-go/app .
 COPY --from=builder ./mall-go/configs.docker ./configs
 
 # 将时区设置为东八区
-RUN echo "https://mirrors.aliyun.com/alpine/v3.8/main/" > /etc/apk/repositories \
-    && echo "https://mirrors.aliyun.com/alpine/v3.8/community/" >> /etc/apk/repositories \
-    && apk update \
+#RUN echo "https://mirrors.aliyun.com/alpine/latest-stable/main/" > /etc/apk/repositories \
+#    && echo "https://mirrors.aliyun.com/alpine/latest-stable/community/" >> /etc/apk/repositories \
+#    && apk update && apk add curl \
+#    && apk add --no-cache tzdata \
+#    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime  \
+#    && apk del tzdata \
+#    && echo "Asia/Shanghai" > /etc/timezone \
+
+RUN echo "https://dl-cdn.alpinelinux.org/alpine/latest-stable/main/" > /etc/apk/repositories \
+    && echo "https://dl-cdn.alpinelinux.org/alpine/latest-stable/community/" >> /etc/apk/repositories \
+    && apk update && apk add curl \
     && apk add --no-cache tzdata \
-    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime  \
+    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && apk del tzdata \
-    && echo "Asia/Shanghai" > /etc/timezone \
+    && echo "Asia/Shanghai" > /etc/timezone
+
+
+
 
 # 暴露三个端口
 EXPOSE 8080 8081 8082
@@ -52,3 +63,6 @@ EXPOSE 8080 8081 8082
 # 启动项目
 CMD ["./app"]
 #ENTRYPOINT ["./app"]
+
+# 健康检查
+HEALTHCHECK --interval=5s --timeout=3s --retries=3 CMD curl -fs http://localhost:8080/health || exit 1
